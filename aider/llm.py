@@ -18,6 +18,7 @@ VERBOSE = False
 
 class LazyLiteLLM:
     _lazy_module = None
+    _stackspot_provider = None
 
     def __getattr__(self, name):
         if name == "_lazy_module":
@@ -38,6 +39,15 @@ class LazyLiteLLM:
         self._lazy_module.set_verbose = False
         self._lazy_module.drop_params = True
         self._lazy_module._logging._disable_debugging()
+
+        # Register StackSpot provider
+        try:
+            from aider.providers.stackspot import StackSpotProvider
+            self._stackspot_provider = StackSpotProvider()
+            self._lazy_module.register_provider("stackspot", self._stackspot_provider)
+        except Exception as e:
+            if VERBOSE:
+                print(f"Failed to register StackSpot provider: {e}")
 
 
 litellm = LazyLiteLLM()

@@ -49,6 +49,14 @@ gpt-3.5-turbo-16k-0613
 
 OPENAI_MODELS = [ln.strip() for ln in OPENAI_MODELS.splitlines() if ln.strip()]
 
+STACKSPOT_MODELS = """
+stackspot-ai-chat
+stackspot-ai-code
+stackspot-ai-assistant
+"""
+
+STACKSPOT_MODELS = [ln.strip() for ln in STACKSPOT_MODELS.splitlines() if ln.strip()]
+
 ANTHROPIC_MODELS = """
 claude-2
 claude-2.1
@@ -75,6 +83,10 @@ MODEL_ALIASES = {
     "35turbo": "gpt-3.5-turbo",
     "35-turbo": "gpt-3.5-turbo",
     "3": "gpt-3.5-turbo",
+    # StackSpot models
+    "stackspot": "stackspot-ai-chat",
+    "stackspot-code": "stackspot-ai-code",
+    "stackspot-assistant": "stackspot-ai-assistant",
     # Other models
     "deepseek": "deepseek/deepseek-chat",
     "r1": "deepseek/deepseek-reasoner",
@@ -278,6 +290,14 @@ class Model(ModelSettings):
             self.use_repo_map = True
             self.send_undo_reply = True
             self.examples_as_sys_msg = True
+            return  # <--
+
+        if "stackspot-ai" in model:
+            self.edit_format = "diff"
+            self.use_repo_map = True
+            self.send_undo_reply = True
+            self.examples_as_sys_msg = True
+            self.reminder = "user"
             return  # <--
 
         if "gpt-4-turbo" in model or ("gpt-4-" in model and "-preview" in model):

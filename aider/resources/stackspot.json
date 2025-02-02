@@ -1,0 +1,40 @@
+{
+    "provider": "stackspot",
+    "models": {
+        "stackspot-ai-chat": {
+            "litellm_provider": "stackspot",
+            "mode": "chat",
+            "max_tokens": 8192,
+            "model_type": "chat",
+            "context_window": 16384,
+            "input_cost_per_token": 0.0001,
+            "output_cost_per_token": 0.0002
+        },
+        "stackspot-ai-code": {
+            "litellm_provider": "stackspot",
+            "mode": "chat",
+            "max_tokens": 8192,
+            "model_type": "code",
+            "context_window": 16384,
+            "input_cost_per_token": 0.0002,
+            "output_cost_per_token": 0.0004
+        },
+        "stackspot-ai-assistant": {
+            "litellm_provider": "stackspot",
+            "mode": "chat",
+            "max_tokens": 8192,
+            "model_type": "assistant",
+            "context_window": 16384,
+            "input_cost_per_token": 0.0001,
+            "output_cost_per_token": 0.0002
+        }
+    },
+    "api": {
+        "base_url": "https://api.stackspot.com/v1",
+        "chat_endpoint": "/chat/completions",
+        "code_endpoint": "/code/completions",
+        "assistant_endpoint": "/assistant/completions",
+        "auth_header": "Authorization",
+        "auth_type": "Bearer"
+    }
+} 
