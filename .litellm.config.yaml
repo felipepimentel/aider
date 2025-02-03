@@ -1,0 +1,36 @@
+model_list:
+  - model_name: stackspot-ai-code
+    litellm_params:
+      model: stackspot/stackspot-ai-code
+      api_key: ${STACKSPOT_API_KEY}
+      api_base: https://api.stackspot.com/v1/code/completions
+      max_tokens: 8192
+
+  - model_name: stackspot-ai-chat
+    litellm_params:
+      model: stackspot/stackspot-ai-chat
+      api_key: ${STACKSPOT_API_KEY}
+      api_base: https://api.stackspot.com/v1/chat/completions
+      max_tokens: 8192
+
+  - model_name: stackspot-ai-assistant
+    litellm_params:
+      model: stackspot/stackspot-ai-assistant
+      api_key: ${STACKSPOT_API_KEY}
+      api_base: https://api.stackspot.com/v1/assistant/completions
+      max_tokens: 8192
+
+litellm_settings:
+  drop_params: true
+  set_verbose: true
+  cache: false
+  model_alias_map:
+    stackspot: stackspot-ai-chat
+    stackspot-code: stackspot-ai-code
+    stackspot-assistant: stackspot-ai-assistant
+
+general_settings:
+  completion_model: stackspot-ai-code
+
+environment_variables:
+  STACKSPOT_API_KEY: ${STACKSPOT_API_KEY} 

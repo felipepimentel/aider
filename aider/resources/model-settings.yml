@@ -638,4 +638,37 @@
   use_temperature: false
   editor_model_name: gpt-4o
   editor_edit_format: editor-diff
+
+- name: stackspot-ai-code
+  edit_format: diff
+  weak_model_name: stackspot-ai-code
+  use_repo_map: true
+  lazy: true
+  reminder: sys
+  examples_as_sys_msg: true
+  extra_params:
+    api_base: https://api.stackspot.com/v1
+    max_tokens: 8192
+
+- name: stackspot-ai-chat
+  edit_format: diff
+  weak_model_name: stackspot-ai-chat
+  use_repo_map: true
+  lazy: true
+  reminder: sys
+  examples_as_sys_msg: true
+  extra_params:
+    api_base: https://api.stackspot.com/v1
+    max_tokens: 8192
+
+- name: stackspot-ai-assistant
+  edit_format: diff
+  weak_model_name: stackspot-ai-assistant
+  use_repo_map: true
+  lazy: true
+  reminder: sys
+  examples_as_sys_msg: true
+  extra_params:
+    api_base: https://api.stackspot.com/v1
+    max_tokens: 8192
       

@@ -46,7 +46,13 @@ class ConfirmGroup:
 
 class AutoCompleter(Completer):
     def __init__(
-        self, root, rel_fnames, addable_rel_fnames, commands, encoding, abs_read_only_fnames=None
+        self,
+        root,
+        rel_fnames,
+        addable_rel_fnames,
+        commands,
+        encoding,
+        abs_read_only_fnames=None,
     ):
         self.addable_rel_fnames = addable_rel_fnames
         self.rel_fnames = rel_fnames
@@ -98,7 +104,9 @@ class AutoCompleter(Completer):
 
             tokens = list(lexer.get_tokens(content))
             self.words.update(
-                (token[1], f"`{token[1]}`") for token in tokens if token[0] in Token.Name
+                (token[1], f"`{token[1]}`")
+                for token in tokens
+                if token[0] in Token.Name
             )
 
     def get_command_completions(self, document, complete_event, text, words):
@@ -152,12 +160,16 @@ class AutoCompleter(Completer):
             return
 
         if text[0] == "/":
-            yield from self.get_command_completions(document, complete_event, text, words)
+            yield from self.get_command_completions(
+                document, complete_event, text, words
+            )
             return
 
         candidates = self.words
         candidates.update(set(self.fname_to_rel_fnames))
-        candidates = [word if type(word) is tuple else (word, word) for word in candidates]
+        candidates = [
+            word if type(word) is tuple else (word, word) for word in candidates
+        ]
 
         last_word = words[-1]
         completions = []
@@ -181,31 +193,30 @@ class InputOutput:
 
     def __init__(
         self,
-        pretty=True,
-        yes=None,
+        pretty,
+        yes_always=False,
         input_history_file=None,
         chat_history_file=None,
         input=None,
         output=None,
-        user_input_color="blue",
+        user_input_color=None,
         tool_output_color=None,
-        tool_error_color="red",
-        tool_warning_color="#FFA500",
-        assistant_output_color="blue",
+        tool_warning_color=None,
+        tool_error_color=None,
         completion_menu_color=None,
         completion_menu_bg_color=None,
         completion_menu_current_color=None,
         completion_menu_current_bg_color=None,
-        code_theme="default",
+        assistant_output_color=None,
+        code_theme=None,
+        dry_run=False,
         encoding="utf-8",
         line_endings="platform",
-        dry_run=False,
         llm_history_file=None,
-        editingmode=EditingMode.EMACS,
+        editingmode=None,
         fancy_input=True,
-        file_watcher=None,
         multiline_mode=False,
-        root=".",
+        no_web=False,
     ):
         self.placeholder = None
         self.interrupted = False
@@ -223,8 +234,12 @@ class InputOutput:
         self.assistant_output_color = assistant_output_color
         self.completion_menu_color = completion_menu_color if pretty else None
         self.completion_menu_bg_color = completion_menu_bg_color if pretty else None
-        self.completion_menu_current_color = completion_menu_current_color if pretty else None
-        self.completion_menu_current_bg_color = completion_menu_current_bg_color if pretty else None
+        self.completion_menu_current_color = (
+            completion_menu_current_color if pretty else None
+        )
+        self.completion_menu_current_bg_color = (
+            completion_menu_current_bg_color if pretty else None
+        )
 
         self.code_theme = code_theme
 
@@ -235,7 +250,8 @@ class InputOutput:
         if self.output:
             self.pretty = False
 
-        self.yes = yes
+        self.yes_always = yes_always
+        self.no_web = no_web
 
         self.input_history_file = input_history_file
         self.llm_history_file = llm_history_file
@@ -252,7 +268,11 @@ class InputOutput:
                 f"Must be one of: {', '.join(valid_line_endings)}"
             )
         self.newline = (
-            None if line_endings == "platform" else "\n" if line_endings == "lf" else "\r\n"
+            None
+            if line_endings == "platform"
+            else "\n"
+            if line_endings == "lf"
+            else "\r\n"
         )
         self.dry_run = dry_run
 
@@ -287,10 +307,12 @@ class InputOutput:
         else:
             self.console = Console(force_terminal=False, no_color=True)  # non-pretty
             if self.is_dumb_terminal:
-                self.tool_output("Detected dumb terminal, disabling fancy input and pretty output.")
+                self.tool_output(
+                    "Detected dumb terminal, disabling fancy input and pretty output."
+                )
 
-        self.file_watcher = file_watcher
-        self.root = root
+        self.file_watcher = None
+        self.root = "."
 
     def _get_style(self):
         style_dict = {}
@@ -299,11 +321,9 @@ class InputOutput:
 
         if self.user_input_color:
             style_dict.setdefault("", self.user_input_color)
-            style_dict.update(
-                {
-                    "pygments.literal.string": f"bold italic {self.user_input_color}",
-                }
-            )
+            style_dict.update({
+                "pygments.literal.string": f"bold italic {self.user_input_color}",
+            })
 
         # Conditionally add 'completion-menu' style
         completion_menu_style = []
@@ -317,7 +337,9 @@ class InputOutput:
         # Conditionally add 'completion-menu.completion.current' style
         completion_menu_current_style = []
         if self.completion_menu_current_bg_color:
-            completion_menu_current_style.append(f"bg:{self.completion_menu_current_bg_color}")
+            completion_menu_current_style.append(
+                f"bg:{self.completion_menu_current_bg_color}"
+            )
         if self.completion_menu_current_color:
             completion_menu_current_style.append(self.completion_menu_current_color)
         if completion_menu_current_style:
@@ -385,7 +407,9 @@ class InputOutput:
         delay = initial_delay
         for attempt in range(max_retries):
             try:
-                with open(str(filename), "w", encoding=self.encoding, newline=self.newline) as f:
+                with open(
+                    str(filename), "w", encoding=self.encoding, newline=self.newline
+                ) as f:
                     f.write(content)
                 return  # Successfully wrote the file
             except PermissionError as err:
@@ -403,7 +427,9 @@ class InputOutput:
 
     def rule(self):
         if self.pretty:
-            style = dict(style=self.user_input_color) if self.user_input_color else dict()
+            style = (
+                dict(style=self.user_input_color) if self.user_input_color else dict()
+            )
             self.console.rule(**style)
         else:
             print()
@@ -491,7 +517,9 @@ class InputOutput:
                 # In normal mode, Enter submits
                 event.current_buffer.validate_and_handle()
 
-        @kb.add("escape", "enter", eager=True, filter=~is_searching)  # This is Alt+Enter
+        @kb.add(
+            "escape", "enter", eager=True, filter=~is_searching
+        )  # This is Alt+Enter
         def _(event):
             "Handle Alt+Enter key press"
             if self.multiline_mode:
@@ -653,14 +681,18 @@ class InputOutput:
         hist = "\n" + content.strip() + "\n\n"
         self.append_chat_history(hist)
 
-    def offer_url(self, url, prompt="Open URL for more info?", allow_never=True):
-        """Offer to open a URL in the browser, returns True if opened."""
-        if url in self.never_prompts:
+    def offer_url(self, url, prompt=None, allow_never=True):
+        if getattr(self, "no_web", False):
             return False
-        if self.confirm_ask(prompt, subject=url, allow_never=allow_never):
-            webbrowser.open(url)
-            return True
-        return False
+
+        if not prompt:
+            prompt = f"Open {url}?"
+
+        if not self.confirm_ask(prompt, allow_never=allow_never):
+            return False
+
+        webbrowser.open(url)
+        return True
 
     def confirm_ask(
         self,
@@ -723,9 +755,9 @@ class InputOutput:
                 return True
             return text.lower() in valid_responses
 
-        if self.yes is True:
+        if self.yes_always is True:
             res = "n" if explicit_yes_required else "y"
-        elif self.yes is False:
+        elif self.yes_always is False:
             res = "n"
         elif group and group.preference:
             res = group.preference
@@ -745,11 +777,15 @@ class InputOutput:
                     res = default
                     break
                 res = res.lower()
-                good = any(valid_response.startswith(res) for valid_response in valid_responses)
+                good = any(
+                    valid_response.startswith(res) for valid_response in valid_responses
+                )
                 if good:
                     break
 
-                error_message = f"Please answer with one of: {', '.join(valid_responses)}"
+                error_message = (
+                    f"Please answer with one of: {', '.join(valid_responses)}"
+                )
                 self.tool_error(error_message)
 
         res = res.lower()[0]
@@ -794,9 +830,9 @@ class InputOutput:
 
         style = self._get_style()
 
-        if self.yes is True:
+        if self.yes_always is True:
             res = "yes"
-        elif self.yes is False:
+        elif self.yes_always is False:
             res = "no"
         else:
             if self.prompt_session:
@@ -811,7 +847,7 @@ class InputOutput:
 
         hist = f"{question.strip()} {res.strip()}"
         self.append_chat_history(hist, linebreak=True, blockquote=True)
-        if self.yes in (True, False):
+        if self.yes_always in (True, False):
             self.tool_output(hist)
 
         # Restore original multiline mode
@@ -823,7 +859,9 @@ class InputOutput:
         if message.strip():
             if "\n" in message:
                 for line in message.splitlines():
-                    self.append_chat_history(line, linebreak=True, blockquote=True, strip=strip)
+                    self.append_chat_history(
+                        line, linebreak=True, blockquote=True, strip=strip
+                    )
             else:
                 hist = message.strip() if strip else message
                 self.append_chat_history(hist, linebreak=True, blockquote=True)
@@ -919,10 +957,14 @@ class InputOutput:
             text += "\n"
         if self.chat_history_file is not None:
             try:
-                with self.chat_history_file.open("a", encoding=self.encoding, errors="ignore") as f:
+                with self.chat_history_file.open(
+                    "a", encoding=self.encoding, errors="ignore"
+                ) as f:
                     f.write(text)
             except (PermissionError, OSError) as err:
-                print(f"Warning: Unable to write to chat history file {self.chat_history_file}.")
+                print(
+                    f"Warning: Unable to write to chat history file {self.chat_history_file}."
+                )
                 print(err)
                 self.chat_history_file = None  # Disable further attempts to write
 
@@ -944,7 +986,9 @@ class InputOutput:
         console = Console(file=output, force_terminal=False)
 
         read_only_files = sorted(rel_read_only_fnames or [])
-        editable_files = [f for f in sorted(rel_fnames) if f not in rel_read_only_fnames]
+        editable_files = [
+            f for f in sorted(rel_fnames) if f not in rel_read_only_fnames
+        ]
 
         if read_only_files:
             # Use shorter of abs/rel paths for readonly files
@@ -955,7 +999,9 @@ class InputOutput:
 
             files_with_label = ["Readonly:"] + ro_paths
             read_only_output = StringIO()
-            Console(file=read_only_output, force_terminal=False).print(Columns(files_with_label))
+            Console(file=read_only_output, force_terminal=False).print(
+                Columns(files_with_label)
+            )
             read_only_lines = read_only_output.getvalue().splitlines()
             console.print(Columns(files_with_label))
 
@@ -964,7 +1010,9 @@ class InputOutput:
             if read_only_files:
                 files_with_label = ["Editable:"] + editable_files
                 editable_output = StringIO()
-                Console(file=editable_output, force_terminal=False).print(Columns(files_with_label))
+                Console(file=editable_output, force_terminal=False).print(
+                    Columns(files_with_label)
+                )
                 editable_lines = editable_output.getvalue().splitlines()
 
                 if len(read_only_lines) > 1 or len(editable_lines) > 1:

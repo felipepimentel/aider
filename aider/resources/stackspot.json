@@ -7,8 +7,8 @@
             "max_tokens": 8192,
             "model_type": "chat",
             "context_window": 16384,
-            "input_cost_per_token": 0.0001,
-            "output_cost_per_token": 0.0002
+            "input_cost_per_token": 0.0,
+            "output_cost_per_token": 0.0
         },
         "stackspot-ai-code": {
             "litellm_provider": "stackspot",
@@ -16,8 +16,8 @@
             "max_tokens": 8192,
             "model_type": "code",
             "context_window": 16384,
-            "input_cost_per_token": 0.0002,
-            "output_cost_per_token": 0.0004
+            "input_cost_per_token": 0.0,
+            "output_cost_per_token": 0.0
         },
         "stackspot-ai-assistant": {
             "litellm_provider": "stackspot",
@@ -25,8 +25,8 @@
             "max_tokens": 8192,
             "model_type": "assistant",
             "context_window": 16384,
-            "input_cost_per_token": 0.0001,
-            "output_cost_per_token": 0.0002
+            "input_cost_per_token": 0.0,
+            "output_cost_per_token": 0.0
         }
     },
     "api": {

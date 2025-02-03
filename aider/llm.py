@@ -1,6 +1,9 @@
-import importlib
 import os
+import sys
+import traceback
 import warnings
+
+from aider.litellm_init import init_litellm
 
 warnings.filterwarnings("ignore", category=UserWarning, module="pydantic")
 
@@ -11,45 +14,29 @@ os.environ["OR_SITE_URL"] = AIDER_SITE_URL
 os.environ["OR_APP_NAME"] = AIDER_APP_NAME
 os.environ["LITELLM_MODE"] = "PRODUCTION"
 
-# `import litellm` takes 1.5 seconds, defer it!
+VERBOSE = True
 
-VERBOSE = False
+print("\n=== Debug: Starting LLM Module ===", file=sys.stderr)
+print(f"Current working directory: {os.getcwd()}", file=sys.stderr)
+print(f"Python path: {sys.path}", file=sys.stderr)
+print("Environment variables:", file=sys.stderr)
+print(
+    f"- STACKSPOT_API_KEY present: {bool(os.getenv('STACKSPOT_API_KEY'))}",
+    file=sys.stderr,
+)
+print(f"- LITELLM_MODE: {os.getenv('LITELLM_MODE')}", file=sys.stderr)
 
+try:
+    print("Initializing LiteLLM...", file=sys.stderr)
+    litellm = init_litellm()
+    print("LiteLLM initialized successfully!", file=sys.stderr)
+except Exception as e:
+    print("\nError initializing LiteLLM:", file=sys.stderr)
+    print(str(e), file=sys.stderr)
+    print("\nTraceback:", file=sys.stderr)
+    traceback.print_exc(file=sys.stderr)
+    raise
 
-class LazyLiteLLM:
-    _lazy_module = None
-    _stackspot_provider = None
-
-    def __getattr__(self, name):
-        if name == "_lazy_module":
-            return super()
-        self._load_litellm()
-        return getattr(self._lazy_module, name)
-
-    def _load_litellm(self):
-        if self._lazy_module is not None:
-            return
-
-        if VERBOSE:
-            print("Loading litellm...")
-
-        self._lazy_module = importlib.import_module("litellm")
-
-        self._lazy_module.suppress_debug_info = True
-        self._lazy_module.set_verbose = False
-        self._lazy_module.drop_params = True
-        self._lazy_module._logging._disable_debugging()
-
-        # Register StackSpot provider
-        try:
-            from aider.providers.stackspot import StackSpotProvider
-            self._stackspot_provider = StackSpotProvider()
-            self._lazy_module.register_provider("stackspot", self._stackspot_provider)
-        except Exception as e:
-            if VERBOSE:
-                print(f"Failed to register StackSpot provider: {e}")
-
-
-litellm = LazyLiteLLM()
+print("=== Debug: LLM Module Loaded ===\n", file=sys.stderr)
 
 __all__ = [litellm]
