@@ -639,36 +639,42 @@
   editor_model_name: gpt-4o
   editor_edit_format: editor-diff
 
-- name: stackspot-ai-code
+- name: stackspot-ai
   edit_format: diff
-  weak_model_name: stackspot-ai-code
   use_repo_map: true
-  lazy: true
-  reminder: sys
+  send_undo_reply: true
   examples_as_sys_msg: true
+  reminder: user
   extra_params:
-    api_base: https://api.stackspot.com/v1
     max_tokens: 8192
+    api_base: https://genai-code-buddy-api.stackspot.com
+    api_path: /v1/quick-commands/create-execution
+    model_type: code
+    litellm_provider: stackspot
 
 - name: stackspot-ai-chat
   edit_format: diff
-  weak_model_name: stackspot-ai-chat
   use_repo_map: true
-  lazy: true
-  reminder: sys
+  send_undo_reply: true
   examples_as_sys_msg: true
+  reminder: user
   extra_params:
-    api_base: https://api.stackspot.com/v1
     max_tokens: 8192
+    api_base: https://genai-code-buddy-api.stackspot.com
+    api_path: /v1/quick-commands/create-execution
+    model_type: chat
+    litellm_provider: stackspot
 
-- name: stackspot-ai-assistant
+- name: stackspot-ai-code
   edit_format: diff
-  weak_model_name: stackspot-ai-assistant
   use_repo_map: true
-  lazy: true
-  reminder: sys
+  send_undo_reply: true
   examples_as_sys_msg: true
+  reminder: user
   extra_params:
-    api_base: https://api.stackspot.com/v1
     max_tokens: 8192
+    api_base: https://genai-code-buddy-api.stackspot.com
+    api_path: /v1/quick-commands/create-execution
+    model_type: code
+    litellm_provider: stackspot
       

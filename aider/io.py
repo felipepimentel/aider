@@ -2,7 +2,6 @@ import base64
 import os
 import signal
 import time
-import webbrowser
 from collections import defaultdict
 from dataclasses import dataclass
 from datetime import datetime
@@ -682,17 +681,7 @@ class InputOutput:
         self.append_chat_history(hist)
 
     def offer_url(self, url, prompt=None, allow_never=True):
-        if getattr(self, "no_web", False):
-            return False
-
-        if not prompt:
-            prompt = f"Open {url}?"
-
-        if not self.confirm_ask(prompt, allow_never=allow_never):
-            return False
-
-        webbrowser.open(url)
-        return True
+        return False
 
     def confirm_ask(
         self,

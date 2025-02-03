@@ -3,11 +3,8 @@ import platform
 import subprocess
 import sys
 import traceback
-import urllib.parse
-import webbrowser
 
 from aider import __version__
-from aider.urls import github_issues
 from aider.versioncheck import VERSION_CHECK_FNAME
 
 FENCE = "`" * 3
@@ -23,7 +20,9 @@ def get_python_info():
 
 
 def get_os_info():
-    return f"OS: {platform.system()} {platform.release()} ({platform.architecture()[0]})"
+    return (
+        f"OS: {platform.system()} {platform.release()} ({platform.architecture()[0]})"
+    )
 
 
 def get_git_info():
@@ -52,43 +51,14 @@ def report_github_issue(issue_text, title=None, confirm=True):
     git_info = get_git_info() + "\n"
 
     system_info = (
-        version_info + python_version + platform_info + python_info + os_info + git_info + "\n"
+        version_info
+        + python_version
+        + platform_info
+        + python_info
+        + os_info
+        + git_info
+        + "\n"
     )
-
-    issue_text = system_info + issue_text
-    params = {"body": issue_text}
-    if title is None:
-        title = "Bug report"
-    params["title"] = title
-    issue_url = f"{github_issues}?{urllib.parse.urlencode(params)}"
-
-    if confirm:
-        print(f"\n# {title}\n")
-        print(issue_text.strip())
-        print()
-        print("Please consider reporting this bug to help improve aider!")
-        prompt = "Open a GitHub Issue pre-filled with the above error in your browser? (Y/n) "
-        confirmation = input(prompt).strip().lower()
-
-        yes = not confirmation or confirmation.startswith("y")
-        if not yes:
-            return
-
-    print("Attempting to open the issue URL in your default web browser...")
-    try:
-        if webbrowser.open(issue_url):
-            print("Browser window should be opened.")
-    except Exception:
-        pass
-
-    if confirm:
-        print()
-        print()
-        print("You can also use this URL to file the GitHub Issue:")
-        print()
-        print(issue_url)
-        print()
-        print()
 
 
 def exception_handler(exc_type, exc_value, exc_traceback):

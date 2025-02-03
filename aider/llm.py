@@ -39,4 +39,32 @@ except Exception as e:
 
 print("=== Debug: LLM Module Loaded ===\n", file=sys.stderr)
 
+def completion(prompt, model="stackspot-ai", stream=True, **kwargs):
+    """Send a completion request to the LLM."""
+    try:
+        response = litellm.completion(
+            model=model,
+            messages=[{"role": "user", "content": prompt}],
+            stream=stream,
+            **kwargs
+        )
+        return response
+    except Exception as e:
+        print(f"Error during completion: {str(e)}")
+        raise
+
+def chat_completion(messages, model="stackspot-ai", stream=True, **kwargs):
+    """Send a chat completion request to the LLM."""
+    try:
+        response = litellm.chat_completion(
+            model=model,
+            messages=messages,
+            stream=stream,
+            **kwargs
+        )
+        return response
+    except Exception as e:
+        print(f"Error during chat completion: {str(e)}")
+        raise
+
 __all__ = [litellm]

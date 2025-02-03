@@ -235,15 +235,6 @@ def get_parser(default_config_files, git_root):
         help="Use architect edit format for the main chat",
     )
     group.add_argument(
-        "--weak-model",
-        metavar="WEAK_MODEL",
-        default=None,
-        help=(
-            "Specify the model to use for commit messages and chat history summarization (default"
-            " depends on --model)"
-        ),
-    )
-    group.add_argument(
         "--editor-model",
         metavar="EDITOR_MODEL",
         default=None,

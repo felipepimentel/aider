@@ -1,40 +1,10 @@
 import importlib.resources
-import os
-from dataclasses import dataclass, fields
+from dataclasses import fields
 from typing import Optional
 
 import yaml
 
-from aider.dump import dump  # noqa: F401
-
-DEFAULT_MODEL_NAME = "stackspot-ai"
-
-# Mapping of model aliases to their canonical names
-MODEL_ALIASES = {
-    "stackspot": "stackspot-ai",
-    "stackspot-code": "stackspot-ai",
-}
-
-
-@dataclass
-class ModelSettings:
-    name: str
-    edit_format: str = "whole"
-    use_repo_map: bool = False
-    send_undo_reply: bool = False
-    lazy: bool = False
-    reminder: str = "user"
-    examples_as_sys_msg: bool = False
-    extra_params: Optional[dict] = None
-    cache_control: bool = False
-    caches_by_default: bool = False
-    use_system_prompt: bool = True
-    use_temperature: bool = True
-    streaming: bool = True
-    editor_model_name: Optional[str] = None
-    editor_edit_format: Optional[str] = None
-    remove_reasoning: Optional[str] = None
-
+from .settings import ModelSettings
 
 # Load model settings from package resource
 MODEL_SETTINGS = []
@@ -44,15 +14,37 @@ with importlib.resources.open_text("aider.resources", "model-settings.yml") as f
         if "stackspot" in model_settings_dict.get("name", ""):
             MODEL_SETTINGS.append(ModelSettings(**model_settings_dict))
 
+MODEL_ALIASES = {
+    "stackspot-ai-code": "openai/stackspot-ai-code",
+}
+
 
 class Model(ModelSettings):
-    def __init__(self, model, editor_model=None, editor_edit_format=None):
-        # Map any alias to its canonical name
-        model = MODEL_ALIASES.get(model, model)
-
+    def __init__(
+        self,
+        name: str,
+        api_key: Optional[str] = None,
+        use_temperature: bool = True,
+        remove_reasoning: Optional[str] = None,
+        extra_params: Optional[dict] = None,
+    ):
+        model = MODEL_ALIASES.get(name, name)
         self.name = model
         self.max_chat_history_tokens = 1024
         self.editor_model = None
+        self.api_key = api_key
+        self.use_temperature = use_temperature
+        self.remove_reasoning = remove_reasoning
+        self.extra_params = extra_params or {}
+
+        # Model information
+        self.info = {
+            "max_input_tokens": 1024,
+            "max_output_tokens": 1024,
+            "supports_vision": False,
+            "input_cost_per_token": 0.0,
+            "output_cost_per_token": 0.0,
+        }
 
         # Find the extra settings
         self.extra_model_settings = next(
@@ -64,7 +56,11 @@ class Model(ModelSettings):
         self.missing_keys = res.get("missing_keys")
         self.keys_in_environment = res.get("keys_in_environment")
 
+        # Configure model settings
         self.configure_model_settings(model)
+
+        self.editor_model = None
+        self.editor_edit_format = None
 
     def configure_model_settings(self, model):
         # Look for exact model match
@@ -94,27 +90,17 @@ class Model(ModelSettings):
             return
 
     def validate_environment(self):
-        api_key = os.getenv("STACKSPOT_API_KEY")
-        if not api_key:
-            return {"missing_keys": ["STACKSPOT_API_KEY"], "keys_in_environment": []}
+        """Validate environment variables"""
         return {"missing_keys": [], "keys_in_environment": ["STACKSPOT_API_KEY"]}
 
-    def __str__(self):
-        return self.name
+    def commit_message_models(self):
+        """Return list of models for commit messages"""
+        return [self]
 
-    def token_count(self, message):
-        """Count the number of tokens in a message."""
-        if isinstance(message, dict):
-            content = message.get("content", "")
-            if isinstance(content, str):
-                # Simple approximation: split on whitespace
-                return len(content.split())
-            elif isinstance(content, list):
-                # For messages with multiple content parts
-                total = 0
-                for part in content:
-                    if isinstance(part, dict):
-                        text = part.get("text", "")
-                        total += len(text.split())
-                return total
-        return 0
+    def token_count(self, text):
+        """Return the number of tokens in the text"""
+        return len(text.split())
+
+    def get_repo_map_tokens(self):
+        """Return the number of tokens to use for repository mapping"""
+        return 1024

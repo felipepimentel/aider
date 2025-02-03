@@ -121,9 +121,7 @@ def setup_git(git_root, io):
             "You should probably run aider in your project's directory, not your home dir."
         )
         return
-    elif cwd and io.confirm_ask(
-        "No git repo found, create one to track aider's changes (recommended)?"
-    ):
+    elif cwd:
         git_root = str(cwd.resolve())
         repo = make_new_repo(git_root, io)
 
@@ -191,11 +189,6 @@ def check_gitignore(git_root, io, ask=True):
         patterns_to_add = patterns
 
     if not patterns_to_add:
-        return
-
-    if ask and not io.confirm_ask(
-        f"Add {', '.join(patterns_to_add)} to .gitignore (recommended)?"
-    ):
         return
 
     if content and not content.endswith("\n"):
@@ -797,10 +790,11 @@ def main(argv=None, input=None, output=None, force_git_root=None, return_coder=F
             return 1
 
     main_model = models.Model(
-        args.model,
-        weak_model=args.weak_model,
-        editor_model=args.editor_model,
-        editor_edit_format=args.editor_edit_format,
+        name=args.model,
+        api_key=None,
+        use_temperature=True,
+        remove_reasoning=None,
+        extra_params={"max_tokens": 1024},
     )
 
     # add --reasoning-effort cli param
@@ -892,7 +886,7 @@ def main(argv=None, input=None, output=None, force_git_root=None, return_coder=F
     )
 
     summarizer = ChatSummary(
-        [main_model.weak_model, main_model],
+        [main_model],
         args.max_chat_history_tokens or main_model.max_chat_history_tokens,
     )
 

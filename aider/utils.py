@@ -120,7 +120,9 @@ def format_messages(messages, title=None):
                 if isinstance(item, dict):
                     for key, value in item.items():
                         if isinstance(value, dict) and "url" in value:
-                            output.append(f"{role} {key.capitalize()} URL: {value['url']}")
+                            output.append(
+                                f"{role} {key.capitalize()} URL: {value['url']}"
+                            )
                         else:
                             output.append(f"{role} {key}: {value}")
                 else:
@@ -292,7 +294,11 @@ class Spinner:
             return
 
         self.test_charset()
-        print(f"\r{self.text} {next(self.spinner_chars)}\r{self.text} ", end="", flush=True)
+        print(
+            f"\r{self.text} {next(self.spinner_chars)}\r{self.text} ",
+            end="",
+            flush=True,
+        )
 
     def end(self):
         if self.visible and self.is_tty:
@@ -347,9 +353,6 @@ def check_pip_install_extra(io, module, prompt, pip_install_cmd, self_update=Fal
         io.tool_output("Run this command to update:")
         print()
         print(printable_shell_command(cmd))  # plain print so it doesn't line-wrap
-        return
-
-    if not io.confirm_ask("Run pip install?", default="y", subject=printable_shell_command(cmd)):
         return
 
     success, output = run_install(cmd)

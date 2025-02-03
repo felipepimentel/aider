@@ -45,3 +45,15 @@ class ArchitectCoder(AskCoder):
         self.move_back_cur_messages("I made those changes to the files.")
         self.total_cost = editor_coder.total_cost
         self.aider_commit_hashes = editor_coder.aider_commit_hashes
+
+    def run(self, prompt):
+        """Run the architect coder with the given prompt"""
+        self.io.tool_output("Analyzing your request...")
+
+        messages = self.get_messages(prompt)
+        completion = self.send(messages)
+        if not completion:
+            return
+
+        self.apply_updates()
+        return True

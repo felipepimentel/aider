@@ -1,36 +1,36 @@
 model_list:
-  - model_name: stackspot-ai-code
+  - model_name: stackspot-ai
     litellm_params:
-      model: stackspot/stackspot-ai-code
+      model: stackspot-ai
       api_key: ${STACKSPOT_API_KEY}
-      api_base: https://api.stackspot.com/v1/code/completions
+      api_base: https://genai-code-buddy-api.stackspot.com
+      api_path: /v1/quick-commands/create-execution
       max_tokens: 8192
+      timeout: 60
+      max_retries: 3
+      retry_delay: 1.0
 
-  - model_name: stackspot-ai-chat
-    litellm_params:
-      model: stackspot/stackspot-ai-chat
-      api_key: ${STACKSPOT_API_KEY}
-      api_base: https://api.stackspot.com/v1/chat/completions
-      max_tokens: 8192
-
-  - model_name: stackspot-ai-assistant
-    litellm_params:
-      model: stackspot/stackspot-ai-assistant
-      api_key: ${STACKSPOT_API_KEY}
-      api_base: https://api.stackspot.com/v1/assistant/completions
-      max_tokens: 8192
+router_settings:
+  routing_strategy: simple-shuffle
+  num_retries: 3
+  retry_delay: 1.0
+  timeout: 60
+  fallbacks: []
 
 litellm_settings:
   drop_params: true
   set_verbose: true
   cache: false
-  model_alias_map:
-    stackspot: stackspot-ai-chat
-    stackspot-code: stackspot-ai-code
-    stackspot-assistant: stackspot-ai-assistant
-
-general_settings:
-  completion_model: stackspot-ai-code
+  request_timeout: 60
+  max_retries: 3
+  retry_delay: 1.0
+  stream_chunk_size: 4096
+  error_handling:
+    max_attempts: 3
+    backoff_factor: 1.0
+    retry_status_codes: [429, 500, 502, 503, 504]
 
 environment_variables:
-  STACKSPOT_API_KEY: ${STACKSPOT_API_KEY} 
+  STACKSPOT_API_KEY: ${STACKSPOT_API_KEY}
+  LITELLM_MODE: PRODUCTION
+  LITELLM_LOG_LEVEL: DEBUG 

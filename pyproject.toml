@@ -1,6 +1,5 @@
-
 [project]
-name = "aider-chat"
+name = "aider"
 description = "Aider is AI pair programming in your terminal"
 readme = "README.md"
 classifiers = [
@@ -41,8 +40,8 @@ include-package-data = true
 include = ["aider"]
 
 [build-system]
-requires = ["setuptools>=68", "setuptools_scm[toml]>=8"]
-build-backend = "setuptools.build_meta"
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
 
 [tool.setuptools_scm]
 write_to = "aider/_version.py"
@@ -50,3 +49,63 @@ write_to = "aider/_version.py"
 [tool.codespell]
 skip = "*.svg,Gemfile.lock"
 write-changes = true
+
+[tool.poetry]
+name = "aider"
+version = "0.1.0"
+description = "StackSpot AI Integration with LiteLLM"
+authors = ["Your Name <your.email@example.com>"]
+readme = "README.md"
+packages = [{ include = "aider" }]
+
+[tool.poetry.dependencies]
+python = ">=3.10,<3.13"
+httpx = ">=0.23.0,<0.28.0"
+litellm = "^1.60.0"
+pydantic = ">=2.6.0,<2.10.0"
+python-dotenv = "^1.0.1"
+PyYAML = "^6.0.2"
+aiohappyeyeballs = "^2.4.4"
+aiohttp = "^3.11.11"
+beautifulsoup4 = "^4.13.1"
+configargparse = "^1.7"
+diff-match-patch = "^20241021"
+diskcache = "^5.6.3"
+gitpython = "^3.1.44"
+grep-ast = "^0.4.1"
+importlib-metadata = "^8.6.1"
+importlib-resources = "^6.5.2"
+json5 = "^0.10.0"
+jsonschema = "^4.23.0"
+networkx = "^3.4.2"
+numpy = "^2.2.2"
+packaging = "^24.2"
+pathspec = "^0.12.1"
+pexpect = "^4.9.0"
+pillow = "^11.1.0"
+posthog = "^3.11.0"
+prompt-toolkit = "^3.0.50"
+psutil = "^6.1.1"
+pydub = "^0.25.1"
+pypandoc = "^1.15"
+pyperclip = "^1.9.0"
+rich = "^13.9.4"
+scipy = "^1.15.1"
+sounddevice = "^0.5.1"
+soundfile = "^0.13.1"
+tokenizers = "^0.21.0"
+tree-sitter = "^0.24.0"
+tree-sitter-languages = "^1.10.2"
+watchfiles = "^1.0.4"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.3.4"
+pytest-cov = "^6.0.0"
+pytest-mock = "^3.14.0"
+responses = "^0.25.6"
+coverage = "^7.6.10"
+black = "^25.1.0"
+flake8 = "^7.1.1"
+mypy = "^1.14.1"
+bandit = "^1.8.2"
+safety = "^3.2.14"

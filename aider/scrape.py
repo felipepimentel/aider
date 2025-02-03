@@ -16,54 +16,29 @@ aider_user_agent = f"Aider/{__version__} +{urls.website}"
 
 def install_playwright(io):
     try:
-        from playwright.sync_api import sync_playwright
+        import playwright  # noqa: F401
 
-        has_pip = True
-    except ImportError:
-        has_pip = False
-
-    try:
-        with sync_playwright() as p:
-            p.chromium.launch()
-            has_chromium = True
-    except Exception:
-        has_chromium = False
-
-    if has_pip and has_chromium:
         return True
+    except (ImportError, ModuleNotFoundError):
+        pass
 
-    pip_cmd = utils.get_pip_install(["aider-chat[playwright]"])
-    chromium_cmd = "-m playwright install --with-deps chromium"
-    chromium_cmd = [sys.executable] + chromium_cmd.split()
+    io.tool_output("Installing playwright...")
+    cmd = utils.get_pip_install("playwright")
+    success, output = utils.run_install(cmd)
+    if success:
+        try:
+            import playwright  # noqa: F401
 
-    cmds = ""
-    if not has_pip:
-        cmds += " ".join(pip_cmd) + "\n"
-    if not has_chromium:
-        cmds += " ".join(chromium_cmd) + "\n"
+            return True
+        except (ImportError, ModuleNotFoundError) as err:
+            io.tool_error(str(err))
+            pass
 
-    text = f"""For the best web scraping, install Playwright:
-
-{cmds}
-See {urls.enable_playwright} for more info.
-"""
-
-    io.tool_output(text)
-    if not io.confirm_ask("Install playwright?", default="y"):
-        return
-
-    if not has_pip:
-        success, output = utils.run_install(pip_cmd)
-        if not success:
-            io.tool_error(output)
-            return
-
-    success, output = utils.run_install(chromium_cmd)
-    if not success:
-        io.tool_error(output)
-        return
-
-    return True
+    io.tool_error(output)
+    print()
+    print("Install failed, try running this command manually:")
+    print(utils.printable_shell_command(cmd))
+    return False
 
 
 class Scraper:
@@ -126,7 +101,9 @@ class Scraper:
                 r"<p>",
                 r"<a\s+href=",
             ]
-            return any(re.search(pattern, content, re.IGNORECASE) for pattern in html_patterns)
+            return any(
+                re.search(pattern, content, re.IGNORECASE) for pattern in html_patterns
+            )
         return False
 
     # Internals...
@@ -190,7 +167,9 @@ class Scraper:
             ) as client:
                 response = client.get(url)
                 response.raise_for_status()
-                return response.text, response.headers.get("content-type", "").split(";")[0]
+                return response.text, response.headers.get("content-type", "").split(
+                    ";"
+                )[0]
         except httpx.HTTPError as http_err:
             self.print_error(f"HTTP error occurred: {http_err}")
         except Exception as err:
