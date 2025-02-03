@@ -1,3 +1,33 @@
+"""StackSpot AI Provider Configuration for LiteLLM.
+
+This module configures the StackSpot AI provider to work with LiteLLM, enabling access to
+StackSpot's AI models through a standardized interface.
+
+Available Models:
+    - stackspot-ai-chat: General chat completion model
+    - stackspot-ai-code: Code-specific completion model
+    - stackspot-ai-assistant: Assistant-style completion model
+
+Environment Variables:
+    STACKSPOT_API_KEY (required): Your StackSpot API key
+        Format: Can be provided with or without 'sk-' prefix
+        Example: 'your-api-key' or 'sk-your-api-key'
+
+Usage:
+    from aider.providers.stackspot_config import configure_stackspot
+
+    # Configure StackSpot provider
+    configure_stackspot()
+
+    # Use with LiteLLM
+    response = litellm.completion(
+        model="stackspot-code",  # or use the alias "stackspot" for chat, "stackspot-assistant" for assistant
+        messages=[{"role": "user", "content": "Your prompt here"}],
+        temperature=0.7,
+        max_tokens=50
+    )
+"""
+
 import logging
 import os
 from typing import Dict, List, Optional
@@ -8,7 +38,25 @@ from litellm import ModelResponse
 
 
 def configure_stackspot():
-    """Configure StackSpot provider for LiteLLM"""
+    """Configure StackSpot provider for LiteLLM.
+
+    This function sets up the StackSpot AI provider with LiteLLM, configuring:
+    - API authentication
+    - Model endpoints
+    - Custom completion function
+    - Model aliases
+
+    Returns:
+        bool: True if configuration was successful
+
+    Raises:
+        ValueError: If STACKSPOT_API_KEY environment variable is not set
+        Exception: If there's an error during configuration
+
+    Note:
+        The function expects the STACKSPOT_API_KEY environment variable to be set.
+        The API key can be provided with or without the 'sk-' prefix.
+    """
     logger = logging.getLogger("stackspot_config")
 
     # Get API key from environment
@@ -99,6 +147,30 @@ def configure_stackspot():
         stream: bool = True,
         **kwargs,
     ) -> ModelResponse:
+        """Execute a completion request using StackSpot's AI models.
+
+        Args:
+            model: The model to use for completion. Must be one of:
+                  - "stackspot-ai-chat"
+                  - "stackspot-ai-code"
+                  - "stackspot-ai-assistant"
+                  Or their aliases:
+                  - "stackspot"
+                  - "stackspot-code"
+                  - "stackspot-assistant"
+            messages: List of message dictionaries with 'role' and 'content'
+            temperature: Controls randomness in the response (0.0 to 1.0)
+            max_tokens: Maximum number of tokens to generate
+            stream: Whether to stream the response
+            **kwargs: Additional parameters to pass to the API
+
+        Returns:
+            ModelResponse: The completion response in LiteLLM's format
+
+        Raises:
+            ValueError: If the model is not found or configuration is invalid
+            Exception: If there's an error during the API request
+        """
         try:
             # Check if this is a StackSpot model
             if not model.startswith("openai/stackspot-"):
