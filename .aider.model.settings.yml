@@ -6,11 +6,11 @@
   lazy: false
   reminder: user
   examples_as_sys_msg: true
+  streaming: true
+  temperature: 0.7
   extra_params:
     max_tokens: 8192
     model_type: chat
-    streaming: true
-    temperature: 0.7
     api_base: https://genai-code-buddy-api.stackspot.com
     api_path: /v1/chat/completions
 
@@ -22,11 +22,11 @@
   lazy: false
   reminder: user
   examples_as_sys_msg: true
+  streaming: true
+  temperature: 0.7
   extra_params:
     max_tokens: 8192
     model_type: code
-    streaming: true
-    temperature: 0.7
     api_base: https://genai-code-buddy-api.stackspot.com
     api_path: /v1/code/completions
 
@@ -38,10 +38,10 @@
   lazy: false
   reminder: user
   examples_as_sys_msg: true
+  streaming: true
+  temperature: 0.7
   extra_params:
     max_tokens: 8192
     model_type: assistant
-    streaming: true
-    temperature: 0.7
     api_base: https://genai-code-buddy-api.stackspot.com
     api_path: /v1/assistant/completions 
