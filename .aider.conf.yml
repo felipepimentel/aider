@@ -1,0 +1,13 @@
+model: stackspot-ai-code
+api-key: stackspot=test-key-123
+model-settings-file: .aider.model.settings.yml
+model-metadata-file: .aider.model.metadata.json
+git: true
+gitignore: true
+auto-commits: true
+dirty-commits: true
+attribute-author: true
+attribute-committer: true
+pretty: true
+stream: true
+verbose: true 
