@@ -1,0 +1,14 @@
+2025-02-03 23:53:33,513 - litellm_init - INFO - Logger initialized
+2025-02-03 23:53:33,513 - litellm_init - INFO - Configuring LiteLLM base settings...
+2025-02-03 23:53:33,513 - litellm_init - INFO - LiteLLM base configuration:
+2025-02-03 23:53:33,513 - litellm_init - INFO - - Verbose mode: True
+2025-02-03 23:53:33,513 - litellm_init - INFO - - Drop params: True
+2025-02-03 23:53:33,513 - litellm_init - INFO - - Cache enabled: False
+2025-02-03 23:53:33,513 - litellm_init - INFO - - Request timeout: 60
+2025-02-03 23:53:33,513 - litellm_init - INFO - - Max retries: 3
+2025-02-03 23:53:33,513 - litellm_init - INFO - Configuring StackSpot provider...
+2025-02-03 23:53:33,513 - litellm_init - INFO - StackSpot provider configured successfully
+2025-02-03 23:53:33,513 - litellm_init - INFO - === LiteLLM Initialization Complete ===
+2025-02-03 23:53:33,653 - httpx - DEBUG - load_ssl_context verify=True cert=None trust_env=True http2=False
+2025-02-03 23:53:33,653 - httpx - DEBUG - load_verify_locations cafile='/home/pimentel/.pyenv/versions/3.12.4/lib/python3.12/site-packages/certifi/cacert.pem'
+2025-02-03 23:53:33,732 - asyncio - DEBUG - Using selector: EpollSelector

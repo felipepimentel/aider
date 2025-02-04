@@ -2,7 +2,10 @@
 .vscode/
 aider.code-workspace
 *.pyc
-.aider*
+.aider.chat.history.md
+.aider.tags.cache.v2
+.aider.tags.cache.v3
+.aider.undo.gz
 aider_chat.egg-info/
 build
 dist/

@@ -1,0 +1,14 @@
+stackspot-ai-chat:
+  context_window: 16384
+  input_cost_per_1k: 0.0
+  output_cost_per_1k: 0.0
+
+stackspot-ai-code:
+  context_window: 16384
+  input_cost_per_1k: 0.0
+  output_cost_per_1k: 0.0
+
+stackspot-ai-assistant:
+  context_window: 16384
+  input_cost_per_1k: 0.0
+  output_cost_per_1k: 0.0 

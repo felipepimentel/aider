@@ -1,135 +1,78 @@
 import logging
 import os
-import sys
-import traceback
+from pathlib import Path
 
 import litellm
 
-
-def setup_logging():
-    """Setup logging to both file and console"""
-    log_file = "/tmp/litellm_debug.log"
-
-    # Configure logging
-    logging.basicConfig(
-        level=logging.DEBUG,
-        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-        handlers=[
-            logging.FileHandler(log_file, mode="w"),
-            logging.StreamHandler(sys.stderr),
-        ],
-    )
-
-    # Also write directly to the file for immediate feedback
-    with open(log_file, "w") as f:
-        f.write("Starting LiteLLM logging...\n")
-
-    return logging.getLogger("litellm_init")
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 
 def init_litellm():
-    """Initialize LiteLLM with the StackSpot provider configuration."""
-    logger = setup_logging()
-    logger.info("Logger initialized")
-
+    """Initialize LiteLLM with StackSpot configuration."""
     try:
-        logger.info("Configuring LiteLLM base settings...")
-        litellm.set_verbose = True
-        litellm.drop_params = True
-        litellm.cache = False
-        litellm.request_timeout = 60
+        # Set environment variables for LiteLLM
+        os.environ["LITELLM_MODE"] = "PRODUCTION"
+        os.environ["LITELLM_LOG_LEVEL"] = "DEBUG"
+
+        # Configure StackSpot provider
+        api_key = os.getenv("STACKSPOT_API_KEY")
+        if not api_key:
+            logger.error("STACKSPOT_API_KEY not found in environment")
+            return False
+
+        # Set default parameters
+        litellm.api_base = "https://genai-code-buddy-api.stackspot.com/v1"
+        litellm.api_key = api_key
         litellm.max_retries = 3
+        litellm.retry_delay = 1.0
+        litellm.stream_chunk_size = 4096
+        litellm.cache_control = True
+        litellm.request_timeout = 30
+        litellm.drop_params = True
 
-        logger.info("LiteLLM base configuration:")
-        logger.info("- Verbose mode: True")
-        logger.info("- Drop params: True")
-        logger.info("- Cache enabled: False")
-        logger.info("- Request timeout: 60")
-        logger.info("- Max retries: 3")
+        # Set default headers
+        litellm.headers = {
+            "Authorization": f"Bearer {api_key}",
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+        }
 
-        logger.info("Configuring StackSpot provider...")
-        litellm.api_base = "https://genai-code-buddy-api.stackspot.com"
-        litellm.api_key = os.getenv("STACKSPOT_API_KEY")
+        # Configure error handling
+        litellm.error_handling = {
+            "max_retries": 3,
+            "backoff_factor": 1.0,
+            "retry_status_codes": [429, 500, 502, 503, 504],
+        }
 
-        # Configure model settings
-        litellm.model_list = [
-            {
-                "model_name": "stackspot-ai",
-                "litellm_params": {
-                    "model": "stackspot-ai",
-                    "api_key": litellm.api_key,
-                    "api_base": litellm.api_base,
-                    "api_path": "/v1/quick-commands/create-execution",
-                    "max_tokens": 8192,
-                    "headers": {
-                        "Authorization": f"Bearer {litellm.api_key}",
-                        "Content-Type": "application/json",
-                    },
-                },
-            }
-        ]
+        # Set model aliases
+        litellm.model_alias_map = {
+            "stackspot": "openai/stackspot-ai-code",
+            "stackspot-code": "openai/stackspot-ai-code",
+            "stackspot-chat": "openai/stackspot-ai-chat",
+            "stackspot-assistant": "openai/stackspot-ai-assistant",
+        }
 
-        # Create custom completion class
-        class StackSpotCompletion:
-            def __init__(self, api_base, api_key):
-                self.api_base = api_base
-                self.api_key = api_key
-                self.headers = {
-                    "Authorization": f"Bearer {api_key}",
-                    "Content-Type": "application/json",
-                }
+        # Load config file if exists
+        config_path = Path.home() / ".aider" / ".litellm.config.yaml"
+        if config_path.exists():
+            try:
+                litellm.config_path = str(config_path)
+                logger.info(f"Loaded LiteLLM config from {config_path}")
+            except Exception as e:
+                logger.warning(f"Failed to load config file: {e}")
 
-            def completion(self, model, messages, stream=True, **kwargs):
-                import json
+        # Enable debug mode for detailed logging
+        litellm._turn_on_debug()
 
-                import requests
-
-                url = f"{self.api_base}/v1/quick-commands/create-execution"
-                data = {
-                    "messages": messages,
-                    "stream": stream,
-                    "max_tokens": kwargs.get("max_tokens", 8192),
-                    **kwargs,
-                }
-
-                try:
-                    response = requests.post(
-                        url, headers=self.headers, json=data, stream=stream
-                    )
-                    response.raise_for_status()
-
-                    if stream:
-
-                        def generate():
-                            for line in response.iter_lines():
-                                if line:
-                                    try:
-                                        chunk = json.loads(line.decode())
-                                        yield chunk
-                                    except json.JSONDecodeError:
-                                        continue
-
-                        return generate()
-                    else:
-                        return response.json()
-
-                except Exception as e:
-                    logger.error(f"Error during completion: {str(e)}")
-                    raise
-
-            def chat_completion(self, model, messages, stream=True, **kwargs):
-                return self.completion(model, messages, stream, **kwargs)
-
-        # Create instance of custom completion class
-        stackspot = StackSpotCompletion(litellm.api_base, litellm.api_key)
-
-        logger.info("StackSpot provider configured successfully")
-        logger.info("=== LiteLLM Initialization Complete ===")
-        return stackspot
+        logger.info("LiteLLM initialization completed successfully")
+        return True
 
     except Exception as e:
-        logger.error("Error during LiteLLM initialization:")
-        logger.error(str(e))
-        logger.error("Traceback:")
-        logger.error(traceback.format_exc())
-        raise
+        logger.error(f"Failed to initialize LiteLLM: {e}")
+        return False
+
+
+# Initialize LiteLLM when module is imported
+init_litellm()

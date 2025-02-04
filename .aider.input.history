@@ -1,0 +1,90 @@
+
+# 2025-02-02 16:52:08.407009
++N
+
+# 2025-02-02 16:54:04.303471
++export STACKSPOT_API_KEY=test-key-123 && aider --model stackspot-ai-code --no-show-model-warnings --yes-always
+
+# 2025-02-02 17:35:08.411844
++Y
+
+# 2025-02-02 17:39:21.027460
++aider --model stackspot-ai-code --no-web
+
+# 2025-02-02 17:55:22.087467
++aider --model stackspot/stackspot-ai-code --no-web
+
+# 2025-02-02 17:55:55.110004
++aider --model stackspot-ai-code --no-web
+
+# 2025-02-02 21:11:31.257562
++aider --model stackspot-ai-code --no-web --verbose
+
+# 2025-02-02 21:12:58.920247
++cat litellm_debug.log
+
+# 2025-02-02 21:13:34.962104
++aider --model stackspot-ai-code --no-web --verbose
+
+# 2025-02-02 21:13:52.121600
++python3 -c "from aider.llm import litellm; print('LiteLLM imported successfully')"
+
+# 2025-02-02 21:14:24.674706
++aider --model stackspot-ai-code --no-web --verbose 2>&1
+
+# 2025-02-02 21:15:47.295770
++aider --model stackspot-ai-code --no-web --verbose
+
+# 2025-02-02 21:16:37.668193
++python3 -c "from aider.llm import litellm; print('LiteLLM imported successfully'); print(litellm.__file__)" 2>&1
+
+# 2025-02-03 08:49:46.003032
++PYTHONPATH=/home/pimentel/Workspace/aider python3 -c "from aider.llm import litellm; print('LiteLLM imported successfully')" 2>&1
+
+# 2025-02-03 08:50:05.192889
++python3 -c "import litellm; print('LiteLLM version:', litellm.__version__); print('LiteLLM path:', litellm.__file__)" 2>&1
+
+# 2025-02-03 08:50:24.189958
++pip show litellm
+
+# 2025-02-03 08:50:42.931834
++pip install --upgrade litellm
+
+# 2025-02-03 08:51:01.372862
++python3 -c "import sys; import litellm; sys.stderr.write('LiteLLM imported successfully\n')" 2>&1
+
+# 2025-02-03 08:51:39.695393
++aider --model stackspot-ai-code --no-web --verbose
+
+# 2025-02-03 08:51:58.005844
++cat ~/.aider/logs/litellm_debug.log
+
+# 2025-02-03 08:52:16.390286
++python3 -c "import litellm; print('LiteLLM version:', litellm.__version__); print('LiteLLM path:', litellm.__file__); print('LiteLLM dir:', dir(litellm))" 2>&1
+
+# 2025-02-03 08:52:34.438418
++python3 -c "import sys; print('Python version:', sys.version); print('Python path:', sys.path); print('Current directory:', __import__('os').getcwd())" 2>&1
+
+# 2025-02-03 08:53:21.459386
++aider --model stackspot-ai-code --no-web --verbose
+
+# 2025-02-03 08:53:38.643231
++cat /tmp/litellm_debug.log
+
+# 2025-02-03 08:53:56.616679
++touch /tmp/litellm_debug.log && echo "Test log entry" > /tmp/litellm_debug.log && cat /tmp/litellm_debug.log
+
+# 2025-02-03 08:54:17.498383
++which python3 && python3 --version && echo $PYTHONPATH
+
+# 2025-02-03 08:54:35.075014
++echo "Hello, world!"
+
+# 2025-02-03 14:34:10.497316
++N
+
+# 2025-02-03 16:38:36.481487
++Hello! Can you help me write a simple Python function?
+
+# 2025-02-03 16:48:00.083787
++Hello! Can you help me write a simple Python function to calculate the factorial of a number?

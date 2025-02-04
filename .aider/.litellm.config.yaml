@@ -1,0 +1,52 @@
+model_list:
+  - model_name: openai/stackspot-ai-code
+    litellm_params:
+      model: stackspot-ai-code
+      api_base: https://genai-code-buddy-api.stackspot.com/v1/code
+      api_key: ${STACKSPOT_API_KEY}
+      max_tokens: 8192
+      temperature: 0.7
+      headers:
+        Authorization: ${STACKSPOT_API_KEY}
+        Content-Type: application/json
+        Accept: application/json
+
+  - model_name: openai/stackspot-ai-chat
+    litellm_params:
+      model: stackspot-ai-chat
+      api_base: https://genai-code-buddy-api.stackspot.com/v1/chat
+      api_key: ${STACKSPOT_API_KEY}
+      max_tokens: 8192
+      temperature: 0.7
+      headers:
+        Authorization: ${STACKSPOT_API_KEY}
+        Content-Type: application/json
+        Accept: application/json
+
+  - model_name: openai/stackspot-ai-assistant
+    litellm_params:
+      model: stackspot-ai-assistant
+      api_base: https://genai-code-buddy-api.stackspot.com/v1/assistant
+      api_key: ${STACKSPOT_API_KEY}
+      max_tokens: 8192
+      temperature: 0.7
+      headers:
+        Authorization: ${STACKSPOT_API_KEY}
+        Content-Type: application/json
+        Accept: application/json
+
+litellm_settings:
+  drop_params: true
+  cache_control: true
+  max_retries: 3
+  retry_delay: 1.0
+  stream_chunk_size: 4096
+  request_timeout: 30
+  error_handling:
+    max_retries: 3
+    backoff_factor: 1.0
+    retry_status_codes: [429, 500, 502, 503, 504]
+  headers:
+    Authorization: ${STACKSPOT_API_KEY}
+    Content-Type: application/json
+    Accept: application/json 

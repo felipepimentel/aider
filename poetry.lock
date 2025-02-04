@@ -1478,6 +1478,23 @@ files = [
 ]
 
 [[package]]
+name = "mixpanel"
+version = "4.10.1"
+description = "Official Mixpanel library for Python"
+optional = false
+python-versions = ">=2.7, !=3.4.*"
+groups = ["main"]
+files = [
+    {file = "mixpanel-4.10.1-py2.py3-none-any.whl", hash = "sha256:a7a338b7197327e36356dbc1903086e7626db6d88367ccdd732b3f3c60d3b3ed"},
+    {file = "mixpanel-4.10.1.tar.gz", hash = "sha256:29a6b5773dd34f05cf8e249f4e1d16e7b6280d6b58894551ce9a5aad7700a115"},
+]
+
+[package.dependencies]
+requests = ">=2.4.2"
+six = ">=1.9.0"
+urllib3 = "*"
+
+[[package]]
 name = "monotonic"
 version = "1.6"
 description = "An implementation of time.monotonic() for Python 2 & < 3.3"
@@ -3637,4 +3654,4 @@ type = ["pytest-mypy"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.10,<3.13"
-content-hash = "d6e298063004db9ab721edc1c14c62520bf7c45f953b42f42c6734444994cd2b"
+content-hash = "99c783779225eb894d1cd8aacd2827303cdd1a551b72772c163b37e2a983a842"

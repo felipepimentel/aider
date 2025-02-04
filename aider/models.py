@@ -1,39 +1,45 @@
 import importlib.resources
 import os
 from dataclasses import dataclass, fields
-from typing import Optional
+from typing import Dict, Optional
 
 import yaml
 
 from aider.dump import dump  # noqa: F401
 
-DEFAULT_MODEL_NAME = "stackspot-ai"
+DEFAULT_MODEL_NAME = "stackspot-ai-code"
 
 # Mapping of model aliases to their canonical names
 MODEL_ALIASES = {
-    "stackspot": "stackspot-ai",
-    "stackspot-code": "stackspot-ai",
+    "stackspot": "stackspot-ai-code",
+    "stackspot-code": "stackspot-ai-code",
+    "stackspot-chat": "stackspot-ai-chat",
+    "stackspot-assistant": "stackspot-ai-assistant",
 }
 
 
 @dataclass
 class ModelSettings:
+    """Model settings."""
+
     name: str
-    edit_format: str = "whole"
-    use_repo_map: bool = False
-    send_undo_reply: bool = False
-    lazy: bool = False
+    edit_format: str = "diff"
+    use_repo_map: bool = True
+    send_undo_reply: bool = True
+    examples_as_sys_msg: bool = True
     reminder: str = "user"
-    examples_as_sys_msg: bool = False
-    extra_params: Optional[dict] = None
-    cache_control: bool = False
-    caches_by_default: bool = False
-    use_system_prompt: bool = True
-    use_temperature: bool = True
-    streaming: bool = True
-    editor_model_name: Optional[str] = None
-    editor_edit_format: Optional[str] = None
-    remove_reasoning: Optional[str] = None
+    extra_params: Dict = None
+
+    def __post_init__(self):
+        if self.extra_params is None:
+            self.extra_params = {
+                "max_tokens": 8192,
+                "model_type": "code",
+                "streaming": True,
+                "temperature": 0.7,
+                "api_base": "https://genai-code-buddy-api.stackspot.com",
+                "api_path": "/v1/code/completions",
+            }
 
 
 # Load model settings from package resource
@@ -54,44 +60,24 @@ class Model(ModelSettings):
         self.max_chat_history_tokens = 1024
         self.editor_model = None
 
-        # Find the extra settings
-        self.extra_model_settings = next(
-            (ms for ms in MODEL_SETTINGS if ms.name == "aider/extra_params"), None
-        )
+        # Find the model settings
+        model_settings = next((ms for ms in MODEL_SETTINGS if ms.name == model), None)
+
+        if model_settings:
+            self._copy_fields(model_settings)
+        else:
+            super().__init__(name=model)
 
         # Are all needed keys/params available?
         res = self.validate_environment()
         self.missing_keys = res.get("missing_keys")
         self.keys_in_environment = res.get("keys_in_environment")
 
-        self.configure_model_settings(model)
-
-    def configure_model_settings(self, model):
-        # Look for exact model match
-        exact_match = False
-        for ms in MODEL_SETTINGS:
-            if model == ms.name:
-                self._copy_fields(ms)
-                exact_match = True
-                break
-
-        if not exact_match:
-            self.apply_generic_model_settings(model)
-
     def _copy_fields(self, source):
         """Helper to copy fields from a ModelSettings instance to self"""
         for field in fields(ModelSettings):
             val = getattr(source, field.name)
             setattr(self, field.name, val)
-
-    def apply_generic_model_settings(self, model):
-        if "stackspot-ai" in model:
-            self.edit_format = "diff"
-            self.use_repo_map = True
-            self.send_undo_reply = True
-            self.examples_as_sys_msg = True
-            self.reminder = "user"
-            return
 
     def validate_environment(self):
         api_key = os.getenv("STACKSPOT_API_KEY")
@@ -118,3 +104,25 @@ class Model(ModelSettings):
                         total += len(text.split())
                 return total
         return 0
+
+
+def load_model_settings(
+    model_name: str, api_key: Optional[str] = None
+) -> ModelSettings:
+    """Load model settings from configuration."""
+    model_settings = next((ms for ms in MODEL_SETTINGS if ms.name == model_name), None)
+    if model_settings:
+        return model_settings
+    return ModelSettings(name=model_name)
+
+
+def load_model_metadata(model_name: str) -> Dict:
+    """Load model metadata from configuration."""
+    return {
+        "name": model_name,
+        "max_input_tokens": 16384,
+        "max_output_tokens": 8192,
+        "supports_functions": False,
+        "supports_streaming": True,
+        "supports_temperature": True,
+    }

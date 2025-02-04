@@ -1,4 +1,5 @@
 import importlib.resources
+import os
 from dataclasses import fields
 from typing import Optional
 
@@ -28,41 +29,46 @@ class Model(ModelSettings):
         remove_reasoning: Optional[str] = None,
         extra_params: Optional[dict] = None,
     ):
+        # Initialize parent class
+        super().__init__(
+            name=name,
+            api_key=api_key,
+            model_type="chat" if "chat" in name else "code",
+            use_temperature=use_temperature,
+            remove_reasoning=remove_reasoning,
+            extra_params=extra_params or {},
+        )
+
+        # Handle model alias
         model = MODEL_ALIASES.get(name, name)
         self.name = model
-        self.max_chat_history_tokens = 1024
+
+        # Additional model-specific settings
         self.editor_model = None
-        self.api_key = api_key
-        self.use_temperature = use_temperature
-        self.remove_reasoning = remove_reasoning
-        self.extra_params = extra_params or {}
+        self.editor_edit_format = None
 
-        # Model information
-        self.info = {
-            "max_input_tokens": 1024,
-            "max_output_tokens": 1024,
-            "supports_vision": False,
-            "input_cost_per_token": 0.0,
-            "output_cost_per_token": 0.0,
-        }
-
-        # Find the extra settings
+        # Find extra settings and configure
         self.extra_model_settings = next(
             (ms for ms in MODEL_SETTINGS if ms.name == "aider/extra_params"), None
         )
+        self.configure_model_settings(model)
 
-        # Are all needed keys/params available?
+        # Configure provider
+        if "stackspot" in self.name:
+            from aider.providers.stackspot import StackSpotProvider
+
+            try:
+                self.provider = StackSpotProvider(api_key=self.api_key)
+            except Exception as e:
+                print(f"Warning: Could not configure StackSpot provider: {e}")
+
+        # Validate environment
         res = self.validate_environment()
         self.missing_keys = res.get("missing_keys")
         self.keys_in_environment = res.get("keys_in_environment")
 
-        # Configure model settings
-        self.configure_model_settings(model)
-
-        self.editor_model = None
-        self.editor_edit_format = None
-
     def configure_model_settings(self, model):
+        """Configure model-specific settings."""
         # Look for exact model match
         exact_match = False
         for ms in MODEL_SETTINGS:
@@ -75,32 +81,36 @@ class Model(ModelSettings):
             self.apply_generic_model_settings(model)
 
     def _copy_fields(self, source):
-        """Helper to copy fields from a ModelSettings instance to self"""
+        """Copy fields from another ModelSettings instance."""
         for field in fields(ModelSettings):
             val = getattr(source, field.name)
             setattr(self, field.name, val)
 
     def apply_generic_model_settings(self, model):
+        """Apply generic settings based on model name."""
         if "stackspot-ai" in model:
             self.edit_format = "diff"
             self.use_repo_map = True
             self.send_undo_reply = True
             self.examples_as_sys_msg = True
             self.reminder = "user"
-            return
+            self.max_tokens = 8192
+            self.max_chat_history_tokens = 1024
+            self.streaming = True
+            self.use_temperature = True
 
     def validate_environment(self):
-        """Validate environment variables"""
-        return {"missing_keys": [], "keys_in_environment": ["STACKSPOT_API_KEY"]}
+        """Validate required environment variables."""
+        missing_keys = []
+        keys_in_environment = []
 
-    def commit_message_models(self):
-        """Return list of models for commit messages"""
-        return [self]
+        if "stackspot" in self.name:
+            if not self.api_key and "STACKSPOT_API_KEY" not in os.environ:
+                missing_keys.append("STACKSPOT_API_KEY")
+            else:
+                keys_in_environment.append("STACKSPOT_API_KEY")
 
-    def token_count(self, text):
-        """Return the number of tokens in the text"""
-        return len(text.split())
-
-    def get_repo_map_tokens(self):
-        """Return the number of tokens to use for repository mapping"""
-        return 1024
+        return {
+            "missing_keys": missing_keys,
+            "keys_in_environment": keys_in_environment,
+        }

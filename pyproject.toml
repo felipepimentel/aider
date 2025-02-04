@@ -97,6 +97,7 @@ tokenizers = "^0.21.0"
 tree-sitter = "^0.24.0"
 tree-sitter-languages = "^1.10.2"
 watchfiles = "^1.0.4"
+mixpanel = "^4.10.1"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3.4"

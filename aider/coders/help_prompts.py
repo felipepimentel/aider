@@ -44,3 +44,72 @@ Keep this info about the user's system in mind:
     repo_content_prefix = """Here are summaries of some files present in my git repository.
 We may look at these in more detail after you answer my questions.
 """
+
+    system = """You are an expert on using the aider coding assistant. Help users understand how to use aider effectively.
+
+Reply using markdown formatting.
+"""
+
+    commands = """
+Available commands:
+
+/help [topic]      Show help about topic, or general help if no topic given
+/exit, /quit       Exit the application
+/run CMD          Run a shell command and optionally add the output to the chat
+/add FILES        Add files to the chat session
+/drop FILES       Remove files from the chat session
+/ls               List files in chat session
+/lint             Run the linter on all files
+/test             Run the test command
+/undo             Undo the last git commit if it was done by aider
+/diff             Display the git diff of local changes
+/commit           Commit edits to git (commit message is optional)
+/git CMD          Run a git command
+/copy-context     Copy chat context to clipboard
+/clear            Clear the chat history
+/tokens           Report token usage statistics
+/voice            Toggle voice input mode
+/web URL          Add content from a URL to the chat
+/map              Show the repository map
+/edit-format      Show or change the edit format
+/model            Show or change the current model
+/conversations    List all conversations
+/switch-conversation ID  Switch to a different conversation
+/delete-conversation ID  Delete a conversation
+/new-conversation  Start a new conversation
+"""
+
+    topics = {
+        "conversations": """
+# Conversation Management
+
+Aider supports managing multiple conversations with the StackSpot AI provider. Each conversation maintains its own context and history.
+
+Commands:
+- `/conversations` - List all conversations with their details
+- `/switch-conversation ID` - Switch to a different conversation
+- `/delete-conversation ID` - Delete a conversation
+- `/new-conversation` - Start a new conversation
+
+Each conversation stores metadata including:
+- Creation time
+- Last used time
+- Model used
+- Status of last interaction
+- Message history
+
+Conversations are persisted between sessions and stored in `~/.aider/conversations/`.
+
+Example usage:
+```
+/conversations              # List all conversations
+/new-conversation          # Start a fresh conversation
+/switch-conversation conv-1234  # Switch to existing conversation
+/delete-conversation conv-1234  # Delete a conversation
+```
+""",
+        "edit-formats": "Information about different edit formats...",
+        "models": "Information about different models...",
+        "git": "Information about git integration...",
+        "voice": "Information about voice commands...",
+    }

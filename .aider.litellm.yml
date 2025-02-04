@@ -1,0 +1,14 @@
+providers:
+  stackspot:
+    api_base: "https://api.stackspot.com"
+    api_key: "${STACKSPOT_API_KEY}"
+    models:
+      stackspot-ai-chat:
+        provider: stackspot
+        model: stackspot-ai-chat
+      stackspot-ai-code:
+        provider: stackspot
+        model: stackspot-ai-code
+      stackspot-ai-assistant:
+        provider: stackspot
+        model: stackspot-ai-assistant 

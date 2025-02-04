@@ -119,5 +119,18 @@
         "supports_function_calling": false,
         "supports_assistant_prefill": false,
         "supports_prompt_caching": true
+    },
+    "stackspot-ai-assistant": {
+        "max_tokens": 8192,
+        "max_input_tokens": 16384,
+        "max_output_tokens": 8192,
+        "input_cost_per_token": 0.0,
+        "output_cost_per_token": 0.0,
+        "litellm_provider": "stackspot",
+        "mode": "chat",
+        "supports_vision": false,
+        "supports_function_calling": false,
+        "supports_assistant_prefill": false,
+        "supports_prompt_caching": true
     }
 }

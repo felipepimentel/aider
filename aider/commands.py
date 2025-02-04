@@ -4,6 +4,7 @@ import re
 import subprocess
 import sys
 import tempfile
+import time
 from collections import OrderedDict
 from os.path import expanduser
 from pathlib import Path
@@ -226,7 +227,20 @@ class Commands:
             cmd = cmd.replace("_", "-")
             commands.append("/" + cmd)
 
-        return commands
+        return sorted(commands)
+
+    def get_command_help(self):
+        """Get help text for all commands."""
+        help_text = {}
+        for attr in dir(self):
+            if not attr.startswith("cmd_"):
+                continue
+            cmd = attr[4:]
+            cmd = cmd.replace("_", "-")
+            method = getattr(self, attr)
+            doc = method.__doc__ or ""
+            help_text["/" + cmd] = doc.strip()
+        return help_text
 
     def do_run(self, cmd_name, args):
         cmd_name = cmd_name.replace("-", "_")
@@ -1390,6 +1404,133 @@ Just show me the edits I need to make.
             self.io.tool_error(
                 f"An unexpected error occurred while copying to clipboard: {str(e)}"
             )
+
+    def cmd_conversations(self, args):
+        """List all conversations"""
+        if not hasattr(self.coder.main_model, "provider"):
+            self.io.tool_error("Current model does not support conversations")
+            return
+
+        provider = self.coder.main_model.provider
+        if not hasattr(provider, "conversation_manager"):
+            self.io.tool_error(
+                "Current provider does not support conversation management"
+            )
+            return
+
+        conversations = provider.conversation_manager.list_conversations()
+        if not conversations:
+            self.io.tool_output("No conversations found")
+            return
+
+        current_id = provider.conversation_manager.get_current_conversation()
+
+        for conv_id, conv_data in conversations.items():
+            current = " (current)" if conv_id == current_id else ""
+            created = time.strftime(
+                "%Y-%m-%d %H:%M:%S", time.localtime(conv_data["created_at"])
+            )
+            last_used = time.strftime(
+                "%Y-%m-%d %H:%M:%S", time.localtime(conv_data["last_used"])
+            )
+
+            self.io.tool_output(f"\nConversation: {conv_id}{current}")
+            self.io.tool_output(f"Created: {created}")
+            self.io.tool_output(f"Last used: {last_used}")
+
+            if "model" in conv_data["metadata"]:
+                self.io.tool_output(f"Model: {conv_data['metadata']['model']}")
+
+            if "last_status" in conv_data["metadata"]:
+                self.io.tool_output(f"Status: {conv_data['metadata']['last_status']}")
+
+    def cmd_switch_conversation(self, args):
+        """Switch to a different conversation"""
+        if not args:
+            self.io.tool_error("Please provide a conversation ID")
+            return
+
+        if not hasattr(self.coder.main_model, "provider"):
+            self.io.tool_error("Current model does not support conversations")
+            return
+
+        provider = self.coder.main_model.provider
+        if not hasattr(provider, "conversation_manager"):
+            self.io.tool_error(
+                "Current provider does not support conversation management"
+            )
+            return
+
+        try:
+            provider.conversation_manager.set_current_conversation(args)
+            provider.conversation_id = args
+            self.io.tool_output(f"Switched to conversation: {args}")
+        except ValueError as e:
+            self.io.tool_error(str(e))
+
+    def cmd_delete_conversation(self, args):
+        """Delete a conversation"""
+        if not args:
+            self.io.tool_error("Please provide a conversation ID")
+            return
+
+        if not hasattr(self.coder.main_model, "provider"):
+            self.io.tool_error("Current model does not support conversations")
+            return
+
+        provider = self.coder.main_model.provider
+        if not hasattr(provider, "conversation_manager"):
+            self.io.tool_error(
+                "Current provider does not support conversation management"
+            )
+            return
+
+        try:
+            provider.conversation_manager.delete_conversation(args)
+            self.io.tool_output(f"Deleted conversation: {args}")
+        except ValueError as e:
+            self.io.tool_error(str(e))
+
+    def cmd_new_conversation(self, args):
+        """Start a new conversation"""
+        if not hasattr(self.coder.main_model, "provider"):
+            self.io.tool_error("Current model does not support conversations")
+            return
+
+        provider = self.coder.main_model.provider
+        if not hasattr(provider, "conversation_manager"):
+            self.io.tool_error(
+                "Current provider does not support conversation management"
+            )
+            return
+
+        metadata = {
+            "model": self.coder.main_model.name,
+            "created_from": provider.conversation_id
+            if provider.conversation_id
+            else None,
+        }
+
+        conv_id = provider.conversation_manager.create_conversation(metadata)
+        provider.conversation_id = conv_id
+        self.io.tool_output(f"Started new conversation: {conv_id}")
+
+    def completions_conversations(self):
+        """Return list of conversation IDs for autocompletion."""
+        if not hasattr(self.coder.main_model, "provider"):
+            return []
+        provider = self.coder.main_model.provider
+        if not hasattr(provider, "conversation_manager"):
+            return []
+        return list(provider.conversation_manager.list_conversations().keys())
+
+    def completions_switch_conversation(self):
+        """Return list of conversation IDs for autocompletion."""
+        return self.completions_conversations()
+
+    def completions_delete_conversation(self):
+        """Return list of conversation IDs for autocompletion."""
+        return self.completions_conversations()
 
 
 def expand_subdir(file_path):

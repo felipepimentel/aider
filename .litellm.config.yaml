@@ -1,14 +1,42 @@
 model_list:
-  - model_name: stackspot-ai
+  - model_name: stackspot-ai-code
     litellm_params:
-      model: stackspot-ai
+      model: stackspot-ai-code
       api_key: ${STACKSPOT_API_KEY}
       api_base: https://genai-code-buddy-api.stackspot.com
-      api_path: /v1/quick-commands/create-execution
+      api_path: /v1/code/completions
       max_tokens: 8192
       timeout: 60
       max_retries: 3
       retry_delay: 1.0
+      streaming: true
+      temperature: 0.7
+
+  - model_name: stackspot-ai-chat
+    litellm_params:
+      model: stackspot-ai-chat
+      api_key: ${STACKSPOT_API_KEY}
+      api_base: https://genai-code-buddy-api.stackspot.com
+      api_path: /v1/chat/completions
+      max_tokens: 8192
+      timeout: 60
+      max_retries: 3
+      retry_delay: 1.0
+      streaming: true
+      temperature: 0.7
+
+  - model_name: stackspot-ai-assistant
+    litellm_params:
+      model: stackspot-ai-assistant
+      api_key: ${STACKSPOT_API_KEY}
+      api_base: https://genai-code-buddy-api.stackspot.com
+      api_path: /v1/assistant/completions
+      max_tokens: 8192
+      timeout: 60
+      max_retries: 3
+      retry_delay: 1.0
+      streaming: true
+      temperature: 0.7
 
 router_settings:
   routing_strategy: simple-shuffle
