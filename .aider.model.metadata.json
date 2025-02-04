@@ -12,7 +12,9 @@
         "supports_assistant_prefill": false,
         "supports_prompt_caching": true,
         "supports_system_messages": true,
-        "supports_response_schema": true
+        "supports_response_schema": true,
+        "supports_streaming": true,
+        "supports_temperature": true
     },
     "stackspot-ai-chat": {
         "max_tokens": 8192,
@@ -27,7 +29,9 @@
         "supports_assistant_prefill": false,
         "supports_prompt_caching": true,
         "supports_system_messages": true,
-        "supports_response_schema": true
+        "supports_response_schema": true,
+        "supports_streaming": true,
+        "supports_temperature": true
     },
     "stackspot-ai-assistant": {
         "max_tokens": 8192,
@@ -42,6 +46,8 @@
         "supports_assistant_prefill": false,
         "supports_prompt_caching": true,
         "supports_system_messages": true,
-        "supports_response_schema": true
+        "supports_response_schema": true,
+        "supports_streaming": true,
+        "supports_temperature": true
     }
 } 
