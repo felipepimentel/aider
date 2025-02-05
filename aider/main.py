@@ -12,6 +12,8 @@ try:
 except ImportError:
     git = None
 
+import logging
+
 import importlib_resources
 from dotenv import load_dotenv
 
@@ -20,11 +22,14 @@ from aider.args import get_parser
 from aider.coders import Coder
 from aider.io import InputOutput
 from aider.llm import litellm  # noqa: F401; properly init litellm on launch
+from aider.logging import setup_logging, setup_verbose_mode
 from aider.models import Model
 from aider.repo import ANY_GIT_ERROR, GitRepo
 from aider.report import report_uncaught_exceptions
 
 from .dump import dump  # noqa: F401
+
+logger = logging.getLogger(__name__)
 
 
 def check_config_files_for_yes(config_files):
@@ -331,20 +336,18 @@ def register_models(git_root, model_settings_fname, io, verbose=False):
     try:
         files_loaded = models.register_models(model_settings_files)
         if len(files_loaded) > 0:
-            if verbose:
-                io.tool_output("Loaded model settings from:")
-                for file_loaded in files_loaded:
-                    io.tool_output(f"  - {file_loaded}")  # noqa: E221
-        elif verbose:
-            io.tool_output("No model settings files loaded")
+            logger.info("Configurações de modelo carregadas de:")
+            for file_loaded in files_loaded:
+                logger.info("  - %s", file_loaded)
+        else:
+            logger.info("Nenhum arquivo de configuração de modelo carregado")
     except Exception as e:
-        io.tool_error(f"Error loading aider model settings: {e}")
+        logger.error("Erro ao carregar configurações do modelo aider: %s", e)
         return 1
 
-    if verbose:
-        io.tool_output("Searched for model settings files:")
-        for file in model_settings_files:
-            io.tool_output(f"  - {file}")
+    logger.debug("Procurou arquivos de configuração de modelo em:")
+    for file in model_settings_files:
+        logger.debug("  - %s", file)
 
     return None
 
@@ -441,76 +444,88 @@ def main(argv=None, input=None, output=None, force_git_root=None, return_coder=F
     if argv is None:
         argv = sys.argv[1:]
 
-    parser = get_parser(default_config_files=[], git_root=None)
-    args = parser.parse_args(argv)
-
-    io = InputOutput(
-        pretty=True,
-        input=input,
-        output=output,
-        chat_history_file=args.chat_history_file,
-        input_history_file=args.input_history_file,
-        llm_history_file=args.llm_history_file,
-    )
-
-    # Initialize provider
-    provider = None
-    if args.model.startswith("stackspot"):
-        from aider.providers.stackspot import StackSpotProvider
-
-        try:
-            provider = StackSpotProvider(api_key=args.api_key)
-        except ValueError as e:
-            io.tool_error(str(e))
-            return 1
-
-    # Initialize model settings
-    model_settings = Model(
-        args.model,
-        api_key=args.api_key,
-        use_temperature=True,
-        use_repo_map=True,
-        extra_params={
-            "max_tokens": 8192,
-            "model_type": "code",
-            "streaming": True,
-            "temperature": 0.7,
-            "api_base": "https://genai-code-buddy-api.stackspot.com",
-            "api_path": "/v1/code/completions",
-        },
-    )
-
-    # Initialize coder
     try:
-        coder = Coder.create(
-            main_model=model_settings,
-            io=io,
-            verbose=args.verbose,
+        # Configurar logging antes de qualquer outra operação
+        setup_logging()
+
+        git_root = find_git_root()
+        default_config_files = generate_search_path_list(".aider.conf.yml", git_root)
+        parser = get_parser(default_config_files, git_root)
+        args = parser.parse_args(argv)
+
+        # Ajustar logging baseado no modo verbose
+        setup_verbose_mode(args.verbose)
+        logger.debug("Argumentos processados: %s", args)
+
+        io = InputOutput(
+            pretty=True,
+            input=input,
+            output=output,
+            chat_history_file=args.chat_history_file,
+            input_history_file=args.input_history_file,
+            llm_history_file=args.llm_history_file,
         )
 
-        # Attach provider to model if available
-        if provider:
-            coder.main_model.provider = provider
+        # Initialize provider
+        provider = None
+        if args.model.startswith("stackspot"):
+            from aider.providers.stackspot import StackSpotProvider
+
+            try:
+                provider = StackSpotProvider(api_key=args.api_key)
+            except ValueError as e:
+                io.tool_error(str(e))
+                return 1
+
+        # Initialize model settings
+        model_settings = Model(
+            args.model,
+            api_key=args.api_key,
+            use_temperature=True,
+            use_repo_map=True,
+            extra_params={
+                "max_tokens": 8192,
+                "model_type": "code",
+                "streaming": True,
+                "temperature": 0.7,
+                "api_base": "https://genai-code-buddy-api.stackspot.com",
+                "api_path": "/v1/code/completions",
+            },
+        )
+
+        # Initialize coder
+        try:
+            coder = Coder.create(
+                main_model=model_settings,
+                io=io,
+                verbose=args.verbose,
+            )
+
+            # Attach provider to model if available
+            if provider:
+                coder.main_model.provider = provider
+        except Exception as e:
+            io.tool_error(f"Error initializing coder: {str(e)}")
+            return 1
+
+        if return_coder:
+            return coder
+
+        # Run the chat loop
+        try:
+            coder.run()
+        except KeyboardInterrupt:
+            logger.info("Recebido Ctrl+C, encerrando...")
+            return 1
+        except Exception as e:
+            logger.error("Erro não tratado: %s", str(e), exc_info=True)
+            return 1
+
+        return 0
+
     except Exception as e:
-        io.tool_error(f"Error initializing coder: {str(e)}")
+        logger.error("Erro não tratado: %s", str(e), exc_info=True)
         return 1
-
-    if return_coder:
-        return coder
-
-    # Run the chat loop
-    try:
-        coder.run()
-    except KeyboardInterrupt:
-        io.tool_error("\nExiting due to keyboard interrupt")
-        return 1
-    except Exception as e:
-        io.tool_error(f"Error during execution: {str(e)}")
-        if args.verbose:
-            traceback.print_exc()
-        return 1
-
-    return 0
 
 
 def is_first_run_of_new_version(io, verbose=False):
@@ -559,35 +574,34 @@ def is_first_run_of_new_version(io, verbose=False):
 def check_and_load_imports(io, is_first_run, verbose=False):
     try:
         if is_first_run:
-            if verbose:
-                io.tool_output(
-                    "First run for this version and executable, loading imports synchronously"
-                )
+            logger.info(
+                "Primeira execução para esta versão e executável, carregando imports sincronamente"
+            )
             try:
                 load_slow_imports(swallow=False)
             except Exception as err:
-                io.tool_error(str(err))
+                logger.error("Erro ao carregar imports necessários: %s", str(err))
                 io.tool_output(
-                    "Error loading required imports. Did you install aider properly?"
+                    "Erro ao carregar imports necessários. O aider foi instalado corretamente?"
                 )
                 io.offer_url(
-                    urls.install_properly, "Open documentation url for more info?"
+                    urls.install_properly, "Abrir documentação para mais informações?"
                 )
                 sys.exit(1)
 
-            if verbose:
-                io.tool_output("Imports loaded and installs file updated")
+            logger.info("Imports carregados e arquivo de instalação atualizado")
         else:
-            if verbose:
-                io.tool_output("Not first run, loading imports in background thread")
+            logger.info(
+                "Não é primeira execução, carregando imports em thread em background"
+            )
             thread = threading.Thread(target=load_slow_imports)
             thread.daemon = True
             thread.start()
 
     except Exception as e:
-        io.tool_warning(f"Error in loading imports: {e}")
+        logger.error("Erro ao carregar imports: %s", e)
         if verbose:
-            io.tool_output(f"Full exception details: {traceback.format_exc()}")
+            logger.debug("Detalhes completos da exceção: %s", traceback.format_exc())
 
 
 def load_slow_imports(swallow=True):

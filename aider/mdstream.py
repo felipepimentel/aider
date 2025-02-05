@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import io
+import logging
 import time
 
 from rich.console import Console
@@ -45,6 +46,9 @@ The end.
 
 """  # noqa: E501
 
+logger = logging.getLogger(__name__)
+console = Console()
+
 
 class MarkdownStream:
     """Streaming markdown renderer that progressively displays content with a live updating window.
@@ -66,6 +70,8 @@ class MarkdownStream:
             mdargs (dict, optional): Additional arguments to pass to rich Markdown renderer
         """
         self.printed = []  # Stores lines that have already been printed
+        self.buffer = []
+        self.last_update = 0
 
         if mdargs:
             self.mdargs = mdargs
@@ -177,6 +183,33 @@ class MarkdownStream:
         """
         Splits text into chunks on blank lines "\n\n".
         """
+
+    def write(self, text):
+        """Write text to the stream."""
+        self.buffer.append(text)
+        self.update()
+
+    def show(self, text):
+        """Show text above the live area."""
+        console.print(text)
+
+    def flush(self):
+        """Flush the buffer."""
+        pass
+
+    def close(self):
+        """Close the stream."""
+        self.update()
+        self.live.stop()
+
+    def __enter__(self):
+        """Enter context manager."""
+        self.live.start()
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        """Exit context manager."""
+        self.close()
 
 
 if __name__ == "__main__":

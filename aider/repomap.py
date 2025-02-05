@@ -23,7 +23,13 @@ from aider.utils import Spinner
 
 # tree_sitter is throwing a FutureWarning
 warnings.simplefilter("ignore", category=FutureWarning)
+import logging
+import re
+
+import git
 from tree_sitter_languages import get_language, get_parser  # noqa: E402
+
+logger = logging.getLogger(__name__)
 
 Tag = namedtuple("Tag", "rel_fname fname line name kind".split())
 
@@ -48,10 +54,14 @@ class RepoMap:
         max_context_window=None,
         map_mul_no_files=8,
         refresh="auto",
+        git_root=None,
+        analytics=None,
     ):
         self.io = io
         self.verbose = verbose
         self.refresh = refresh
+        self.git_root = git_root
+        self.analytics = analytics
 
         if not root:
             root = os.getcwd()
@@ -73,6 +83,19 @@ class RepoMap:
         self.map_cache = {}
         self.map_processing_time = 0
         self.last_map = None
+
+        self.repo = None
+        self.repo_content = None
+        self.repo_content_tokens = None
+        self.repo_content_files = None
+        self.repo_content_error = None
+        self.repo_content_error_reported = False
+
+        if git_root:
+            try:
+                self.repo = git.Repo(git_root)
+            except git.InvalidGitRepositoryError:
+                logger.warning("Diretório %s não é um repositório git válido", git_root)
 
         if self.verbose:
             self.io.tool_output(
@@ -333,7 +356,12 @@ class RepoMap:
             )
 
     def get_ranked_tags(
-        self, chat_fnames, other_fnames, mentioned_fnames, mentioned_idents, progress=None
+        self,
+        chat_fnames,
+        other_fnames,
+        mentioned_fnames,
+        mentioned_idents,
+        progress=None,
     ):
         import networkx as nx
 
@@ -469,7 +497,9 @@ class RepoMap:
                 progress()
 
             src_rank = ranked[src]
-            total_weight = sum(data["weight"] for _src, _dst, data in G.out_edges(src, data=True))
+            total_weight = sum(
+                data["weight"] for _src, _dst, data in G.out_edges(src, data=True)
+            )
             # dump(src, src_rank, total_weight)
             for _src, dst, data in G.out_edges(src, data=True):
                 data["rank"] = src_rank * data["weight"] / total_weight
@@ -489,11 +519,15 @@ class RepoMap:
                 continue
             ranked_tags += list(definitions.get((fname, ident), []))
 
-        rel_other_fnames_without_tags = set(self.get_rel_fname(fname) for fname in other_fnames)
+        rel_other_fnames_without_tags = set(
+            self.get_rel_fname(fname) for fname in other_fnames
+        )
 
         fnames_already_included = set(rt[0] for rt in ranked_tags)
 
-        top_rank = sorted([(rank, node) for (node, rank) in ranked.items()], reverse=True)
+        top_rank = sorted(
+            [(rank, node) for (node, rank) in ranked.items()], reverse=True
+        )
         for rank, fname in top_rank:
             if fname in rel_other_fnames_without_tags:
                 rel_other_fnames_without_tags.remove(fname)
@@ -547,7 +581,11 @@ class RepoMap:
         # If not in cache or force_refresh is True, generate the map
         start_time = time.time()
         result = self.get_ranked_tags_map_uncached(
-            chat_fnames, other_fnames, max_map_tokens, mentioned_fnames, mentioned_idents
+            chat_fnames,
+            other_fnames,
+            max_map_tokens,
+            mentioned_fnames,
+            mentioned_idents,
         )
         end_time = time.time()
         self.map_processing_time = end_time - start_time
@@ -585,7 +623,9 @@ class RepoMap:
             progress=spin.step,
         )
 
-        other_rel_fnames = sorted(set(self.get_rel_fname(fname) for fname in other_fnames))
+        other_rel_fnames = sorted(
+            set(self.get_rel_fname(fname) for fname in other_fnames)
+        )
         special_fnames = filter_important_files(other_rel_fnames)
         ranked_tags_fnames = set(tag[0] for tag in ranked_tags)
         special_fnames = [fn for fn in special_fnames if fn not in ranked_tags_fnames]
@@ -616,7 +656,9 @@ class RepoMap:
 
             pct_err = abs(num_tokens - max_map_tokens) / max_map_tokens
             ok_err = 0.15
-            if (num_tokens <= max_map_tokens and num_tokens > best_tree_tokens) or pct_err < ok_err:
+            if (
+                num_tokens <= max_map_tokens and num_tokens > best_tree_tokens
+            ) or pct_err < ok_err:
                 best_tree = tree
                 best_tree_tokens = num_tokens
 
@@ -711,6 +753,78 @@ class RepoMap:
 
         return output
 
+    def get_files_content(self, fnames):
+        if not fnames:
+            return ""
+
+        content = []
+        for fname in sorted(fnames):
+            try:
+                with open(fname, "r", encoding="utf-8") as f:
+                    file_content = f.read()
+                rel_fname = os.path.relpath(fname, self.git_root or ".")
+                content.append(f"# {rel_fname}\n{file_content}\n")
+            except Exception as e:
+                logger.warning("Erro ao ler arquivo %s: %s", fname, str(e))
+
+        return "\n".join(content)
+
+    def get_repo_content(self):
+        if not self.repo:
+            return ""
+
+        try:
+            content = []
+            for obj in self.repo.head.commit.tree.traverse():
+                if not obj.type == "blob":
+                    continue
+
+                fname = obj.path
+                if self.should_ignore(fname):
+                    continue
+
+                try:
+                    file_content = obj.data_stream.read().decode("utf-8")
+                    content.append(f"# {fname}\n{file_content}\n")
+                except Exception as e:
+                    logger.warning("Erro ao ler arquivo %s do git: %s", fname, str(e))
+
+            return "\n".join(content)
+
+        except Exception as e:
+            logger.error("Erro ao ler conteúdo do repositório git: %s", str(e))
+            return ""
+
+    def should_ignore(self, fname):
+        # Ignorar arquivos binários comuns
+        if re.search(
+            r"\.(pyc|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$", fname, re.I
+        ):
+            return True
+
+        # Ignorar diretórios comuns
+        if re.search(
+            r"^(node_modules|__pycache__|\.git|\.svn|\.hg|\.idea|\.vscode)", fname
+        ):
+            return True
+
+        # Ignorar arquivos muito grandes (>1MB)
+        try:
+            if os.path.getsize(os.path.join(self.git_root, fname)) > 1024 * 1024:
+                return True
+        except:
+            pass
+
+        return False
+
+    def truncate_content(self, content, ratio):
+        if ratio >= 1:
+            return content
+
+        lines = content.split("\n")
+        keep_lines = int(len(lines) * ratio)
+        return "\n".join(lines[:keep_lines])
+
 
 def find_src_files(directory):
     if not os.path.isdir(directory):
@@ -733,7 +847,9 @@ def get_random_color():
 def get_scm_fname(lang):
     # Load the tags queries
     try:
-        return resources.files(__package__).joinpath("queries", f"tree-sitter-{lang}-tags.scm")
+        return resources.files(__package__).joinpath(
+            "queries", f"tree-sitter-{lang}-tags.scm"
+        )
     except KeyError:
         return
 
@@ -756,6 +872,21 @@ def get_supported_languages_md():
     res += "\n"
 
     return res
+
+
+def skip_file(fname, err):
+    """Log skipped file."""
+    logger.warning("Skipping file %s: %s", fname, err)
+
+
+def log_rank(rank, fname, ident):
+    """Log ranking information."""
+    logger.debug("Rank %.03f %s %s", rank, fname, ident)
+
+
+def log_repo_map(repo_map):
+    """Log repository map."""
+    logger.debug("Repository map:\n%s", repo_map)
 
 
 if __name__ == "__main__":

@@ -1,9 +1,44 @@
 #!/usr/bin/env python
 
+import logging
 import subprocess
 import sys
 
 from aider.dump import dump  # noqa: F401
+
+logger = logging.getLogger(__name__)
+
+
+def run_grid_search(models, edit_formats, num_tests=None, threads=None):
+    """Run grid search over models and edit formats."""
+    for model in models:
+        for edit_format in edit_formats:
+            cmd = build_command(model, edit_format, num_tests, threads)
+            logger.info("Running command: %s", " ".join(cmd))
+            try:
+                subprocess.run(cmd, check=True)
+            except subprocess.CalledProcessError as e:
+                logger.error(
+                    "Command failed with exit code %d: %s", e.returncode, " ".join(cmd)
+                )
+            except Exception as e:
+                logger.error("Error running command: %s", e)
+
+
+def build_command(model, edit_format, num_tests=None, threads=None):
+    """Build command for running benchmark."""
+    cmd = ["python", "-m", "benchmark.benchmark"]
+
+    if model:
+        cmd.extend(["--model", model])
+    if edit_format:
+        cmd.extend(["--edit-format", edit_format])
+    if num_tests:
+        cmd.extend(["--num-tests", str(num_tests)])
+    if threads:
+        cmd.extend(["--threads", str(threads)])
+
+    return cmd
 
 
 def main():

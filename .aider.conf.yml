@@ -9,4 +9,28 @@ attribute-author: true
 attribute-committer: true
 pretty: true
 stream: true
-verbose: true 
+verbose: true
+
+# Configuração centralizada de logging
+logging:
+  level: INFO  # Nível global de log
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  handlers:
+    console:
+      enabled: true
+      level: INFO
+    file:
+      enabled: true
+      level: DEBUG
+      filename: "aider.log"
+  components:
+    litellm:
+      level: DEBUG
+    repomap:
+      level: INFO
+    commands:
+      level: INFO
+    watch:
+      level: INFO
+    main:
+      level: INFO 

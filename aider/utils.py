@@ -1,16 +1,20 @@
-import itertools
+import logging
 import os
 import platform
-import shlex
 import subprocess
 import sys
 import tempfile
 import time
 from pathlib import Path
 
+from rich.console import Console
+
 from aider.dump import dump  # noqa: F401
 
 IMAGE_EXTENSIONS = {".png", ".jpg", ".jpeg", ".gif", ".bmp", ".tiff", ".webp", ".pdf"}
+
+logger = logging.getLogger(__name__)
+console = Console()
 
 
 class IgnorantTemporaryDirectory:
@@ -138,10 +142,10 @@ def format_messages(messages, title=None):
 
 def show_messages(messages, title=None, functions=None):
     formatted_output = format_messages(messages, title)
-    print(formatted_output)
+    logger.debug(formatted_output)
 
     if functions:
-        dump(functions)
+        logger.debug("Functions: %s", functions)
 
 
 def split_chat_history_markdown(text, include_tool=False):
@@ -210,8 +214,8 @@ def get_pip_install(args):
 
 
 def run_install(cmd):
-    print()
-    print("Installing:", printable_shell_command(cmd))
+    logger.info("")
+    logger.info("Installing: %s", printable_shell_command(cmd))
 
     try:
         output = []
@@ -240,69 +244,39 @@ def run_install(cmd):
         output = "".join(output)
 
         if return_code == 0:
-            print("Installation complete.")
-            print()
+            logger.info("Installation complete.")
+            logger.info("")
             return True, output
 
     except subprocess.CalledProcessError as e:
-        print(f"\nError running pip install: {e}")
+        logger.error("Error running pip install: %s", e)
 
-    print("\nInstallation failed.\n")
-
+    logger.error("Installation failed.")
+    logger.error("")
     return False, output
 
 
 class Spinner:
-    unicode_spinner = ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"]
-    ascii_spinner = ["|", "/", "-", "\\"]
+    """A simple spinner for showing progress."""
 
-    def __init__(self, text):
+    def __init__(self, text=""):
+        """Initialize the spinner."""
         self.text = text
-        self.start_time = time.time()
-        self.last_update = 0
-        self.visible = False
-        self.is_tty = sys.stdout.isatty()
-        self.tested = False
+        self.unicode_spinner = ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"]
+        self.current = 0
 
-    def test_charset(self):
-        if self.tested:
-            return
-        self.tested = True
-        # Try unicode first, fall back to ascii if needed
-        try:
-            # Test if we can print unicode characters
-            print(self.unicode_spinner[0], end="", flush=True)
-            print("\r", end="", flush=True)
-            self.spinner_chars = itertools.cycle(self.unicode_spinner)
-        except UnicodeEncodeError:
-            self.spinner_chars = itertools.cycle(self.ascii_spinner)
+    def spin(self):
+        """Update the spinner."""
+        sys.stdout.write(self.unicode_spinner[self.current])
+        sys.stdout.write("\r")
+        sys.stdout.flush()
+        self.current = (self.current + 1) % len(self.unicode_spinner)
 
-    def step(self):
-        if not self.is_tty:
-            return
-
-        current_time = time.time()
-        if not self.visible and current_time - self.start_time >= 0.5:
-            self.visible = True
-            self._step()
-        elif self.visible and current_time - self.last_update >= 0.1:
-            self._step()
-        self.last_update = current_time
-
-    def _step(self):
-        if not self.visible:
-            return
-
-        self.test_charset()
-        print(
-            f"\r{self.text} {next(self.spinner_chars)}\r{self.text} ",
-            end="",
-            flush=True,
-        )
-
-    def end(self):
-        if self.visible and self.is_tty:
-            print("\r" + " " * (len(self.text) + 3))
+    def clear(self):
+        """Clear the spinner."""
+        sys.stdout.write("\r" + " " * (len(self.text) + 3))
+        sys.stdout.write("\r")
+        sys.stdout.flush()
 
 
 def find_common_root(abs_fnames):
@@ -373,20 +347,11 @@ def check_pip_install_extra(io, module, prompt, pip_install_cmd, self_update=Fal
     print(printable_shell_command(cmd))
 
 
-def printable_shell_command(cmd_list):
-    """
-    Convert a list of command arguments to a properly shell-escaped string.
-
-    Args:
-        cmd_list (list): List of command arguments.
-
-    Returns:
-        str: Shell-escaped command string.
-    """
-    if platform.system() == "Windows":
-        return subprocess.list2cmdline(cmd_list)
-    else:
-        return shlex.join(cmd_list)
+def printable_shell_command(cmd):
+    """Format shell command for display."""
+    if isinstance(cmd, str):
+        return cmd
+    return " ".join(cmd)
 
 
 def main():

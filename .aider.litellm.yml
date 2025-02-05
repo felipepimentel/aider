@@ -1,64 +1,51 @@
-providers:
-  stackspot:
-    api_base: "https://genai-code-buddy-api.stackspot.com"
-    api_key: "${STACKSPOTAI_CLIENT_KEY}"
-    client_id: "${STACKSPOTAI_CLIENT_ID}"
-    client_realm: "${STACKSPOTAI_REALM}"
-    models:
-      stackspot-ai:
-        provider: stackspot
-        model: stackspot-ai
-        max_tokens: 8192
-        max_input_tokens: 16384
-        max_output_tokens: 8192
-        model_type: code
-        streaming: true
-        temperature: 0.7
-      stackspot-ai-chat:
-        provider: stackspot
-        model: stackspot-ai-chat
-        max_tokens: 8192
-        max_input_tokens: 16384
-        max_output_tokens: 8192
-        model_type: chat
-        streaming: true
-        temperature: 0.7
-      stackspot-ai-code:
-        provider: stackspot
-        model: stackspot-ai-code
-        max_tokens: 8192
-        max_input_tokens: 16384
-        max_output_tokens: 8192
-        model_type: code
-        streaming: true
-        temperature: 0.7
-      stackspot-ai-assistant:
-        provider: stackspot
-        model: stackspot-ai-assistant
-        max_tokens: 8192
-        max_input_tokens: 16384
-        max_output_tokens: 8192
-        model_type: chat
-        streaming: true
-        temperature: 0.7
+model_list:
+  - model_name: openai/stackspot-ai-code
+    litellm_params:
+      model: stackspot-ai-code
+      api_base: https://genai-code-buddy-api.stackspot.com/v1/code
+      api_key: ${STACKSPOT_API_KEY}
+      max_tokens: 8192
+      temperature: 0.7
+      headers:
+        Authorization: ${STACKSPOT_API_KEY}
+        Content-Type: application/json
+        Accept: application/json
+
+  - model_name: openai/stackspot-ai-chat
+    litellm_params:
+      model: stackspot-ai-chat
+      api_base: https://genai-code-buddy-api.stackspot.com/v1/chat
+      api_key: ${STACKSPOT_API_KEY}
+      max_tokens: 8192
+      temperature: 0.7
+      headers:
+        Authorization: ${STACKSPOT_API_KEY}
+        Content-Type: application/json
+        Accept: application/json
+
+  - model_name: openai/stackspot-ai-assistant
+    litellm_params:
+      model: stackspot-ai-assistant
+      api_base: https://genai-code-buddy-api.stackspot.com/v1/assistant
+      api_key: ${STACKSPOT_API_KEY}
+      max_tokens: 8192
+      temperature: 0.7
+      headers:
+        Authorization: ${STACKSPOT_API_KEY}
+        Content-Type: application/json
+        Accept: application/json
 
 litellm_settings:
   drop_params: true
-  set_verbose: true
-  api_base: "https://genai-code-buddy-api.stackspot.com"
-  cache: false
-  cache_params:
-    type: local
-    max_cache_size: 1000
-  retry: true
-  retry_status_codes: [429, 500, 502, 503, 504]
+  cache_control: true
   max_retries: 3
-  timeout: 60
-  stream_chunk_size: 50
-  max_tokens: 8192
-  temperature: 0.7
-  request_timeout: 60
-  fallbacks: []
-  metadata:
-    user: "aider"
-    purpose: "code-assistant" 
+  retry_delay: 1.0
+  stream_chunk_size: 4096
+  request_timeout: 30
+  error_handling:
+    max_retries: 3
+    backoff_factor: 1.0
+    retry_status_codes: [429, 500, 502, 503, 504]
+  headers:
+    Content-Type: application/json
+    Accept: application/json 

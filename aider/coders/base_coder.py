@@ -3,6 +3,7 @@
 import base64
 import json
 import locale
+import logging
 import mimetypes
 import os
 import platform
@@ -30,6 +31,8 @@ from aider.utils import format_tokens, is_image_file
 
 from ..dump import dump  # noqa: F401
 from .chat_chunks import ChatChunks
+
+logger = logging.getLogger(__name__)
 
 
 class UnknownEditFormat(ValueError):
@@ -763,6 +766,7 @@ class Coder:
 
     def run(self, with_message=None, preproc=True):
         try:
+            logger.info("Iniciando coder")
             if with_message:
                 self.io.user_input(with_message)
                 self.run_one(with_message, preproc)
@@ -775,6 +779,7 @@ class Coder:
                     self.run_one(user_message, preproc)
                     self.show_undo_hint()
                 except KeyboardInterrupt:
+                    logger.info("Interrupção do usuário recebida")
                     self.keyboard_interrupt()
         except EOFError:
             return

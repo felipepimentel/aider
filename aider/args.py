@@ -1,10 +1,12 @@
 #!/usr/bin/env python
 
 import argparse
+import logging
 import os
 import sys
 
 import configargparse
+from rich.console import Console
 
 from aider import __version__
 from aider.args_formatter import (
@@ -14,6 +16,9 @@ from aider.args_formatter import (
 )
 
 from .dump import dump  # noqa: F401
+
+logger = logging.getLogger(__name__)
+console = Console()
 
 
 def default_env_file(git_root):

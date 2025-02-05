@@ -1,3 +1,4 @@
+import logging
 import os
 import platform
 import subprocess
@@ -7,17 +8,23 @@ from io import BytesIO
 import pexpect
 import psutil
 
+logger = logging.getLogger(__name__)
+
 
 def run_cmd(command, verbose=False, error_print=None, cwd=None):
     try:
-        if sys.stdin.isatty() and hasattr(pexpect, "spawn") and platform.system() != "Windows":
+        if (
+            sys.stdin.isatty()
+            and hasattr(pexpect, "spawn")
+            and platform.system() != "Windows"
+        ):
             return run_cmd_pexpect(command, verbose, cwd)
 
         return run_cmd_subprocess(command, verbose, cwd)
     except OSError as e:
         error_message = f"Error occurred while running command '{command}': {str(e)}"
         if error_print is None:
-            print(error_message)
+            logger.error(error_message)
         else:
             error_print(error_message)
         return 1, error_message
@@ -41,7 +48,7 @@ def get_windows_parent_process_name():
 
 def run_cmd_subprocess(command, verbose=False, cwd=None, encoding=sys.stdout.encoding):
     if verbose:
-        print("Using run_cmd_subprocess:", command)
+        logger.debug("Using run_cmd_subprocess: %s", command)
 
     try:
         shell = os.environ.get("SHELL", "/bin/sh")
@@ -54,10 +61,10 @@ def run_cmd_subprocess(command, verbose=False, cwd=None, encoding=sys.stdout.enc
                 command = f"powershell -Command {command}"
 
         if verbose:
-            print("Running command:", command)
-            print("SHELL:", shell)
+            logger.debug("Running command: %s", command)
+            logger.debug("SHELL: %s", shell)
             if platform.system() == "Windows":
-                print("Parent process:", parent_process)
+                logger.debug("Parent process: %s", parent_process)
 
         process = subprocess.Popen(
             command,
@@ -77,7 +84,8 @@ def run_cmd_subprocess(command, verbose=False, cwd=None, encoding=sys.stdout.enc
             chunk = process.stdout.read(1)
             if not chunk:
                 break
-            print(chunk, end="", flush=True)  # Print the chunk in real-time
+            sys.stdout.write(chunk)  # Use sys.stdout.write para output em tempo real
+            sys.stdout.flush()
             output.append(chunk)  # Store the chunk for later use
 
         process.wait()
@@ -113,7 +121,9 @@ def run_cmd_pexpect(command, verbose=False, cwd=None):
             # Use the shell from SHELL environment variable
             if verbose:
                 print("Running pexpect.spawn with shell:", shell)
-            child = pexpect.spawn(shell, args=["-i", "-c", command], encoding="utf-8", cwd=cwd)
+            child = pexpect.spawn(
+                shell, args=["-i", "-c", command], encoding="utf-8", cwd=cwd
+            )
         else:
             # Fall back to spawning the command directly
             if verbose:

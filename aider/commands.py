@@ -1,4 +1,5 @@
 import glob
+import logging
 import os
 import re
 import subprocess
@@ -25,6 +26,8 @@ from aider.scrape import Scraper, install_playwright
 from aider.utils import is_image_file
 
 from .dump import dump  # noqa: F401
+
+logger = logging.getLogger(__name__)
 
 
 class SwitchCoder(Exception):
@@ -60,6 +63,8 @@ class Commands:
         parser=None,
         verbose=False,
         editor=None,
+        suggest_shell_commands=True,
+        analytics=None,
     ):
         self.io = io
         self.coder = coder
@@ -77,6 +82,9 @@ class Commands:
 
         self.help = None
         self.editor = editor
+        self.suggest_shell_commands = suggest_shell_commands
+        self.analytics = analytics
+        self.last_cmd = None
 
     def cmd_model(self, args):
         "Switch to a new LLM"
@@ -1531,6 +1539,118 @@ Just show me the edits I need to make.
     def completions_delete_conversation(self):
         """Return list of conversation IDs for autocompletion."""
         return self.completions_conversations()
+
+    def run_cmd(self, cmd, **kwargs):
+        """Run a shell command."""
+        logger.debug("Executando comando: %s", cmd)
+        try:
+            return run_cmd(cmd, **kwargs)
+        except Exception as e:
+            logger.error("Erro ao executar comando: %s", str(e))
+            return None
+
+    def do_cmd(self, inp):
+        """Execute a shell command."""
+        if not inp:
+            return
+
+        cmd = inp
+        if cmd.startswith("!"):
+            cmd = cmd[1:]
+
+        logger.info("Executando comando: %s", cmd)
+        self.last_cmd = cmd
+
+        try:
+            ret = self.run_cmd(cmd, verbose=True)
+            if ret:
+                logger.debug("Comando retornou: %s", ret)
+            return ret
+        except Exception as e:
+            logger.error("Erro ao executar comando: %s", str(e))
+            return None
+
+    def do_ls(self, inp):
+        """List directory contents."""
+        cmd = f"ls {inp or ''}"
+        return self.do_cmd(cmd)
+
+    def do_pwd(self, inp):
+        """Print working directory."""
+        return self.do_cmd("pwd")
+
+    def do_cd(self, inp):
+        """Change directory."""
+        try:
+            if not inp:
+                inp = str(Path.home())
+            os.chdir(os.path.expanduser(inp))
+            logger.info("Diretório alterado para: %s", os.getcwd())
+        except Exception as e:
+            logger.error("Erro ao mudar diretório: %s", str(e))
+
+    def do_git(self, inp):
+        """Execute a git command."""
+        cmd = f"git {inp}"
+        return self.do_cmd(cmd)
+
+    def do_clear(self, inp):
+        """Clear the screen."""
+        if sys.platform == "win32":
+            os.system("cls")
+        else:
+            os.system("clear")
+
+    def do_help(self, inp):
+        """Show help about commands."""
+        commands = []
+        for name in sorted(dir(self)):
+            if name.startswith("do_"):
+                cmd = name[3:]
+                doc = getattr(self, name).__doc__ or ""
+                commands.append(f"/{cmd:<10} {doc}")
+        self.io.tool_output("Comandos disponíveis:\n" + "\n".join(commands))
+
+    def do_exit(self, inp):
+        """Exit the application."""
+        logger.info("Saindo da aplicação")
+        sys.exit(0)
+
+    def do_quit(self, inp):
+        """Alias for exit."""
+        return self.do_exit(inp)
+
+    def suggest_commands(self, msg):
+        """Suggest shell commands based on user message."""
+        if not self.suggest_shell_commands:
+            return
+
+        # Padrões comuns que indicam comandos shell
+        patterns = [
+            r"(?:posso|pode|poderia|como)\s+(?:executar|rodar|fazer)\s+(.+)",
+            r"(?:preciso|quero|gostaria)\s+(?:de\s+)?(?:ver|listar|mostrar)\s+(.+)",
+            r"(?:qual|onde)\s+(?:é|está|seria)\s+(.+)",
+        ]
+
+        for pattern in patterns:
+            match = re.search(pattern, msg, re.I)
+            if match:
+                action = match.group(1).strip().lower()
+                suggestion = None
+
+                if "listar" in action or "mostrar" in action or "ver" in action:
+                    suggestion = "ls"
+                elif "diretório" in action or "pasta" in action:
+                    suggestion = "pwd"
+                elif "mudar" in action or "ir para" in action:
+                    suggestion = "cd"
+                elif "git" in action:
+                    suggestion = "git status"
+
+                if suggestion:
+                    logger.info("Sugerindo comando: %s", suggestion)
+                    self.io.tool_output(f"Você pode usar o comando: /{suggestion}")
+                break
 
 
 def expand_subdir(file_path):

@@ -1,12 +1,15 @@
 #!/usr/bin/env python
 
 import ast
+import logging
 import os
 import shutil
 import sys
 from pathlib import Path
 
 from aider.dump import dump  # noqa: F401
+
+logger = logging.getLogger(__name__)
 
 
 class ParentNodeTransformer(ast.NodeTransformer):
@@ -22,7 +25,9 @@ class ParentNodeTransformer(ast.NodeTransformer):
 
 def verify_full_func_at_top_level(tree, func, func_children):
     func_nodes = [
-        item for item in ast.walk(tree) if isinstance(item, ast.FunctionDef) and item.name == func
+        item
+        for item in ast.walk(tree)
+        if isinstance(item, ast.FunctionDef) and item.name == func
     ]
     assert func_nodes, f"Function {func} not found"
 
@@ -32,9 +37,9 @@ def verify_full_func_at_top_level(tree, func, func_children):
 
         num_children = sum(1 for _ in ast.walk(func_node))
         pct_diff_children = abs(num_children - func_children) * 100 / func_children
-        assert (
-            pct_diff_children < 10
-        ), f"Old method had {func_children} children, new method has {num_children}"
+        assert pct_diff_children < 10, (
+            f"Old method had {func_children} children, new method has {num_children}"
+        )
         return
 
     assert False, f"{func} is not a top level function"
@@ -53,10 +58,12 @@ def verify_old_class_children(tree, old_class, old_class_children):
 
     num_children = sum(1 for _ in ast.walk(node))
 
-    pct_diff_children = abs(num_children - old_class_children) * 100 / old_class_children
-    assert (
-        pct_diff_children < 10
-    ), f"Old class had {old_class_children} children, new class has {num_children}"
+    pct_diff_children = (
+        abs(num_children - old_class_children) * 100 / old_class_children
+    )
+    assert pct_diff_children < 10, (
+        f"Old class had {old_class_children} children, new class has {num_children}"
+    )
 
 
 def verify_refactor(fname, func, func_children, old_class, old_class_children):
@@ -153,7 +160,9 @@ def process(entry):
     if "test" in fname.stem:
         return
 
-    print(f"{fname} {class_name} {method_name} {class_children} {method_children}")
+    logger.info(
+        f"{fname} {class_name} {method_name} {class_children} {method_children}"
+    )
 
     dname = Path("tmp.benchmarks/refactor-benchmark-spyder")
     dname.mkdir(exist_ok=True)
@@ -207,3 +216,42 @@ def main(paths):
 
 if __name__ == "__main__":
     main(sys.argv[1:])
+
+
+def find_refactoring_opportunities(fname, class_name=None, method_name=None):
+    """Find refactoring opportunities in a file."""
+    try:
+        with open(fname, "r") as f:
+            content = f.read()
+    except Exception as e:
+        logger.error("Error reading file %s: %s", fname, e)
+        return []
+
+    # Parse the file content
+    try:
+        tree = ast.parse(content)
+    except Exception as e:
+        logger.error("Error parsing file %s: %s", fname, e)
+        return []
+
+    # Find classes and methods
+    class_children = []
+    method_children = []
+    for node in ast.walk(tree):
+        if isinstance(node, ast.ClassDef):
+            if class_name is None or node.name == class_name:
+                class_children.extend(node.body)
+        elif isinstance(node, ast.FunctionDef):
+            if method_name is None or node.name == method_name:
+                method_children.extend(node.body)
+
+    logger.debug(
+        "File: %s, Class: %s, Method: %s, Class children: %d, Method children: %d",
+        fname,
+        class_name,
+        method_name,
+        len(class_children),
+        len(method_children),
+    )
+
+    return analyze_code_structure(class_children + method_children)

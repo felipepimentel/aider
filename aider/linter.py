@@ -1,3 +1,4 @@
+import logging
 import os
 import re
 import subprocess
@@ -15,6 +16,8 @@ from aider.run_cmd import run_cmd_subprocess  # noqa: F401
 
 # tree_sitter is throwing a FutureWarning
 warnings.simplefilter("ignore", category=FutureWarning)
+
+logger = logging.getLogger(__name__)
 
 
 class Linter:
@@ -55,7 +58,7 @@ class Linter:
                 encoding=self.encoding,
             )
         except OSError as err:
-            print(f"Unable to execute lint command: {err}")
+            logger.error("Unable to execute lint command: %s", err)
             return
         errors = stdout
         if returncode == 0:
@@ -83,7 +86,7 @@ class Linter:
         try:
             code = Path(fname).read_text(encoding=self.encoding, errors="replace")
         except OSError as err:
-            print(f"Unable to read {fname}: {err}")
+            logger.error("Unable to read %s: %s", fname, err)
             return
 
         if cmd:
@@ -213,7 +216,7 @@ def basic_lint(fname, code):
     try:
         parser = get_parser(lang)
     except Exception as err:
-        print(f"Unable to load parser: {err}")
+        logger.error("Unable to load parser: %s", err)
         return
 
     tree = parser.parse(bytes(code, "utf-8"))
@@ -221,7 +224,7 @@ def basic_lint(fname, code):
     try:
         errors = traverse_tree(tree.root_node)
     except RecursionError:
-        print(f"Unable to lint {fname} due to RecursionError")
+        logger.error("Unable to lint %s due to RecursionError", fname)
         return
 
     if not errors:
@@ -273,7 +276,9 @@ def find_filenames_and_linenums(text, fnames):
     Search text for all occurrences of <filename>:\\d+ and make a list of them
     where <filename> is one of the filenames in the list `fnames`.
     """
-    pattern = re.compile(r"(\b(?:" + "|".join(re.escape(fname) for fname in fnames) + r"):\d+\b)")
+    pattern = re.compile(
+        r"(\b(?:" + "|".join(re.escape(fname) for fname in fnames) + r"):\d+\b)"
+    )
     matches = pattern.findall(text)
     result = {}
     for match in matches:
@@ -285,18 +290,51 @@ def find_filenames_and_linenums(text, fnames):
 
 
 def main():
-    """
-    Main function to parse files provided as command line arguments.
-    """
+    """Main function."""
     if len(sys.argv) < 2:
-        print("Usage: python linter.py <file1> <file2> ...")
+        logger.error("Usage: python linter.py <file1> <file2> ...")
         sys.exit(1)
 
-    linter = Linter(root=os.getcwd())
-    for file_path in sys.argv[1:]:
-        errors = linter.lint(file_path)
-        if errors:
-            print(errors)
+    errors = lint_files(sys.argv[1:])
+    if errors:
+        logger.error("\n".join(errors))
+        sys.exit(1)
+
+
+def lint_files(fnames):
+    """Lint multiple files."""
+    errors = []
+    for fname in fnames:
+        file_errors = lint_file(fname)
+        if file_errors:
+            errors.extend(file_errors)
+    return errors
+
+
+def lint_file(fname):
+    """Lint a single file."""
+    try:
+        with open(fname, "r") as f:
+            content = f.read()
+    except Exception as e:
+        logger.error("Unable to read %s: %s", fname, e)
+        return []
+
+    try:
+        tree = ast.parse(content)
+    except Exception as e:
+        logger.error("Unable to parse %s: %s", fname, e)
+        return []
+
+    errors = []
+    visitor = LintVisitor(fname)
+    try:
+        visitor.visit(tree)
+        errors.extend(visitor.errors)
+    except RecursionError:
+        logger.error("Unable to lint %s due to RecursionError", fname)
+
+    return errors
 
 
 if __name__ == "__main__":

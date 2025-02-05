@@ -1,9 +1,11 @@
+import logging
 import os
 import sys
-import traceback
 import warnings
 
 from aider.litellm_init import init_litellm
+
+logger = logging.getLogger(__name__)
 
 warnings.filterwarnings("ignore", category=UserWarning, module="pydantic")
 
@@ -14,30 +16,25 @@ os.environ["OR_SITE_URL"] = AIDER_SITE_URL
 os.environ["OR_APP_NAME"] = AIDER_APP_NAME
 os.environ["LITELLM_MODE"] = "PRODUCTION"
 
-VERBOSE = True
-
-print("\n=== Debug: Starting LLM Module ===", file=sys.stderr)
-print(f"Current working directory: {os.getcwd()}", file=sys.stderr)
-print(f"Python path: {sys.path}", file=sys.stderr)
-print("Environment variables:", file=sys.stderr)
-print(
-    f"- STACKSPOT_API_KEY present: {bool(os.getenv('STACKSPOT_API_KEY'))}",
-    file=sys.stderr,
-)
-print(f"- LITELLM_MODE: {os.getenv('LITELLM_MODE')}", file=sys.stderr)
+logger.debug("=== Debug: Iniciando Módulo LLM ===")
+logger.debug(f"Diretório de trabalho atual: {os.getcwd()}")
+logger.debug(f"Python path: {sys.path}")
+logger.debug("Variáveis de ambiente:")
+logger.debug(f"- STACKSPOT_API_KEY presente: {bool(os.getenv('STACKSPOT_API_KEY'))}")
+logger.debug(f"- LITELLM_MODE: {os.getenv('LITELLM_MODE')}")
 
 try:
-    print("Initializing LiteLLM...", file=sys.stderr)
+    logger.info("Inicializando LiteLLM...")
     litellm = init_litellm()
-    print("LiteLLM initialized successfully!", file=sys.stderr)
+    logger.info("LiteLLM inicializado com sucesso!")
 except Exception as e:
-    print("\nError initializing LiteLLM:", file=sys.stderr)
-    print(str(e), file=sys.stderr)
-    print("\nTraceback:", file=sys.stderr)
-    traceback.print_exc(file=sys.stderr)
+    logger.error("\nErro ao inicializar LiteLLM:")
+    logger.error(str(e))
+    logger.error("\nTraceback:", exc_info=True)
     raise
 
-print("=== Debug: LLM Module Loaded ===\n", file=sys.stderr)
+logger.debug("=== Debug: Módulo LLM Carregado ===\n")
+
 
 def completion(prompt, model="stackspot-ai", stream=True, **kwargs):
     """Send a completion request to the LLM."""
@@ -46,25 +43,30 @@ def completion(prompt, model="stackspot-ai", stream=True, **kwargs):
             model=model,
             messages=[{"role": "user", "content": prompt}],
             stream=stream,
-            **kwargs
+            **kwargs,
         )
         return response
     except Exception as e:
-        print(f"Error during completion: {str(e)}")
+        logger.error(f"Erro durante completion: {str(e)}")
         raise
+
 
 def chat_completion(messages, model="stackspot-ai", stream=True, **kwargs):
     """Send a chat completion request to the LLM."""
     try:
         response = litellm.chat_completion(
-            model=model,
-            messages=messages,
-            stream=stream,
-            **kwargs
+            model=model, messages=messages, stream=stream, **kwargs
         )
         return response
     except Exception as e:
-        print(f"Error during chat completion: {str(e)}")
-        raise
+        handle_chat_completion_error(e)
+        return None
+
+
+def handle_chat_completion_error(e):
+    """Handle chat completion error."""
+    logger.error("Error during chat completion: %s", str(e))
+    return None
+
 
 __all__ = [litellm]

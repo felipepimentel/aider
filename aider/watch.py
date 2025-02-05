@@ -1,15 +1,22 @@
+import logging
+import os
 import re
 import threading
+import time
 from pathlib import Path
 from typing import Optional
 
 from grep_ast import TreeContext
 from pathspec import PathSpec
 from pathspec.patterns import GitWildMatchPattern
+from watchdog.events import FileSystemEventHandler
+from watchdog.observers import Observer
 from watchfiles import watch
 
 from aider.dump import dump  # noqa
 from aider.watch_prompts import watch_ask_prompt, watch_code_prompt
+
+logger = logging.getLogger(__name__)
 
 
 def load_gitignores(gitignore_paths: list[Path]) -> Optional[PathSpec]:
@@ -60,13 +67,125 @@ def load_gitignores(gitignore_paths: list[Path]) -> Optional[PathSpec]:
     return PathSpec.from_lines(GitWildMatchPattern, patterns) if patterns else None
 
 
+class AiderWatcher(FileSystemEventHandler):
+    def __init__(self, coder, gitignores=None, analytics=None, root=None):
+        self.coder = coder
+        self.gitignores = gitignores or []
+        self.analytics = analytics
+        self.root = root or os.getcwd()
+        self.observer = None
+        self.last_modified = {}
+        self.comment_pattern = re.compile(r"#\s*ai:.*$", re.MULTILINE)
+
+    def start(self):
+        """Inicia o observador de arquivos."""
+        try:
+            self.observer = Observer()
+            self.observer.schedule(self, self.root, recursive=True)
+            self.observer.start()
+            logger.info("Observador de arquivos iniciado em: %s", self.root)
+        except Exception as e:
+            logger.error("Erro ao iniciar observador de arquivos: %s", str(e))
+
+    def stop(self):
+        """Para o observador de arquivos."""
+        if self.observer:
+            try:
+                self.observer.stop()
+                self.observer.join()
+                logger.info("Observador de arquivos parado")
+            except Exception as e:
+                logger.error("Erro ao parar observador de arquivos: %s", str(e))
+
+    def on_modified(self, event):
+        """Manipula eventos de modificação de arquivo."""
+        if event.is_directory:
+            return
+
+        try:
+            path = Path(event.src_path)
+            if not self._should_process_file(path):
+                return
+
+            # Evitar processamento duplicado
+            current_time = time.time()
+            if path in self.last_modified:
+                if current_time - self.last_modified[path] < 1:  # 1 segundo de debounce
+                    return
+            self.last_modified[path] = current_time
+
+            logger.debug("Arquivo modificado: %s", path)
+            self._process_file(path)
+
+        except Exception as e:
+            logger.error("Erro ao processar modificação de arquivo: %s", str(e))
+
+    def _should_process_file(self, path):
+        """Verifica se o arquivo deve ser processado."""
+        try:
+            # Ignorar arquivos ocultos
+            if path.name.startswith("."):
+                return False
+
+            # Verificar gitignores
+            for gitignore in self.gitignores:
+                if gitignore.match_file(path):
+                    logger.debug("Arquivo ignorado por gitignore: %s", path)
+                    return False
+
+            # Verificar se é um arquivo de texto
+            if not self._is_text_file(path):
+                logger.debug("Arquivo não é texto: %s", path)
+                return False
+
+            return True
+
+        except Exception as e:
+            logger.error("Erro ao verificar arquivo: %s", str(e))
+            return False
+
+    def _is_text_file(self, path):
+        """Verifica se o arquivo é um arquivo de texto."""
+        try:
+            with open(path, "rb") as f:
+                chunk = f.read(1024)
+                return not bool(b"\x00" in chunk)
+        except Exception:
+            return False
+
+    def _process_file(self, path):
+        """Processa o arquivo modificado."""
+        try:
+            with open(path, "r", encoding="utf-8") as f:
+                content = f.read()
+
+            # Procurar por comentários AI
+            matches = list(self.comment_pattern.finditer(content))
+            if not matches:
+                return
+
+            logger.info("Encontrados comentários AI em: %s", path)
+            for match in matches:
+                comment = match.group()
+                logger.debug("Processando comentário: %s", comment)
+                # Aqui você pode adicionar a lógica para processar o comentário
+                # Por exemplo, enviá-lo para o coder
+
+        except Exception as e:
+            logger.error("Erro ao processar arquivo %s: %s", path, str(e))
+
+
 class FileWatcher:
     """Watches source files for changes and AI comments"""
 
     # Compiled regex pattern for AI comments
-    ai_comment_pattern = re.compile(r"(?:#|//|--) *(ai\b.*|ai\b.*|.*\bai[?!]?) *$", re.IGNORECASE)
+    ai_comment_pattern = re.compile(
+        r"(?:#|//|--) *(ai\b.*|ai\b.*|.*\bai[?!]?) *$", re.IGNORECASE
+    )
 
-    def __init__(self, coder, gitignores=None, verbose=False, analytics=None, root=None):
+    def __init__(
+        self, coder, gitignores=None, verbose=False, analytics=None, root=None
+    ):
         self.coder = coder
         self.io = coder.io
         self.root = Path(root) if root else Path(coder.root)
@@ -116,7 +235,9 @@ class FileWatcher:
         def watch_files():
             try:
                 for changes in watch(
-                    str(self.root), watch_filter=self.filter_func, stop_event=self.stop_event
+                    str(self.root),
+                    watch_filter=self.filter_func,
+                    stop_event=self.stop_event,
                 ):
                     if not changes:
                         continue

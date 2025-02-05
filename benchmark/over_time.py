@@ -1,11 +1,15 @@
+import logging
 from dataclasses import dataclass
 from datetime import date
+from pathlib import Path
 from typing import Dict, List, Tuple
 
 import matplotlib.pyplot as plt
 import yaml
 from imgcat import imgcat
 from matplotlib import rc
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -133,7 +137,9 @@ class BenchmarkPlotter:
     def set_labels_and_style(self, ax: plt.Axes):
         ax.set_xlabel("Model release date", fontsize=18, color="#555")
         ax.set_ylabel(
-            "Aider code editing benchmark,\npercent completed correctly", fontsize=18, color="#555"
+            "Aider code editing benchmark,\npercent completed correctly",
+            fontsize=18,
+            color="#555",
         )
         ax.set_title("LLM code editing skill by model release date", fontsize=20)
         ax.set_ylim(30, 90)
@@ -153,13 +159,70 @@ class BenchmarkPlotter:
         self.save_and_display(fig)
 
 
+def analyze_model_performance_over_time(models):
+    """Analyze model performance over time."""
+    for model in sorted(models, key=lambda x: x.release_date):
+        logger.info("%s: %s", model.release_date, model.name)
+
+
+def plot_performance_trends(data, output_dir=None):
+    """Plot performance trends over time."""
+    if output_dir is None:
+        output_dir = Path("plots")
+    output_dir = Path(output_dir)
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    # Create plots
+    plot_pass_rate_trend(data, output_dir)
+    plot_duration_trend(data, output_dir)
+    plot_cost_trend(data, output_dir)
+
+
+def plot_pass_rate_trend(data, output_dir):
+    """Plot pass rate trend over time."""
+    plt.figure(figsize=(10, 6))
+    plt.plot(data["date"], data["pass_rate"], marker="o")
+    plt.title("Pass Rate Over Time")
+    plt.xlabel("Date")
+    plt.ylabel("Pass Rate (%)")
+    plt.xticks(rotation=45)
+    plt.tight_layout()
+    plt.savefig(output_dir / "pass_rate_trend.png")
+    plt.close()
+
+
+def plot_duration_trend(data, output_dir):
+    """Plot duration trend over time."""
+    plt.figure(figsize=(10, 6))
+    plt.plot(data["date"], data["avg_duration"], marker="o")
+    plt.title("Average Duration Over Time")
+    plt.xlabel("Date")
+    plt.ylabel("Duration (seconds)")
+    plt.xticks(rotation=45)
+    plt.tight_layout()
+    plt.savefig(output_dir / "duration_trend.png")
+    plt.close()
+
+
+def plot_cost_trend(data, output_dir):
+    """Plot cost trend over time."""
+    plt.figure(figsize=(10, 6))
+    plt.plot(data["date"], data["avg_cost"], marker="o")
+    plt.title("Average Cost Over Time")
+    plt.xlabel("Date")
+    plt.ylabel("Cost ($)")
+    plt.xticks(rotation=45)
+    plt.tight_layout()
+    plt.savefig(output_dir / "cost_trend.png")
+    plt.close()
+
+
 def main():
     plotter = BenchmarkPlotter()
     models = plotter.load_data("aider/website/_data/edit_leaderboard.yml")
 
     # Print release dates and model names
-    for model in sorted(models, key=lambda x: x.release_date):
-        print(f"{model.release_date}: {model.name}")
+    analyze_model_performance_over_time(models)
 
     plotter.plot("aider/website/_data/edit_leaderboard.yml")
 

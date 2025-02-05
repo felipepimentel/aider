@@ -1,26 +1,20 @@
-import difflib
+import logging
 import sys
+
+logger = logging.getLogger(__name__)
 
 from .dump import dump  # noqa: F401
 
 
 def main():
+    """Main function."""
     if len(sys.argv) != 3:
-        print("Usage: python diffs.py file1 file")
+        logger.error("Usage: python diffs.py file1 file2")
         sys.exit(1)
 
-    file_orig, file_updated = sys.argv[1], sys.argv[2]
-
-    with open(file_orig, "r", encoding="utf-8") as f:
-        lines_orig = f.readlines()
-
-    with open(file_updated, "r", encoding="utf-8") as f:
-        lines_updated = f.readlines()
-
-    for i in range(len(file_updated)):
-        res = diff_partial_update(lines_orig, lines_updated[:i])
-        print(res)
-        input()
+    file1, file2 = sys.argv[1:3]
+    res = diff_files(file1, file2)
+    logger.info(res)
 
 
 def create_progress_bar(percentage):
@@ -122,6 +116,48 @@ def find_last_non_deleted(lines_orig, lines_updated):
             pass
 
     return last_non_deleted_orig
+
+
+def diff_files(file1, file2):
+    """Compare two files and return diff."""
+    try:
+        with open(file1, "r") as f1, open(file2, "r") as f2:
+            content1 = f1.read()
+            content2 = f2.read()
+    except Exception as e:
+        logger.error("Error reading files: %s", e)
+        return None
+
+    return create_diff(content1, content2)
+
+
+def create_diff(content1, content2):
+    """Create diff between two content strings."""
+    lines1 = content1.splitlines()
+    lines2 = content2.splitlines()
+
+    diff = []
+    i = j = 0
+    while i < len(lines1) and j < len(lines2):
+        if lines1[i] == lines2[j]:
+            diff.append(f" {lines1[i]}")
+            i += 1
+            j += 1
+        else:
+            diff.append(f"-{lines1[i]}")
+            diff.append(f"+{lines2[j]}")
+            i += 1
+            j += 1
+
+    while i < len(lines1):
+        diff.append(f"-{lines1[i]}")
+        i += 1
+
+    while j < len(lines2):
+        diff.append(f"+{lines2[j]}")
+        j += 1
+
+    return "\n".join(diff)
 
 
 if __name__ == "__main__":

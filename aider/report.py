@@ -1,11 +1,17 @@
+import logging
 import os
 import platform
 import subprocess
 import sys
 import traceback
 
+from rich.console import Console
+
 from aider import __version__
 from aider.versioncheck import VERSION_CHECK_FNAME
+
+logger = logging.getLogger(__name__)
+console = Console()
 
 FENCE = "`" * 3
 
@@ -31,6 +37,46 @@ def get_git_info():
         return f"Git version: {git_version}"
     except Exception:
         return "Git information unavailable"
+
+
+def get_issue_input():
+    """Get issue title and description from user."""
+    console.print("Enter the issue title (optional, press Enter to skip):")
+    title = sys.stdin.readline().strip()
+
+    console.print("Enter the issue text (Ctrl+D to finish):")
+    text = sys.stdin.read().strip()
+
+    return title, text
+
+
+def create_issue_report(title, text, files=None):
+    """Create an issue report."""
+    report = []
+
+    if title:
+        report.append(f"# {title}\n")
+
+    if text:
+        report.append(text)
+        report.append("\n")
+
+    if files:
+        report.append("## Affected Files\n")
+        for file in files:
+            report.append(f"- {file}\n")
+
+    return "".join(report)
+
+
+def save_issue_report(report, output_file):
+    """Save issue report to file."""
+    try:
+        with open(output_file, "w") as f:
+            f.write(report)
+        logger.info("Issue report saved to: %s", output_file)
+    except Exception as e:
+        logger.error("Failed to save issue report: %s", e)
 
 
 def report_github_issue(issue_text, title=None, confirm=True):
@@ -146,22 +192,7 @@ def main():
 
     dummy_function1()
 
-    title = None
-    if len(sys.argv) > 2:
-        # Use the first command-line argument as the title and the second as the issue text
-        title = sys.argv[1]
-        issue_text = sys.argv[2]
-    elif len(sys.argv) > 1:
-        # Use the first command-line argument as the issue text
-        issue_text = sys.argv[1]
-    else:
-        # Read from stdin if no argument is provided
-        print("Enter the issue title (optional, press Enter to skip):")
-        title = input().strip()
-        if not title:
-            title = None
-        print("Enter the issue text (Ctrl+D to finish):")
-        issue_text = sys.stdin.read().strip()
+    title, issue_text = get_issue_input()
 
     report_github_issue(issue_text, title)
 
