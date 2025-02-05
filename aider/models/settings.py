@@ -27,6 +27,7 @@ class ModelSettings:
     editor_edit_format: Optional[str] = None
     remove_reasoning: Optional[str] = None
     provider: Optional[object] = None
+    weak_model_name: Optional[str] = None
     weak_model: Optional["ModelSettings"] = None
     editor_model: Optional["ModelSettings"] = None
 

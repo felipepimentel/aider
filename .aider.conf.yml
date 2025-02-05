@@ -1,5 +1,4 @@
-model: stackspot-ai-code
-api-key: stackspot=test-key-123
+model: stackspot-ai
 model-settings-file: .aider.model.settings.yml
 model-metadata-file: .aider.model.metadata.json
 git: true

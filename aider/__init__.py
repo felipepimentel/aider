@@ -18,3 +18,31 @@ else:
         __version__ = safe_version + "+parse"
 
 __all__ = [__version__]
+
+
+def check_dependencies():
+    """Check if all required dependencies are installed."""
+    try:
+        import tiktoken
+    except ImportError:
+        print(
+            "Warning: tiktoken not found. Installing tiktoken for better token counting..."
+        )
+        try:
+            import subprocess
+
+            subprocess.check_call(["pip", "install", "tiktoken"])
+        except Exception as e:
+            print(f"Failed to install tiktoken: {e}")
+            print("Will fall back to rough token estimation.")
+
+    try:
+        import httpx
+    except ImportError:
+        raise ImportError(
+            "httpx is required for StackSpot integration. Please install it with: pip install httpx"
+        )
+
+
+# Run dependency check on import
+check_dependencies()

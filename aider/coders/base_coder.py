@@ -17,7 +17,6 @@ from pathlib import Path
 from typing import List
 
 from aider import __version__, models, urls, utils
-from aider.analytics import Analytics
 from aider.commands import Commands
 from aider.exceptions import LiteLLMExceptions
 from aider.history import ChatSummary
@@ -98,10 +97,11 @@ class Coder:
     num_cache_warming_pings = 0
     suggest_shell_commands = True
     detect_urls = True
-    ignore_mentions = None
-    chat_language = None
-    file_watcher = None
+    io = None
     root = None
+    analytics = None
+    map_mul_no_files = 2
+    map_refresh = "auto"
 
     @classmethod
     def create(
@@ -252,77 +252,46 @@ class Coder:
 
         return lines
 
-    def __init__(
-        self,
-        main_model,
-        io,
-        repo=None,
-        fnames=None,
-        read_only_fnames=None,
-        show_diffs=True,
-        auto_commits=True,
-        dirty_commits=True,
-        dry_run=False,
-        map_tokens=1024,
-        verbose=False,
-        stream=True,
-        use_git=True,
-        cur_messages=None,
-        done_messages=None,
-        restore_chat_history=True,
-        auto_lint=True,
-        auto_test=False,
-        lint_cmds=None,
-        test_cmd=None,
-        aider_commit_hashes=None,
-        map_mul_no_files=1.0,
-        commands=None,
-        summarizer=None,
-        total_cost=0.0,
-        analytics=None,
-        map_refresh="auto",
-        cache_prompts=False,
-        num_cache_warming_pings=0,
-        suggest_shell_commands=True,
-        chat_language=None,
-        detect_urls=True,
-        ignore_mentions=None,
-        file_watcher=None,
-        auto_copy_context=False,
-    ):
-        # Fill in a dummy Analytics if needed, but it is never .enable()'d
-        self.analytics = analytics if analytics is not None else Analytics()
+    def __init__(self, main_model=None, io=None, **kwargs):
+        self.main_model = main_model
+        self.io = io
+        for k, v in kwargs.items():
+            setattr(self, k, v)
 
+        from aider.analytics import Analytics
+
+        if self.analytics is None:
+            self.analytics = Analytics()
         self.event = self.analytics.event
-        self.chat_language = chat_language
+        self.chat_language = self.chat_language
         self.commit_before_message = []
         self.aider_commit_hashes = set()
         self.rejected_urls = set()
         self.abs_root_path_cache = {}
 
-        self.auto_copy_context = auto_copy_context
+        self.auto_copy_context = self.auto_copy_context
 
-        self.ignore_mentions = ignore_mentions
+        self.ignore_mentions = self.ignore_mentions
         if not self.ignore_mentions:
             self.ignore_mentions = set()
 
-        self.file_watcher = file_watcher
+        self.file_watcher = self.file_watcher
         if self.file_watcher:
             self.file_watcher.coder = self
 
-        self.suggest_shell_commands = suggest_shell_commands
-        self.detect_urls = detect_urls
+        self.suggest_shell_commands = self.suggest_shell_commands
+        self.detect_urls = self.detect_urls
 
-        self.num_cache_warming_pings = num_cache_warming_pings
+        self.num_cache_warming_pings = self.num_cache_warming_pings
 
-        if not fnames:
-            fnames = []
+        if not self.abs_fnames:
+            self.abs_fnames = []
 
-        if io is None:
-            io = InputOutput()
+        if self.io is None:
+            self.io = InputOutput()
 
-        if aider_commit_hashes:
-            self.aider_commit_hashes = aider_commit_hashes
+        if self.aider_commit_hashes:
+            self.aider_commit_hashes = self.aider_commit_hashes
         else:
             self.aider_commit_hashes = set()
 
@@ -330,55 +299,51 @@ class Coder:
         self.chat_completion_response_hashes = []
         self.need_commit_before_edits = set()
 
-        self.total_cost = total_cost
+        self.total_cost = self.total_cost
 
-        self.verbose = verbose
+        self.verbose = self.verbose
         self.abs_fnames = set()
         self.abs_read_only_fnames = set()
 
-        if cur_messages:
-            self.cur_messages = cur_messages
+        if self.cur_messages:
+            self.cur_messages = self.cur_messages
         else:
             self.cur_messages = []
 
-        if done_messages:
-            self.done_messages = done_messages
+        if self.done_messages:
+            self.done_messages = self.done_messages
         else:
             self.done_messages = []
 
-        self.io = io
-
         self.shell_commands = []
 
-        if not auto_commits:
-            dirty_commits = False
+        if not self.auto_commits:
+            self.dirty_commits = False
 
-        self.auto_commits = auto_commits
-        self.dirty_commits = dirty_commits
+        self.auto_commits = self.auto_commits
+        self.dirty_commits = self.dirty_commits
 
-        self.dry_run = dry_run
+        self.dry_run = self.dry_run
         self.pretty = self.io.pretty
 
-        self.main_model = main_model
+        self.stream = self.stream and self.main_model.streaming
 
-        self.stream = stream and main_model.streaming
-
-        if cache_prompts and self.main_model.cache_control:
+        if self.cache_prompts and self.main_model.cache_control:
             self.add_cache_headers = True
 
-        self.show_diffs = show_diffs
+        self.show_diffs = self.show_diffs
 
-        self.commands = commands or Commands(self.io, self)
+        self.commands = self.commands or Commands(self.io, self)
         self.commands.coder = self
 
-        self.repo = repo
-        if use_git and self.repo is None:
+        self.repo = self.repo
+        if self.use_git and self.repo is None:
             try:
                 self.repo = GitRepo(
                     self.io,
-                    fnames,
+                    self.abs_fnames,
                     None,
-                    models=main_model.commit_message_models(),
+                    models=self.main_model.commit_message_models(),
                 )
             except FileNotFoundError:
                 pass
@@ -388,7 +353,7 @@ class Coder:
         else:
             self.root = utils.find_common_root(self.abs_fnames)
 
-        for fname in fnames:
+        for fname in self.abs_fnames:
             fname = Path(fname)
             if self.repo and self.repo.git_ignored_file(fname):
                 self.io.tool_warning(f"Skipping {fname} that matches gitignore spec.")
@@ -416,9 +381,9 @@ class Coder:
         if not self.repo:
             self.root = utils.find_common_root(self.abs_fnames)
 
-        if read_only_fnames:
+        if self.abs_read_only_fnames:
             self.abs_read_only_fnames = set()
-            for fname in read_only_fnames:
+            for fname in self.abs_read_only_fnames:
                 abs_fname = self.abs_root_path(fname)
                 if os.path.exists(abs_fname):
                     self.abs_read_only_fnames.add(abs_fname)
@@ -427,11 +392,11 @@ class Coder:
                         f"Error: Read-only file {fname} does not exist. Skipping."
                     )
 
-        if map_tokens is None:
-            use_repo_map = main_model.use_repo_map
-            map_tokens = 1024
+        if self.map_tokens is None:
+            use_repo_map = self.main_model.use_repo_map
+            self.map_tokens = 1024
         else:
-            use_repo_map = map_tokens > 0
+            use_repo_map = self.map_tokens > 0
 
         max_inp_tokens = self.main_model.info.get("max_input_tokens") or 0
 
@@ -441,18 +406,18 @@ class Coder:
 
         if use_repo_map and self.repo and has_map_prompt:
             self.repo_map = RepoMap(
-                map_tokens,
+                self.map_tokens,
                 self.root,
                 self.main_model,
-                io,
+                self.io,
                 self.gpt_prompts.repo_content_prefix,
                 self.verbose,
                 max_inp_tokens,
-                map_mul_no_files=map_mul_no_files,
-                refresh=map_refresh,
+                self.map_mul_no_files,
+                self.map_refresh,
             )
 
-        self.summarizer = summarizer or ChatSummary(
+        self.summarizer = self.summarizer or ChatSummary(
             [self.main_model],
             self.main_model.max_chat_history_tokens,
         )
@@ -461,19 +426,19 @@ class Coder:
         self.summarized_done_messages = []
         self.summarizing_messages = None
 
-        if not self.done_messages and restore_chat_history:
+        if not self.done_messages and self.restore_chat_history:
             history_md = self.io.read_text(self.io.chat_history_file)
             if history_md:
                 self.done_messages = utils.split_chat_history_markdown(history_md)
                 self.summarize_start()
 
         # Linting and testing
-        self.linter = Linter(root=self.root, encoding=io.encoding)
-        self.auto_lint = auto_lint
-        self.setup_lint_cmds(lint_cmds)
-        self.lint_cmds = lint_cmds
-        self.auto_test = auto_test
-        self.test_cmd = test_cmd
+        self.linter = Linter(root=self.root, encoding=self.io.encoding)
+        self.auto_lint = self.auto_lint
+        self.setup_lint_cmds(self.lint_cmds)
+        self.lint_cmds = self.lint_cmds
+        self.auto_test = self.auto_test
+        self.test_cmd = self.test_cmd
 
         # validate the functions jsonschema
         if self.functions:
@@ -1081,21 +1046,9 @@ class Coder:
             for msg in self.gpt_prompts.example_messages:
                 example_messages.append(
                     dict(
-                        role=msg["role"],
-                        content=self.fmt_system_prompt(msg["content"]),
+                        role=msg["role"], content=self.fmt_system_prompt(msg["content"])
                     )
                 )
-            if self.gpt_prompts.example_messages:
-                example_messages += [
-                    dict(
-                        role="user",
-                        content=(
-                            "I switched to a new code base. Please don't consider the above files"
-                            " or try to edit them any longer."
-                        ),
-                    ),
-                    dict(role="assistant", content="Ok."),
-                ]
 
         if self.gpt_prompts.system_reminder:
             main_sys += "\n" + self.fmt_system_prompt(self.gpt_prompts.system_reminder)
@@ -1655,3 +1608,12 @@ See https://aider.chat/docs/llms/ollama.html#setting-the-context-window-size
         if not cur_msg_text:
             return set()
         return self.get_ident_mentions(cur_msg_text)
+
+    def show_undo_hint(self):
+        """Show a hint about using /undo if there are changes to undo"""
+        if not self.commit_before_message:
+            return
+        if self.commit_before_message != self.repo.get_head():
+            self.io.tool_output(
+                "You can use /undo to undo and discard each aider commit."
+            )

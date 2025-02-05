@@ -15,13 +15,15 @@ class ChatSummary:
 
     def too_big(self, messages):
         sized = self.tokenize(messages)
-        total = sum(tokens for tokens, _msg in sized)
+        total = sum(tokens for tokens, _msg in sized if tokens is not None)
         return total > self.max_tokens
 
     def tokenize(self, messages):
         sized = []
         for msg in messages:
             tokens = self.token_count(msg)
+            if tokens is None:
+                tokens = 0  # Default to 0 if token count fails
             sized.append((tokens, msg))
         return sized
 
@@ -36,7 +38,7 @@ class ChatSummary:
             raise ValueError("No models available for summarization")
 
         sized = self.tokenize(messages)
-        total = sum(tokens for tokens, _msg in sized)
+        total = sum(tokens for tokens, _msg in sized if tokens is not None)
         if total <= self.max_tokens and depth == 0:
             return messages
 
@@ -51,6 +53,8 @@ class ChatSummary:
         # Iterate over the messages in reverse order
         for i in range(len(sized) - 1, -1, -1):
             tokens, _msg = sized[i]
+            if tokens is None:
+                tokens = 0  # Default to 0 if token count fails
             if tail_tokens + tokens < half_max_tokens:
                 tail_tokens += tokens
                 split_index = i
@@ -74,11 +78,14 @@ class ChatSummary:
         total = 0
 
         # These sometimes come set with value = None
-        model_max_input_tokens = self.models[0].info.get("max_input_tokens") or 4096
+        model_max_input_tokens = self.models[0].info.get("max_input_tokens", 4096)
         model_max_input_tokens -= 512
 
         for i in range(split_index):
-            total += sized[i][0]
+            tokens = sized[i][0]
+            if tokens is None:
+                tokens = 0  # Default to 0 if token count fails
+            total += tokens
             if total > model_max_input_tokens:
                 break
             keep.append(head[i])
@@ -87,8 +94,12 @@ class ChatSummary:
 
         summary = self.summarize_all(keep)
 
-        tail_tokens = sum(tokens for tokens, msg in sized[split_index:])
-        summary_tokens = self.token_count(summary)
+        tail_tokens = sum(
+            tokens for tokens, msg in sized[split_index:] if tokens is not None
+        )
+        summary_tokens = (
+            self.token_count(summary) or 0
+        )  # Default to 0 if token count fails
 
         result = summary + tail
         if summary_tokens + tail_tokens < self.max_tokens:
@@ -99,13 +110,24 @@ class ChatSummary:
     def summarize_all(self, messages):
         content = ""
         for msg in messages:
-            role = msg["role"].upper()
+            role = msg.get("role", "").upper()
             if role not in ("USER", "ASSISTANT"):
                 continue
             content += f"# {role}\n"
-            content += msg["content"]
-            if not content.endswith("\n"):
-                content += "\n"
+            msg_content = msg.get("content", "")
+            if msg_content:
+                content += msg_content
+                if not content.endswith("\n"):
+                    content += "\n"
+
+        if not content:
+            return [
+                dict(
+                    role="user",
+                    content=prompts.summary_prefix
+                    + "Previous conversation summarized.",
+                )
+            ]
 
         summarize_messages = [
             dict(role="system", content=prompts.summarize),
@@ -115,13 +137,18 @@ class ChatSummary:
         for model in self.models:
             try:
                 summary = simple_send_with_retries(model, summarize_messages)
-                if summary is not None:
-                    summary = prompts.summary_prefix + summary
-                    return [dict(role="user", content=summary)]
+                if summary:
+                    return [dict(role="user", content=prompts.summary_prefix + summary)]
             except Exception as e:
                 print(f"Summarization failed for model {model.name}: {str(e)}")
 
-        raise ValueError("summarizer unexpectedly failed for all models")
+        # If all models fail, return a simple summary
+        return [
+            dict(
+                role="user",
+                content=prompts.summary_prefix + "Previous conversation summarized.",
+            )
+        ]
 
 
 def main():

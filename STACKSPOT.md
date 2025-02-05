@@ -1,154 +1,163 @@
 # StackSpot AI Integration
 
-This document describes the integration between StackSpot AI services and LiteLLM in the Aider project.
+This document describes the integration between StackSpot AI services and Aider.
 
 ## Overview
 
-The StackSpot AI integration enables access to StackSpot's AI models through a standardized interface using LiteLLM. This allows you to use StackSpot's models in the same way you would use other LLM providers like OpenAI.
+The StackSpot AI integration enables access to StackSpot's AI models through a standardized interface. This allows you to use StackSpot's models for code generation, completion, and analysis.
+
+## Prerequisites
+
+1. A StackSpot account with API access
+2. Client credentials:
+   - Client ID
+   - Client Key
+   - Client Realm (optional, defaults to "stackspot")
+
+## Environment Variables
+
+| Variable | Required | Description | Example |
+|----------|----------|-------------|---------|
+| `STACKSPOTAI_CLIENT_ID` | Yes | Your StackSpot Client ID | `client-id-xxx` |
+| `STACKSPOTAI_CLIENT_KEY` | Yes | Your StackSpot Client Key | `client-key-xxx` |
+| `STACKSPOTAI_REALM` | No | Your StackSpot Realm (default: "stackspot") | `my-realm` |
 
 ## Available Models
 
 StackSpot provides three specialized AI models:
 
-| Model Name | Alias | Description | Best For |
-|------------|-------|-------------|-----------|
-| `stackspot-ai-chat` | `stackspot` | General chat completion model | General conversations and text generation |
-| `stackspot-ai-code` | `stackspot-code` | Code-specific completion model | Code generation, completion, and analysis |
-| `stackspot-ai-assistant` | `stackspot-assistant` | Assistant-style completion model | Task-specific assistance and workflows |
+| Model Name | Description | Best For |
+|------------|-------------|-----------|
+| `stackspot-ai` | Default model | General code generation and analysis |
+| `stackspot-ai-chat` | Chat-optimized model | Interactive conversations and explanations |
+| `stackspot-ai-code` | Code-specific model | Code generation, completion, and refactoring |
 
-## Configuration
+## Model Capabilities
 
-### Prerequisites
+All models support:
+- Maximum input tokens: 16,384
+- Maximum output tokens: 8,192
+- Temperature range: 0.0 to 1.0 (default: 0.7)
+- Streaming responses
+- Conversation context
 
-1. A StackSpot account with API access
-2. A valid StackSpot API key
+## Authentication
 
-### Environment Variables
+The integration uses OAuth2 client credentials flow:
+1. Obtain access token using client credentials
+2. Token is automatically refreshed when expired
+3. All API requests use Bearer token authentication
 
-| Variable | Required | Description | Example |
-|----------|----------|-------------|---------|
-| `STACKSPOT_API_KEY` | Yes | Your StackSpot API key | `your-api-key` or `sk-your-api-key` |
-
-The API key can be provided with or without the 'sk-' prefix. If the prefix is missing, it will be automatically added.
-
-### Basic Usage
+## Usage Example
 
 ```python
-from aider.providers.stackspot_config import configure_stackspot
-import litellm
+from aider.providers.stackspot import StackSpotProvider
 
-# Configure StackSpot provider
-configure_stackspot()
+# Initialize provider (will use environment variables)
+provider = StackSpotProvider()
 
-# Use with LiteLLM
-response = litellm.completion(
-    model="stackspot-code",  # or use aliases: "stackspot", "stackspot-assistant"
+# Use the provider
+response = await provider.completion(
     messages=[
         {
             "role": "user",
-            "content": "Your prompt here"
+            "content": "Write a Python function to calculate factorial"
         }
     ],
-    temperature=0.7,
-    max_tokens=50
+    model="stackspot-ai-code",
+    temperature=0.7
 )
-```
 
-## API Parameters
-
-### Common Parameters
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `model` | str | Required | The model to use (see Available Models) |
-| `messages` | List[Dict] | Required | List of messages with 'role' and 'content' |
-| `temperature` | float | 0.7 | Controls response randomness (0.0 to 1.0) |
-| `max_tokens` | int | 8192 | Maximum tokens to generate |
-| `stream` | bool | True | Whether to stream the response |
-
-### Response Format
-
-The response follows the LiteLLM ModelResponse format:
-
-```python
-{
-    "id": str,           # Unique response ID
-    "choices": List,     # List of completion choices
-    "model": str,        # Model used for completion
-    "usage": Dict        # Token usage statistics
-}
+# Get the generated code
+code = response["choices"][0]["message"]["content"]
 ```
 
 ## Error Handling
 
-The integration includes comprehensive error handling and logging:
+The integration handles various error scenarios:
 
-- API key validation
-- Model configuration validation
-- Request/response logging
-- Detailed error messages
+| Error Code | Description | Action |
+|------------|-------------|---------|
+| 400 | Bad Request | Check input parameters |
+| 401 | Unauthorized | Verify credentials |
+| 403 | Forbidden | Check access permissions |
+| 404 | Not Found | Verify endpoint URLs |
+| 429 | Too Many Requests | Implement rate limiting |
+| 500+ | Server Error | Retry with backoff |
 
-Common errors:
+## Configuration
 
-- `ValueError`: Missing or invalid API key
-- `ValueError`: Invalid model name
-- HTTP errors (401, 403, etc.): Authentication or authorization issues
+The integration can be configured through the `.aider.litellm.yml` file:
 
-## Logging
-
-The integration uses Python's logging system with the following loggers:
-
-- `stackspot_config`: Configuration and setup logging
-- Debug logs include:
-  - API key validation
-  - Request data
-  - Response details
-  - Error information
+```yaml
+providers:
+  stackspot:
+    api_base: "https://genai-code-buddy-api.stackspot.com"
+    api_key: "${STACKSPOTAI_CLIENT_KEY}"
+    client_id: "${STACKSPOTAI_CLIENT_ID}"
+    client_realm: "${STACKSPOTAI_REALM}"
+    models:
+      stackspot-ai:
+        provider: stackspot
+        model: stackspot-ai
+        max_tokens: 8192
+        model_type: code
+      stackspot-ai-chat:
+        provider: stackspot
+        model: stackspot-ai-chat
+        max_tokens: 8192
+        model_type: chat
+      stackspot-ai-code:
+        provider: stackspot
+        model: stackspot-ai-code
+        max_tokens: 8192
+        model_type: code
+```
 
 ## Best Practices
 
-1. **API Key Security**
-   - Never hardcode the API key
-   - Use environment variables
-   - Keep your API key secure
+1. **Environment Variables**
+   - Store credentials in environment variables
+   - Never hardcode credentials in code
+   - Use a secure method to manage secrets
 
-2. **Model Selection**
-   - Use `stackspot-ai-chat` for general conversations
-   - Use `stackspot-ai-code` for code-related tasks
-   - Use `stackspot-ai-assistant` for specific workflow assistance
+2. **Error Handling**
+   - Implement proper error handling
+   - Use exponential backoff for retries
+   - Log errors appropriately
 
-3. **Error Handling**
-   - Always handle potential exceptions
-   - Check response status
-   - Validate API key before making requests
+3. **Performance**
+   - Reuse provider instances
+   - Implement proper timeouts
+   - Monitor token usage
 
-4. **Performance**
-   - Use streaming for long responses
-   - Set appropriate max_tokens
-   - Handle rate limits appropriately
+4. **Security**
+   - Keep credentials secure
+   - Regularly rotate credentials
+   - Monitor access patterns
 
 ## Troubleshooting
 
 Common issues and solutions:
 
-1. **403 Forbidden**
-   - Check API key format
-   - Verify API key is valid
-   - Ensure proper authorization
+1. **Authentication Failures**
+   - Verify credentials are correct
+   - Check environment variables are set
+   - Ensure proper access rights
 
-2. **Invalid Model**
-   - Verify model name/alias
-   - Check available models list
-   - Use correct model for task
-
-3. **Request Failures**
+2. **Timeout Errors**
    - Check network connectivity
-   - Verify request format
-   - Review error messages in logs
+   - Increase timeout settings
+   - Implement retry logic
+
+3. **Rate Limiting**
+   - Implement backoff strategy
+   - Monitor API usage
+   - Contact support for limit increases
 
 ## Support
 
 For issues or questions:
-1. Check the logs for detailed error messages
-2. Review the troubleshooting section
-3. Contact StackSpot support with relevant logs 
+1. Check the [documentation](https://docs.stackspot.com)
+2. Open an issue on GitHub
+3. Contact StackSpot support 

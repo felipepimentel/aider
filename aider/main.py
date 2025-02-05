@@ -20,7 +20,7 @@ from aider.args import get_parser
 from aider.coders import Coder
 from aider.io import InputOutput
 from aider.llm import litellm  # noqa: F401; properly init litellm on launch
-from aider.models import ModelSettings
+from aider.models import Model
 from aider.repo import ANY_GIT_ERROR, GitRepo
 from aider.report import report_uncaught_exceptions
 
@@ -448,6 +448,9 @@ def main(argv=None, input=None, output=None, force_git_root=None, return_coder=F
         pretty=True,
         input=input,
         output=output,
+        chat_history_file=args.chat_history_file,
+        input_history_file=args.input_history_file,
+        llm_history_file=args.llm_history_file,
     )
 
     # Initialize provider
@@ -462,10 +465,19 @@ def main(argv=None, input=None, output=None, force_git_root=None, return_coder=F
             return 1
 
     # Initialize model settings
-    model_settings = ModelSettings(
-        name=args.model,
+    model_settings = Model(
+        args.model,
         api_key=args.api_key,
-        model_type="chat" if "chat" in args.model else "code",
+        use_temperature=True,
+        use_repo_map=True,
+        extra_params={
+            "max_tokens": 8192,
+            "model_type": "code",
+            "streaming": True,
+            "temperature": 0.7,
+            "api_base": "https://genai-code-buddy-api.stackspot.com",
+            "api_path": "/v1/code/completions",
+        },
     )
 
     # Initialize coder

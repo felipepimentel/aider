@@ -1,47 +1,13 @@
-- name: stackspot-ai-chat
+- name: stackspot-ai
   edit_format: diff
-  weak_model_name: null
   use_repo_map: true
   send_undo_reply: true
-  lazy: false
-  reminder: user
   examples_as_sys_msg: true
-  streaming: true
-  temperature: 0.7
-  extra_params:
-    max_tokens: 8192
-    model_type: chat
-    api_base: https://genai-code-buddy-api.stackspot.com
-    api_path: /v1/chat/completions
-
-- name: stackspot-ai-code
-  edit_format: diff
-  weak_model_name: null
-  use_repo_map: true
-  send_undo_reply: true
-  lazy: false
   reminder: user
-  examples_as_sys_msg: true
-  streaming: true
-  temperature: 0.7
   extra_params:
     max_tokens: 8192
     model_type: code
+    streaming: true
+    temperature: 0.7
     api_base: https://genai-code-buddy-api.stackspot.com
     api_path: /v1/code/completions
-
-- name: stackspot-ai-assistant
-  edit_format: diff
-  weak_model_name: null
-  use_repo_map: true
-  send_undo_reply: true
-  lazy: false
-  reminder: user
-  examples_as_sys_msg: true
-  streaming: true
-  temperature: 0.7
-  extra_params:
-    max_tokens: 8192
-    model_type: assistant
-    api_base: https://genai-code-buddy-api.stackspot.com
-    api_path: /v1/assistant/completions 

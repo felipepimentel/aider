@@ -17,6 +17,86 @@ class EditBlockCoder(Coder):
 
     edit_format = "diff"
     gpt_prompts = EditBlockPrompts()
+    show_undo_hint = True
+    chat_language = "python"
+    auto_copy_context = True
+    temperature = 0
+    auto_lint = True
+    auto_test = False
+    test_cmd = None
+    suggest_shell_commands = True
+    detect_urls = True
+    yield_stream = False
+    ignore_mentions = False
+    file_watcher = None
+    analytics = None
+    total_cost = 0.0
+    verbose = False
+    auto_commits = True
+    dirty_commits = True
+    dry_run = False
+    cache_prompts = True
+    show_diffs = True
+    use_git = True
+    commands = None
+    repo = None
+    root = None
+    stream = False
+    abs_fnames = None
+    abs_read_only_fnames = None
+    repo_map = None
+    functions = None
+    num_exhausted_context_windows = 0
+    num_malformed_responses = 0
+    last_keyboard_interrupt = None
+    num_reflections = 0
+    max_reflections = 3
+    last_aider_commit_hash = None
+    aider_edited_files = None
+    last_asked_for_commit_time = 0
+    io = None
+    cur_messages = []
+    done_messages = []
+    map_tokens = None
+    summarizer = None
+    restore_chat_history = True
+    lint_cmds = None
+    chat_history = None
+    repo_map_tokens = None
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        from aider.analytics import Analytics
+        from aider.history import ChatSummary
+        from aider.watch import FileWatcher
+
+        self.analytics = Analytics()
+        self.event = self.analytics.event
+        self.lint_outcome = None
+        self.test_outcome = None
+        self.multi_response_content = ""
+        self.partial_response_content = ""
+        self.commit_before_message = []
+        self.message_cost = 0.0
+        self.message_tokens_sent = 0
+        self.message_tokens_received = 0
+        self.add_cache_headers = False
+        self.cache_warming_thread = None
+        self.num_cache_warming_pings = 0
+        self.file_watcher = FileWatcher(self)
+        self.rejected_urls = set()
+        self.abs_root_path_cache = {}
+        self.aider_commit_hashes = set()
+        self.chat_completion_call_hashes = []
+        self.chat_completion_response_hashes = []
+        self.need_commit_before_edits = set()
+        self.shell_commands = []
+
+        if self.summarizer is None:
+            self.summarizer = ChatSummary(
+                [self.main_model],
+                self.main_model.max_chat_history_tokens,
+            )
 
     def get_edits(self):
         content = self.partial_response_content
@@ -50,7 +130,9 @@ class EditBlockCoder(Coder):
 
             if Path(full_path).exists():
                 content = self.io.read_text(full_path)
-                new_content = do_replace(full_path, content, original, updated, self.fence)
+                new_content = do_replace(
+                    full_path, content, original, updated, self.fence
+                )
 
             # If the edit failed, and
             # this is not a "create a new file" with an empty original...
@@ -59,7 +141,9 @@ class EditBlockCoder(Coder):
                 # try patching any of the other files in the chat
                 for full_path in self.abs_fnames:
                     content = self.io.read_text(full_path)
-                    new_content = do_replace(full_path, content, original, updated, self.fence)
+                    new_content = do_replace(
+                        full_path, content, original, updated, self.fence
+                    )
                     if new_content:
                         path = self.get_rel_fname(full_path)
                         break
@@ -138,7 +222,9 @@ def perfect_or_whitespace(whole_lines, part_lines, replace_lines):
         return res
 
     # Try being flexible about leading whitespace
-    res = replace_part_with_missing_leading_whitespace(whole_lines, part_lines, replace_lines)
+    res = replace_part_with_missing_leading_whitespace(
+        whole_lines, part_lines, replace_lines
+    )
     if res:
         return res
 
@@ -168,7 +254,9 @@ def replace_most_similar_chunk(whole, part, replace):
     # drop leading empty line, GPT sometimes adds them spuriously (issue #25)
     if len(part_lines) > 2 and not part_lines[0].strip():
         skip_blank_line_part_lines = part_lines[1:]
-        res = perfect_or_whitespace(whole_lines, skip_blank_line_part_lines, replace_lines)
+        res = perfect_or_whitespace(
+            whole_lines, skip_blank_line_part_lines, replace_lines
+        )
         if res:
             return res
 
@@ -211,7 +299,9 @@ def try_dotdotdots(whole, part, replace):
         return
 
     # Compare odd strings in part_pieces and replace_pieces
-    all_dots_match = all(part_pieces[i] == replace_pieces[i] for i in range(1, len(part_pieces), 2))
+    all_dots_match = all(
+        part_pieces[i] == replace_pieces[i] for i in range(1, len(part_pieces), 2)
+    )
 
     if not all_dots_match:
         raise ValueError("Unmatched ... in SEARCH/REPLACE block")
@@ -240,7 +330,9 @@ def try_dotdotdots(whole, part, replace):
     return whole
 
 
-def replace_part_with_missing_leading_whitespace(whole_lines, part_lines, replace_lines):
+def replace_part_with_missing_leading_whitespace(
+    whole_lines, part_lines, replace_lines
+):
     # GPT often messes up leading whitespace.
     # It usually does it uniformly across the ORIG and UPD blocks.
     # Either omitting all leading whitespace, or including only some of it.
@@ -266,8 +358,12 @@ def replace_part_with_missing_leading_whitespace(whole_lines, part_lines, replac
         if add_leading is None:
             continue
 
-        replace_lines = [add_leading + rline if rline.strip() else rline for rline in replace_lines]
-        whole_lines = whole_lines[:i] + replace_lines + whole_lines[i + num_part_lines :]
+        replace_lines = [
+            add_leading + rline if rline.strip() else rline for rline in replace_lines
+        ]
+        whole_lines = (
+            whole_lines[:i] + replace_lines + whole_lines[i + num_part_lines :]
+        )
         return "".join(whole_lines)
 
     return None
@@ -451,9 +547,14 @@ def find_original_update_blocks(content, fence=DEFAULT_FENCE, valid_fnames=None)
             "```csh",
             "```tcsh",
         ]
-        next_is_editblock = i + 1 < len(lines) and head_pattern.match(lines[i + 1].strip())
+        next_is_editblock = i + 1 < len(lines) and head_pattern.match(
+            lines[i + 1].strip()
+        )
 
-        if any(line.strip().startswith(start) for start in shell_starts) and not next_is_editblock:
+        if (
+            any(line.strip().startswith(start) for start in shell_starts)
+            and not next_is_editblock
+        ):
             shell_content = []
             i += 1
             while i < len(lines) and not lines[i].strip().startswith("```"):
@@ -472,7 +573,9 @@ def find_original_update_blocks(content, fence=DEFAULT_FENCE, valid_fnames=None)
                 if i + 1 < len(lines) and divider_pattern.match(lines[i + 1].strip()):
                     filename = find_filename(lines[max(0, i - 3) : i], fence, None)
                 else:
-                    filename = find_filename(lines[max(0, i - 3) : i], fence, valid_fnames)
+                    filename = find_filename(
+                        lines[max(0, i - 3) : i], fence, valid_fnames
+                    )
 
                 if not filename:
                     if current_filename:

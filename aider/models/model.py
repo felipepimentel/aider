@@ -12,8 +12,26 @@ MODEL_SETTINGS = []
 with importlib.resources.open_text("aider.resources", "model-settings.yml") as f:
     model_settings_list = yaml.safe_load(f)
     for model_settings_dict in model_settings_list:
-        if "stackspot" in model_settings_dict.get("name", ""):
-            MODEL_SETTINGS.append(ModelSettings(**model_settings_dict))
+        MODEL_SETTINGS.append(ModelSettings(**model_settings_dict))
+
+# Add stackspot-ai model settings
+stackspot_settings = {
+    "name": "stackspot-ai",
+    "edit_format": "diff",
+    "use_repo_map": True,
+    "send_undo_reply": True,
+    "examples_as_sys_msg": True,
+    "reminder": "user",
+    "extra_params": {
+        "max_tokens": 8192,
+        "model_type": "code",
+        "streaming": True,
+        "temperature": 0.7,
+        "api_base": "https://genai-code-buddy-api.stackspot.com",
+        "api_path": "/v1/code/completions",
+    },
+}
+MODEL_SETTINGS.append(ModelSettings(**stackspot_settings))
 
 MODEL_ALIASES = {
     "stackspot-ai-code": "openai/stackspot-ai-code",
@@ -28,8 +46,9 @@ class Model(ModelSettings):
         use_temperature: bool = True,
         remove_reasoning: Optional[str] = None,
         extra_params: Optional[dict] = None,
+        use_repo_map: bool = True,
     ):
-        # Initialize parent class
+        # Initialize parent class with all required attributes
         super().__init__(
             name=name,
             api_key=api_key,
@@ -37,6 +56,14 @@ class Model(ModelSettings):
             use_temperature=use_temperature,
             remove_reasoning=remove_reasoning,
             extra_params=extra_params or {},
+            use_repo_map=use_repo_map,
+            edit_format="diff",  # Default edit format
+            send_undo_reply=True,  # Default value
+            examples_as_sys_msg=True,  # Default value
+            reminder="user",  # Default value
+            streaming=True,  # Default value
+            max_tokens=8192,  # Default value
+            max_chat_history_tokens=1024,  # Default value
         )
 
         # Handle model alias
