@@ -18,14 +18,14 @@ import importlib_resources
 from dotenv import load_dotenv
 
 from aider import __version__, models, urls, utils
-from aider.args import get_parser
+from aider.args import parse_args
 from aider.coders import Coder
 from aider.io import InputOutput
+from aider.litellm_init import init_litellm
 from aider.llm import litellm  # noqa: F401; properly init litellm on launch
-from aider.logging import setup_logging, setup_verbose_mode
+from aider.logging import setup_logging
 from aider.models import Model
 from aider.repo import ANY_GIT_ERROR, GitRepo
-from aider.report import report_uncaught_exceptions
 
 from .dump import dump  # noqa: F401
 
@@ -54,11 +54,18 @@ def check_config_files_for_yes(config_files):
 
 
 def get_git_root():
-    """Try and guess the git repo, since the conf.yml can be at the repo root"""
+    """Get the root directory of the git repository.
+
+    Returns:
+        Path to git root directory or None if not in a repo
+    """
     try:
-        repo = git.Repo(search_parent_directories=True)
-        return repo.working_tree_dir
-    except (git.InvalidGitRepositoryError, FileNotFoundError):
+        try:
+            repo = git.Repo(search_parent_directories=True)
+            return repo.git.rev_parse("--show-toplevel")
+        except git.InvalidGitRepositoryError:
+            return None
+    except ImportError:
         return None
 
 
@@ -298,34 +305,45 @@ def parse_lint_cmds(lint_cmds, io):
     return res
 
 
-def generate_search_path_list(default_file, git_root, command_line_file):
-    files = []
-    files.append(Path.home() / default_file)  # homedir
-    if git_root:
-        files.append(Path(git_root) / default_file)  # git root
-    files.append(default_file)
+def generate_search_path_list(default_file, git_root, command_line_file=None):
+    """Generate a list of paths to search for configuration files.
+
+    Args:
+        default_file: Default filename to search for
+        git_root: Git repository root directory
+        command_line_file: Optional file specified on command line
+
+    Returns:
+        List of paths to search in priority order
+    """
+    search_paths = []
+
+    # Add command line file if specified
     if command_line_file:
-        files.append(command_line_file)
+        search_paths.append(command_line_file)
 
-    resolved_files = []
-    for fn in files:
-        try:
-            resolved_files.append(Path(fn).resolve())
-        except OSError:
-            pass
+    # Add current directory
+    search_paths.append(os.path.join(os.getcwd(), default_file))
 
-    files = resolved_files
-    files.reverse()
-    uniq = []
-    for fn in files:
-        if fn not in uniq:
-            uniq.append(fn)
-    uniq.reverse()
-    files = uniq
-    files = list(map(str, files))
-    files = list(dict.fromkeys(files))
+    # Add git root if available
+    if git_root:
+        search_paths.append(os.path.join(git_root, default_file))
 
-    return files
+    # Add user's home directory
+    search_paths.append(os.path.join(str(Path.home()), default_file))
+
+    # Add aider config directory in home
+    search_paths.append(os.path.join(str(Path.home()), ".aider", default_file))
+
+    # Remove duplicates while preserving order
+    seen = set()
+    unique_paths = []
+    for path in search_paths:
+        if path not in seen:
+            seen.add(path)
+            unique_paths.append(path)
+
+    return unique_paths
 
 
 def register_models(git_root, model_settings_fname, io, verbose=False):
@@ -353,22 +371,47 @@ def register_models(git_root, model_settings_fname, io, verbose=False):
 
 
 def load_dotenv_files(git_root, dotenv_fname, encoding="utf-8"):
-    dotenv_files = generate_search_path_list(
-        ".env",
-        git_root,
-        dotenv_fname,
-    )
-    loaded = []
-    for fname in dotenv_files:
-        try:
-            if Path(fname).exists():
-                load_dotenv(fname, override=True, encoding=encoding)
-                loaded.append(fname)
-        except OSError as e:
-            print(f"OSError loading {fname}: {e}")
-        except Exception as e:
-            print(f"Error loading {fname}: {e}")
-    return loaded
+    """Load environment variables from .env files.
+
+    Args:
+        git_root: Git repository root directory
+        dotenv_fname: Name of the .env file
+        encoding: File encoding to use
+
+    Returns:
+        List of successfully loaded .env files
+    """
+    logger.debug("Loading environment variables from .env files")
+    loaded_files = []
+
+    # Generate list of potential .env file paths
+    search_paths = generate_search_path_list(dotenv_fname, git_root)
+    logger.debug("Searching for .env files in: %s", search_paths)
+
+    # Load each .env file if it exists
+    for env_path in search_paths:
+        if os.path.exists(env_path):
+            try:
+                load_dotenv(env_path, override=True, encoding=encoding)
+                loaded_files.append(env_path)
+                logger.info(
+                    "Successfully loaded environment variables from %s", env_path
+                )
+            except UnicodeDecodeError as e:
+                logger.error("Encoding error loading %s: %s", env_path, e)
+                logger.info("Try using a different encoding (current: %s)", encoding)
+            except PermissionError as e:
+                logger.error("Permission denied reading %s: %s", env_path, e)
+            except Exception as e:
+                logger.error("Unexpected error loading %s: %s", env_path, e)
+                logger.debug("Full traceback:", exc_info=True)
+
+    if not loaded_files:
+        logger.warning("No .env files were found or successfully loaded")
+    else:
+        logger.debug("Loaded %d .env files", len(loaded_files))
+
+    return loaded_files
 
 
 def register_litellm_models(git_root, model_metadata_fname, io, verbose=False):
@@ -438,44 +481,57 @@ def sanity_check_repo(repo, io):
     return False
 
 
-def main(argv=None, input=None, output=None, force_git_root=None, return_coder=False):
-    report_uncaught_exceptions()
+def main():
+    """Main entry point for aider."""
+    args = parse_args()
+    setup_logging(args)
 
-    if argv is None:
-        argv = sys.argv[1:]
+    # Load environment variables first
+    git_root = get_git_root()
+    load_dotenv_files(git_root, ".env")
+
+    # Initialize LiteLLM after environment variables are loaded
+    init_litellm()
+
+    # Initialize InputOutput after environment is set up
+    io = InputOutput(args)
 
     try:
-        # Configurar logging antes de qualquer outra operação
-        setup_logging()
-
-        git_root = find_git_root()
-        default_config_files = generate_search_path_list(".aider.conf.yml", git_root)
-        parser = get_parser(default_config_files, git_root)
-        args = parser.parse_args(argv)
-
-        # Ajustar logging baseado no modo verbose
-        setup_verbose_mode(args.verbose)
-        logger.debug("Argumentos processados: %s", args)
-
-        io = InputOutput(
-            pretty=True,
-            input=input,
-            output=output,
-            chat_history_file=args.chat_history_file,
-            input_history_file=args.input_history_file,
-            llm_history_file=args.llm_history_file,
-        )
-
-        # Initialize provider
+        # Initialize provider if using StackSpot
         provider = None
-        if args.model.startswith("stackspot"):
+        if args.model.startswith("stackspot") and not os.environ.get("AIDER_TEST_MODE"):
             from aider.providers.stackspot import StackSpotProvider
 
             try:
-                provider = StackSpotProvider(api_key=args.api_key)
+                provider = StackSpotProvider(
+                    api_key=os.getenv("STACKSPOTAI_CLIENT_KEY"),
+                    client_id=os.getenv("STACKSPOTAI_CLIENT_ID"),
+                    realm=os.getenv("STACKSPOTAI_REALM", "stackspot"),
+                )
             except ValueError as e:
                 io.tool_error(str(e))
                 return 1
+
+        # Load model settings and metadata files
+        model_settings_files = generate_search_path_list(
+            ".aider.model.settings.yml", git_root, args.model_settings_file
+        )
+        model_metadata_files = generate_search_path_list(
+            ".aider.model.metadata.json", git_root, args.model_metadata_file
+        )
+
+        # Register models with settings and metadata
+        try:
+            files_loaded = models.register_models(model_settings_files)
+            if len(files_loaded) > 0:
+                logger.info("Model settings loaded from:")
+                for file_loaded in files_loaded:
+                    logger.info("  - %s", file_loaded)
+            else:
+                logger.info("No model settings files loaded")
+        except Exception as e:
+            logger.error("Error loading aider model settings: %s", e)
+            return 1
 
         # Initialize model settings
         model_settings = Model(
@@ -489,7 +545,7 @@ def main(argv=None, input=None, output=None, force_git_root=None, return_coder=F
                 "streaming": True,
                 "temperature": 0.7,
                 "api_base": "https://genai-code-buddy-api.stackspot.com",
-                "api_path": "/v1/code/completions",
+                "api_path": "/v1/chat/completions",
             },
         )
 
@@ -499,32 +555,35 @@ def main(argv=None, input=None, output=None, force_git_root=None, return_coder=F
                 main_model=model_settings,
                 io=io,
                 verbose=args.verbose,
+                fnames=[],
+                chat_language="python",
+                edit_format="diff",
+                map_tokens=1024,
+                map_mul_no_files=2,
+                map_refresh="auto",
+                use_git=True,
+                auto_commits=True,
+                auto_lint=True,
+                auto_test=False,
+                restore_chat_history=True,
             )
 
             # Attach provider to model if available
             if provider:
                 coder.main_model.provider = provider
+
+            # Run the coder
+            return coder.run()
         except Exception as e:
             io.tool_error(f"Error initializing coder: {str(e)}")
             return 1
 
-        if return_coder:
-            return coder
-
-        # Run the chat loop
-        try:
-            coder.run()
-        except KeyboardInterrupt:
-            logger.info("Recebido Ctrl+C, encerrando...")
-            return 1
-        except Exception as e:
-            logger.error("Erro não tratado: %s", str(e), exc_info=True)
-            return 1
-
-        return 0
-
+    except KeyboardInterrupt:
+        io.tool_error("\nExiting due to keyboard interrupt...")
+        return 1
     except Exception as e:
-        logger.error("Erro não tratado: %s", str(e), exc_info=True)
+        io.tool_error(f"\nUnhandled error: {str(e)}")
+        logger.error("Exception details:", exc_info=True)
         return 1
 
 

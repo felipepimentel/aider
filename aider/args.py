@@ -884,6 +884,40 @@ def main():
         print(get_sample_yaml())
 
 
+def parse_args():
+    """Parse command line arguments and return the parsed arguments."""
+    from aider.repo import get_git_root
+
+    git_root = get_git_root()
+    default_config_files = [
+        os.path.join(os.path.expanduser("~"), ".aider.conf.yml"),
+        ".aider.conf.yml"
+        if not git_root
+        else os.path.join(git_root, ".aider.conf.yml"),
+    ]
+
+    parser = get_parser(default_config_files, git_root)
+    args = parser.parse_args()
+
+    # Set environment variables from --set-env
+    for env_var in args.set_env:
+        try:
+            name, value = env_var.split("=", 1)
+            os.environ[name] = value
+        except ValueError:
+            parser.error(f"Invalid --set-env value: {env_var}")
+
+    # Set API keys from --api-key
+    for api_key in args.api_key:
+        try:
+            provider, key = api_key.split("=", 1)
+            os.environ[f"{provider.upper()}_API_KEY"] = key
+        except ValueError:
+            parser.error(f"Invalid --api-key value: {api_key}")
+
+    return args
+
+
 if __name__ == "__main__":
     status = main()
     sys.exit(status)

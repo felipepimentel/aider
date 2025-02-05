@@ -1,10 +1,21 @@
-from dataclasses import dataclass
 from typing import Dict, List, Optional
 
+from pydantic import BaseModel, ConfigDict
 
-@dataclass
-class ModelSettings:
+
+class ModelSettings(BaseModel):
+    model_config = ConfigDict(
+        validate_assignment=True,
+        extra="allow",
+        str_strip_whitespace=True,
+        frozen=False,
+        protected_namespaces=(),  # Disable protected namespaces to avoid model_ conflict
+    )
+
+    # Required fields
     name: str
+
+    # Optional fields with defaults
     api_key: Optional[str] = None
     model_type: str = "chat"
     api_base: Optional[str] = None
@@ -23,6 +34,10 @@ class ModelSettings:
     use_system_prompt: bool = True
     use_temperature: bool = True
     streaming: bool = True
+    temperature: float = 0.7
+    top_p: float = 1.0
+    frequency_penalty: float = 0.0
+    presence_penalty: float = 0.0
     editor_model_name: Optional[str] = None
     editor_edit_format: Optional[str] = None
     remove_reasoning: Optional[str] = None
@@ -31,13 +46,35 @@ class ModelSettings:
     weak_model: Optional["ModelSettings"] = None
     editor_model: Optional["ModelSettings"] = None
 
-    def __post_init__(self):
+    def __init__(self, **data):
+        # Convert hyphenated keys to underscores and filter out None values
+        data = {k.replace("-", "_"): v for k, v in data.items() if v is not None}
+
+        # Ensure required fields are present
+        if "name" not in data:
+            raise ValueError("Model name is required")
+
+        super().__init__(**data)
+        self.post_init()
+
+    def post_init(self):
+        # Initialize headers if not set
         if self.headers is None:
             self.headers = {"Content-Type": "application/json"}
 
         # Handle API key format
-        if self.api_key and "=" not in self.api_key:
-            self.api_key = f"stackspot={self.api_key}"
+        if self.api_key:
+            # Convert to string if it's a list
+            if isinstance(self.api_key, list):
+                self.api_key = self.api_key[0] if self.api_key else None
+
+            # Add prefix if needed
+            if isinstance(self.api_key, str) and "=" not in self.api_key:
+                self.api_key = f"stackspot={self.api_key}"
+
+        # Ensure extra_params is a dict
+        if self.extra_params is None:
+            self.extra_params = {}
 
     def commit_message_models(self) -> List["ModelSettings"]:
         """Return list of models for commit messages."""

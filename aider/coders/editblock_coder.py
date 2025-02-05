@@ -2,6 +2,7 @@ import difflib
 import math
 import re
 import sys
+import time
 from difflib import SequenceMatcher
 from pathlib import Path
 
@@ -17,7 +18,7 @@ class EditBlockCoder(Coder):
 
     edit_format = "diff"
     gpt_prompts = EditBlockPrompts()
-    show_undo_hint = True
+    show_diffs = True
     chat_language = "python"
     auto_copy_context = True
     temperature = 0
@@ -36,7 +37,6 @@ class EditBlockCoder(Coder):
     dirty_commits = True
     dry_run = False
     cache_prompts = True
-    show_diffs = True
     use_git = True
     commands = None
     repo = None
@@ -53,7 +53,6 @@ class EditBlockCoder(Coder):
     max_reflections = 3
     last_aider_commit_hash = None
     aider_edited_files = None
-    last_asked_for_commit_time = 0
     io = None
     cur_messages = []
     done_messages = []
@@ -63,6 +62,8 @@ class EditBlockCoder(Coder):
     lint_cmds = None
     chat_history = None
     repo_map_tokens = None
+    main_model = None
+    partial_response_model = None
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -91,6 +92,9 @@ class EditBlockCoder(Coder):
         self.chat_completion_response_hashes = []
         self.need_commit_before_edits = set()
         self.shell_commands = []
+        self._show_undo_hint = (
+            True  # Use an instance variable instead of class variable
+        )
 
         if self.summarizer is None:
             self.summarizer = ChatSummary(
@@ -206,6 +210,42 @@ Don't re-send them.
 Just reply with fixed versions of the {blocks} above that failed to match.
 """
         raise ValueError(res)
+
+    def show_undo_hint(self):
+        """Show hint about undo command if needed."""
+        if not self.done_messages:
+            return
+
+        last_msg = self.done_messages[-1]
+        if last_msg.get("role") != "assistant":
+            return
+
+        if not self.io.pretty:
+            return
+
+        if not self.show_diffs:
+            return
+
+        if self.dry_run:
+            return
+
+        if not self.repo:
+            return
+
+        if not self.repo.last_aider_commit_hash:
+            return
+
+        if time.time() - self.last_asked_for_commit_time < 60:
+            return
+
+        self.io.tool_output("Use /undo to revert the last edit")
+        self.last_asked_for_commit_time = time.time()
+
+    def get_multi_response_content(self, final=False):
+        """Get the accumulated content from multiple responses."""
+        if final:
+            return self.partial_response_content
+        return self.multi_response_content
 
 
 def prep(content):

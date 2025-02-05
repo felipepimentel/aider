@@ -9,7 +9,7 @@ attribute-author: true
 attribute-committer: true
 pretty: true
 stream: true
-verbose: true
+verbose: false
 
 # Configuração centralizada de logging
 logging:
@@ -21,11 +21,12 @@ logging:
       level: INFO
     file:
       enabled: true
-      level: DEBUG
+      level: INFO
       filename: "aider.log"
+  # Configuração por componente
   components:
     litellm:
-      level: DEBUG
+      level: INFO
     repomap:
       level: INFO
     commands:
@@ -33,4 +34,23 @@ logging:
     watch:
       level: INFO
     main:
-      level: INFO 
+      level: INFO
+    stackspot:
+      level: INFO
+    providers:
+      level: INFO
+  # Configuração de módulos de terceiros
+  disable_existing_loggers: true  # Importante para desabilitar loggers existentes
+  loggers:
+    httpx:
+      level: WARNING  # Aumentando para WARNING para suprimir mensagens de DEBUG
+    asyncio:
+      level: WARNING
+    watchfiles:
+      level: WARNING
+    watchdog:
+      level: WARNING
+    urllib3:
+      level: WARNING
+    pydantic:
+      level: WARNING 

@@ -37,6 +37,26 @@ Tag = namedtuple("Tag", "rel_fname fname line name kind".split())
 SQLITE_ERRORS = (sqlite3.OperationalError, sqlite3.DatabaseError, OSError)
 
 
+class Spinner:
+    def __init__(self, text=""):
+        self.text = text
+        self.active = True
+
+    def step(self):
+        """Método chamado para atualizar o spinner"""
+        pass
+
+    def end(self):
+        """Método chamado para finalizar o spinner"""
+        self.active = False
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.end()
+
+
 class RepoMap:
     CACHE_VERSION = 3
     TAGS_CACHE_DIR = f".aider.tags.cache.v{CACHE_VERSION}"

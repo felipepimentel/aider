@@ -1,6 +1,5 @@
 import logging
 import os
-from pathlib import Path
 
 import litellm
 
@@ -10,80 +9,64 @@ logger = logging.getLogger(__name__)
 def init_litellm():
     """Initialize LiteLLM with StackSpot configuration."""
     try:
-        logger.info("Iniciando inicialização do LiteLLM...")
-
-        # Set environment variables for LiteLLM
+        # Set production mode
         os.environ["LITELLM_MODE"] = "PRODUCTION"
-        logger.debug("Variáveis de ambiente configuradas")
 
-        # Configure StackSpot provider
-        api_key = os.getenv("STACKSPOTAI_CLIENT_KEY")
-        if not api_key:
-            logger.error(
-                "STACKSPOTAI_CLIENT_KEY não encontrada nas variáveis de ambiente"
-            )
-            return False
+        # Get credentials from environment
+        client_key = os.getenv("STACKSPOTAI_CLIENT_KEY")
+        if not client_key:
+            logger.warning("STACKSPOTAI_CLIENT_KEY not found in environment")
+            return
 
-        logger.info("Configurando LiteLLM com configurações StackSpot...")
-
-        # Set default parameters
-        litellm.api_base = "https://genai-code-buddy-api.stackspot.com/v1"
-        litellm.api_key = api_key
-        litellm.max_retries = 3
-        litellm.retry_delay = 1.0
-        litellm.stream_chunk_size = 4096
-        litellm.cache_control = True
-        litellm.request_timeout = 30
-        litellm.drop_params = True
-        logger.debug("Parâmetros básicos do LiteLLM configurados")
-
-        # Set default headers
+        # Configure LiteLLM
+        litellm.api_key = client_key
+        litellm.api_base = os.getenv(
+            "STACKSPOTAI_API_URL", "https://genai-code-buddy-api.stackspot.com"
+        )
         litellm.headers = {
-            "Authorization": f"Bearer {api_key}",
             "Content-Type": "application/json",
-            "Accept": "application/json",
+            "Accept": "*/*",
+            "User-Agent": "aider/1.0 (+https://aider.chat)",
         }
-        logger.debug("Headers do LiteLLM configurados")
 
-        # Configure error handling
-        litellm.error_handling = {
-            "max_retries": 3,
-            "backoff_factor": 1.0,
-            "retry_status_codes": [429, 500, 502, 503, 504],
-        }
-        logger.debug("Tratamento de erros configurado")
+        # Load configuration from environment variables
+        if os.getenv("LITELLM_CONFIG_PATH"):
+            config_path = os.getenv("LITELLM_CONFIG_PATH")
+        else:
+            config_path = os.path.join(
+                os.path.dirname(__file__), "..", ".litellm.config.yaml"
+            )
 
-        # Set model aliases
-        litellm.model_alias_map = {
-            "stackspot": "openai/stackspot-ai-code",
-            "stackspot-code": "openai/stackspot-ai-code",
-            "stackspot-chat": "openai/stackspot-ai-chat",
-            "stackspot-assistant": "openai/stackspot-ai-assistant",
-        }
-        logger.debug("Aliases de modelo configurados")
-
-        # Load config file from project root
-        config_path = Path(__file__).parent.parent / ".litellm.config.yaml"
-        if config_path.exists():
+        if os.path.exists(config_path):
             try:
-                logger.info(f"Carregando configuração de {config_path}")
-                litellm.config_path = str(config_path)
-                logger.info("Configuração do LiteLLM carregada com sucesso")
+                with open(config_path) as f:
+                    import yaml
+
+                    config = yaml.safe_load(f)
+
+                # Apply configuration
+                if "litellm_settings" in config:
+                    settings = config["litellm_settings"]
+                    for key, value in settings.items():
+                        setattr(litellm, key, value)
+
+                if "providers" in config:
+                    litellm.providers = config["providers"]
+
+                logger.info("Loaded LiteLLM configuration from %s", config_path)
             except Exception as e:
-                logger.error(
-                    f"Falha ao carregar arquivo de configuração: {e}", exc_info=True
-                )
+                logger.error("Failed to load config from %s: %s", config_path, str(e))
 
-        # Enable debug mode for detailed logging
-        litellm._turn_on_debug()
-        logger.debug("Modo debug habilitado")
+        # Enable debug mode in development
+        if os.getenv("AIDER_DEV_MODE"):
+            litellm.set_verbose = True
+            logger.info("LiteLLM debug mode enabled")
 
-        logger.info("Inicialização do LiteLLM concluída com sucesso")
-        return True
+        logger.info("LiteLLM initialized successfully")
 
     except Exception as e:
-        logger.error(f"Falha ao inicializar LiteLLM: {e}", exc_info=True)
-        return False
+        logger.error("Failed to initialize LiteLLM: %s", str(e), exc_info=True)
+        raise
 
 
 # Initialize LiteLLM when module is imported

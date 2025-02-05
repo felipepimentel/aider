@@ -1,0 +1,1199 @@
+2025-02-05 10:08:12,814 - aider.main - ERROR - Erro não tratado: name 'find_git_root' is not defined
+Traceback (most recent call last):
+  File "/home/pimentel/Workspace/aider/aider/main.py", line 451, in main
+    git_root = find_git_root()
+               ^^^^^^^^^^^^^
+NameError: name 'find_git_root' is not defined. Did you mean: 'force_git_root'?
+2025-02-05 10:09:31,384 - aider.main - ERROR - Erro não tratado: name 'find_git_root' is not defined
+Traceback (most recent call last):
+  File "/home/pimentel/Workspace/aider/aider/main.py", line 451, in main
+    git_root = find_git_root()
+               ^^^^^^^^^^^^^
+NameError: name 'find_git_root' is not defined. Did you mean: 'force_git_root'?
+2025-02-05 10:09:37,114 - aider.main - ERROR - Erro não tratado: name 'find_git_root' is not defined
+Traceback (most recent call last):
+  File "/home/pimentel/Workspace/aider/aider/main.py", line 451, in main
+    git_root = find_git_root()
+               ^^^^^^^^^^^^^
+NameError: name 'find_git_root' is not defined. Did you mean: 'force_git_root'?
+2025-02-05 10:10:08,858 - aider.main - ERROR - Erro não tratado: name 'find_git_root' is not defined
+Traceback (most recent call last):
+  File "/home/pimentel/Workspace/aider/aider/main.py", line 451, in main
+    git_root = find_git_root()
+               ^^^^^^^^^^^^^
+NameError: name 'find_git_root' is not defined. Did you mean: 'force_git_root'?
+2025-02-05 10:13:24,672 - aider.main - ERROR - Erro não tratado: generate_search_path_list() missing 1 required positional argument: 'command_line_file'
+Traceback (most recent call last):
+  File "/home/pimentel/Workspace/aider/aider/main.py", line 453, in main
+    default_config_files = generate_search_path_list(".aider.conf.yml", git_root)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: generate_search_path_list() missing 1 required positional argument: 'command_line_file'
+2025-02-05 10:19:03,825 - aider.providers.stackspot - INFO - Initializing StackSpot provider
+2025-02-05 10:19:03,825 - aider.providers.stackspot - DEBUG - Using provided API key
+2025-02-05 10:19:03,826 - aider.main - ERROR - Erro não tratado: str expected, not list
+Traceback (most recent call last):
+  File "/home/pimentel/Workspace/aider/aider/main.py", line 483, in main
+    provider = StackSpotProvider(api_key=args.api_key)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/pimentel/Workspace/aider/aider/providers/stackspot.py", line 172, in __init__
+    os.environ[ENV_CLIENT_KEY] = api_key
+    ~~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "<frozen os>", line 690, in __setitem__
+  File "<frozen os>", line 764, in encode
+TypeError: str expected, not list
+2025-02-05 10:19:03,826 - aider.providers.stackspot - DEBUG - StackSpot provider cleanup
+2025-02-05 10:44:36,972 - aider.providers.stackspot - INFO - Initializing StackSpot provider
+2025-02-05 10:44:36,972 - aider.providers.stackspot - DEBUG - Using provided API key
+2025-02-05 10:44:36,972 - aider.providers.stackspot_config - INFO - Starting StackSpot configuration...
+2025-02-05 10:44:36,972 - aider.providers.stackspot_config - INFO - Using realm: stackspot
+2025-02-05 10:44:36,972 - aider.providers.stackspot_config - DEBUG - Client ID present: True
+2025-02-05 10:44:36,972 - aider.providers.stackspot_config - DEBUG - Client Key present: True
+2025-02-05 10:44:36,972 - aider.providers.stackspot_config - DEBUG - Remote QC Name: fake_remote_qc
+2025-02-05 10:44:36,972 - aider.providers.stackspot_config - INFO - Auth base URL: https://auth.stackspot.com
+2025-02-05 10:44:36,972 - aider.providers.stackspot_config - INFO - API base URL: https://genai-code-buddy-api.stackspot.com
+2025-02-05 10:44:36,972 - aider.providers.stackspot_config - DEBUG - Validating URL: https://auth.stackspot.com
+2025-02-05 10:44:36,972 - aider.providers.stackspot_config - DEBUG - Validating URL: https://genai-code-buddy-api.stackspot.com
+2025-02-05 10:44:36,972 - aider.providers.stackspot_config - INFO - URLs validated successfully
+2025-02-05 10:44:36,972 - aider.providers.stackspot_config - DEBUG - Building URL with base: https://auth.stackspot.com, path: realms/stackspot/protocol/openid-connect/token
+2025-02-05 10:44:36,973 - aider.providers.stackspot_config - DEBUG - Validating URL: https://auth.stackspot.com
+2025-02-05 10:44:36,973 - aider.providers.stackspot_config - DEBUG - Normalizing path: realms/stackspot/protocol/openid-connect/token
+2025-02-05 10:44:36,973 - aider.providers.stackspot_config - DEBUG - Built URL: https://auth.stackspot.com/realms/stackspot/protocol/openid-connect/token
+2025-02-05 10:44:36,973 - aider.providers.stackspot_config - DEBUG - Building URL with base: https://genai-code-buddy-api.stackspot.com, path: v1/quick-commands/create-execution
+2025-02-05 10:44:36,973 - aider.providers.stackspot_config - DEBUG - Validating URL: https://genai-code-buddy-api.stackspot.com
+2025-02-05 10:44:36,973 - aider.providers.stackspot_config - DEBUG - Normalizing path: v1/quick-commands/create-execution
+2025-02-05 10:44:36,973 - aider.providers.stackspot_config - DEBUG - Built URL: https://genai-code-buddy-api.stackspot.com/v1/quick-commands/create-execution
+2025-02-05 10:44:36,973 - aider.providers.stackspot_config - DEBUG - Building URL with base: https://genai-code-buddy-api.stackspot.com, path: v1/quick-commands/execution
+2025-02-05 10:44:36,973 - aider.providers.stackspot_config - DEBUG - Validating URL: https://genai-code-buddy-api.stackspot.com
+2025-02-05 10:44:36,973 - aider.providers.stackspot_config - DEBUG - Normalizing path: v1/quick-commands/execution
+2025-02-05 10:44:36,973 - aider.providers.stackspot_config - DEBUG - Built URL: https://genai-code-buddy-api.stackspot.com/v1/quick-commands/execution
+2025-02-05 10:44:36,973 - aider.providers.stackspot_config - INFO - Endpoint URLs built successfully
+2025-02-05 10:44:36,973 - aider.providers.stackspot_config - DEBUG - Auth URL: https://auth.stackspot.com/realms/stackspot/protocol/openid-connect/token
+2025-02-05 10:44:36,973 - aider.providers.stackspot_config - DEBUG - Create execution URL: https://genai-code-buddy-api.stackspot.com/v1/quick-commands/create-execution
+2025-02-05 10:44:36,973 - aider.providers.stackspot_config - DEBUG - Check execution URL: https://genai-code-buddy-api.stackspot.com/v1/quick-commands/execution
+2025-02-05 10:44:36,973 - aider.providers.stackspot_config - INFO - Creating final configuration...
+2025-02-05 10:44:36,973 - aider.providers.stackspot_config - DEBUG - Using default User-Agent: aider/1.0 (+https://aider.chat)
+2025-02-05 10:44:36,973 - aider.providers.stackspot_config - INFO - StackSpot configuration completed successfully
+2025-02-05 10:44:36,974 - httpx - DEBUG - load_ssl_context verify=True cert=None trust_env=True http2=False
+2025-02-05 10:44:36,974 - httpx - DEBUG - load_verify_locations cafile='/home/pimentel/.cache/pypoetry/virtualenvs/aider-TKH8PC99-py3.12/lib/python3.12/site-packages/certifi/cacert.pem'
+2025-02-05 10:44:37,016 - aider.providers.stackspot - INFO - StackSpot provider initialized successfully
+2025-02-05 10:44:37,016 - aider.providers.stackspot - INFO - Initializing StackSpot provider
+2025-02-05 10:44:37,016 - aider.providers.stackspot - DEBUG - Using provided API key
+2025-02-05 10:44:37,016 - aider.providers.stackspot_config - INFO - Starting StackSpot configuration...
+2025-02-05 10:44:37,016 - aider.providers.stackspot_config - INFO - Using realm: stackspot
+2025-02-05 10:44:37,016 - aider.providers.stackspot_config - DEBUG - Client ID present: True
+2025-02-05 10:44:37,017 - aider.providers.stackspot_config - DEBUG - Client Key present: True
+2025-02-05 10:44:37,017 - aider.providers.stackspot_config - DEBUG - Remote QC Name: fake_remote_qc
+2025-02-05 10:44:37,017 - aider.providers.stackspot_config - INFO - Auth base URL: https://auth.stackspot.com
+2025-02-05 10:44:37,017 - aider.providers.stackspot_config - INFO - API base URL: https://genai-code-buddy-api.stackspot.com
+2025-02-05 10:44:37,017 - aider.providers.stackspot_config - DEBUG - Validating URL: https://auth.stackspot.com
+2025-02-05 10:44:37,017 - aider.providers.stackspot_config - DEBUG - Validating URL: https://genai-code-buddy-api.stackspot.com
+2025-02-05 10:44:37,017 - aider.providers.stackspot_config - INFO - URLs validated successfully
+2025-02-05 10:44:37,017 - aider.providers.stackspot_config - DEBUG - Building URL with base: https://auth.stackspot.com, path: realms/stackspot/protocol/openid-connect/token
+2025-02-05 10:44:37,017 - aider.providers.stackspot_config - DEBUG - Validating URL: https://auth.stackspot.com
+2025-02-05 10:44:37,017 - aider.providers.stackspot_config - DEBUG - Normalizing path: realms/stackspot/protocol/openid-connect/token
+2025-02-05 10:44:37,017 - aider.providers.stackspot_config - DEBUG - Built URL: https://auth.stackspot.com/realms/stackspot/protocol/openid-connect/token
+2025-02-05 10:44:37,017 - aider.providers.stackspot_config - DEBUG - Building URL with base: https://genai-code-buddy-api.stackspot.com, path: v1/quick-commands/create-execution
+2025-02-05 10:44:37,017 - aider.providers.stackspot_config - DEBUG - Validating URL: https://genai-code-buddy-api.stackspot.com
+2025-02-05 10:44:37,017 - aider.providers.stackspot_config - DEBUG - Normalizing path: v1/quick-commands/create-execution
+2025-02-05 10:44:37,017 - aider.providers.stackspot_config - DEBUG - Built URL: https://genai-code-buddy-api.stackspot.com/v1/quick-commands/create-execution
+2025-02-05 10:44:37,017 - aider.providers.stackspot_config - DEBUG - Building URL with base: https://genai-code-buddy-api.stackspot.com, path: v1/quick-commands/execution
+2025-02-05 10:44:37,017 - aider.providers.stackspot_config - DEBUG - Validating URL: https://genai-code-buddy-api.stackspot.com
+2025-02-05 10:44:37,017 - aider.providers.stackspot_config - DEBUG - Normalizing path: v1/quick-commands/execution
+2025-02-05 10:44:37,017 - aider.providers.stackspot_config - DEBUG - Built URL: https://genai-code-buddy-api.stackspot.com/v1/quick-commands/execution
+2025-02-05 10:44:37,018 - aider.providers.stackspot_config - INFO - Endpoint URLs built successfully
+2025-02-05 10:44:37,018 - aider.providers.stackspot_config - DEBUG - Auth URL: https://auth.stackspot.com/realms/stackspot/protocol/openid-connect/token
+2025-02-05 10:44:37,018 - aider.providers.stackspot_config - DEBUG - Create execution URL: https://genai-code-buddy-api.stackspot.com/v1/quick-commands/create-execution
+2025-02-05 10:44:37,018 - aider.providers.stackspot_config - DEBUG - Check execution URL: https://genai-code-buddy-api.stackspot.com/v1/quick-commands/execution
+2025-02-05 10:44:37,018 - aider.providers.stackspot_config - INFO - Creating final configuration...
+2025-02-05 10:44:37,018 - aider.providers.stackspot_config - DEBUG - Using default User-Agent: aider/1.0 (+https://aider.chat)
+2025-02-05 10:44:37,018 - aider.providers.stackspot_config - INFO - StackSpot configuration completed successfully
+2025-02-05 10:44:37,018 - httpx - DEBUG - load_ssl_context verify=True cert=None trust_env=True http2=False
+2025-02-05 10:44:37,019 - httpx - DEBUG - load_verify_locations cafile='/home/pimentel/.cache/pypoetry/virtualenvs/aider-TKH8PC99-py3.12/lib/python3.12/site-packages/certifi/cacert.pem'
+2025-02-05 10:44:37,060 - aider.providers.stackspot - INFO - StackSpot provider initialized successfully
+2025-02-05 10:44:37,101 - aider.providers.stackspot - DEBUG - StackSpot provider cleanup
+2025-02-05 10:44:37,101 - asyncio - DEBUG - Using selector: EpollSelector
+2025-02-05 10:44:37,101 - aider.providers.stackspot - INFO - Closing HTTP client
+2025-02-05 10:44:37,152 - aider.providers.stackspot - DEBUG - StackSpot provider cleanup
+2025-02-05 10:44:37,152 - aider.providers.stackspot - INFO - Closing HTTP client
+2025-02-05 10:46:50,321 - aider.providers.stackspot - INFO - Initializing StackSpot provider
+2025-02-05 10:46:50,321 - aider.providers.stackspot - DEBUG - Using provided API key
+2025-02-05 10:46:50,321 - aider.providers.stackspot_config - INFO - Starting StackSpot configuration...
+2025-02-05 10:46:50,321 - aider.providers.stackspot_config - INFO - Using realm: stackspot
+2025-02-05 10:46:50,322 - aider.providers.stackspot_config - DEBUG - Client ID present: True
+2025-02-05 10:46:50,322 - aider.providers.stackspot_config - DEBUG - Client Key present: True
+2025-02-05 10:46:50,322 - aider.providers.stackspot_config - DEBUG - Remote QC Name: fake_remote_qc
+2025-02-05 10:46:50,322 - aider.providers.stackspot_config - INFO - Auth base URL: https://auth.stackspot.com
+2025-02-05 10:46:50,322 - aider.providers.stackspot_config - INFO - API base URL: https://genai-code-buddy-api.stackspot.com
+2025-02-05 10:46:50,322 - aider.providers.stackspot_config - DEBUG - Validating URL: https://auth.stackspot.com
+2025-02-05 10:46:50,322 - aider.providers.stackspot_config - DEBUG - Validating URL: https://genai-code-buddy-api.stackspot.com
+2025-02-05 10:46:50,322 - aider.providers.stackspot_config - INFO - URLs validated successfully
+2025-02-05 10:46:50,322 - aider.providers.stackspot_config - DEBUG - Building URL with base: https://auth.stackspot.com, path: realms/stackspot/protocol/openid-connect/token
+2025-02-05 10:46:50,322 - aider.providers.stackspot_config - DEBUG - Validating URL: https://auth.stackspot.com
+2025-02-05 10:46:50,322 - aider.providers.stackspot_config - DEBUG - Normalizing path: realms/stackspot/protocol/openid-connect/token
+2025-02-05 10:46:50,322 - aider.providers.stackspot_config - DEBUG - Built URL: https://auth.stackspot.com/realms/stackspot/protocol/openid-connect/token
+2025-02-05 10:46:50,322 - aider.providers.stackspot_config - DEBUG - Building URL with base: https://genai-code-buddy-api.stackspot.com, path: v1/quick-commands/create-execution
+2025-02-05 10:46:50,322 - aider.providers.stackspot_config - DEBUG - Validating URL: https://genai-code-buddy-api.stackspot.com
+2025-02-05 10:46:50,322 - aider.providers.stackspot_config - DEBUG - Normalizing path: v1/quick-commands/create-execution
+2025-02-05 10:46:50,322 - aider.providers.stackspot_config - DEBUG - Built URL: https://genai-code-buddy-api.stackspot.com/v1/quick-commands/create-execution
+2025-02-05 10:46:50,322 - aider.providers.stackspot_config - DEBUG - Building URL with base: https://genai-code-buddy-api.stackspot.com, path: v1/quick-commands/execution
+2025-02-05 10:46:50,323 - aider.providers.stackspot_config - DEBUG - Validating URL: https://genai-code-buddy-api.stackspot.com
+2025-02-05 10:46:50,323 - aider.providers.stackspot_config - DEBUG - Normalizing path: v1/quick-commands/execution
+2025-02-05 10:46:50,323 - aider.providers.stackspot_config - DEBUG - Built URL: https://genai-code-buddy-api.stackspot.com/v1/quick-commands/execution
+2025-02-05 10:46:50,323 - aider.providers.stackspot_config - INFO - Endpoint URLs built successfully
+2025-02-05 10:46:50,323 - aider.providers.stackspot_config - DEBUG - Auth URL: https://auth.stackspot.com/realms/stackspot/protocol/openid-connect/token
+2025-02-05 10:46:50,323 - aider.providers.stackspot_config - DEBUG - Create execution URL: https://genai-code-buddy-api.stackspot.com/v1/quick-commands/create-execution
+2025-02-05 10:46:50,323 - aider.providers.stackspot_config - DEBUG - Check execution URL: https://genai-code-buddy-api.stackspot.com/v1/quick-commands/execution
+2025-02-05 10:46:50,323 - aider.providers.stackspot_config - INFO - Creating final configuration...
+2025-02-05 10:46:50,323 - aider.providers.stackspot_config - DEBUG - Using default User-Agent: aider/1.0 (+https://aider.chat)
+2025-02-05 10:46:50,323 - aider.providers.stackspot_config - INFO - StackSpot configuration completed successfully
+2025-02-05 10:46:50,323 - httpx - DEBUG - load_ssl_context verify=True cert=None trust_env=True http2=False
+2025-02-05 10:46:50,324 - httpx - DEBUG - load_verify_locations cafile='/home/pimentel/.cache/pypoetry/virtualenvs/aider-TKH8PC99-py3.12/lib/python3.12/site-packages/certifi/cacert.pem'
+2025-02-05 10:46:50,365 - aider.providers.stackspot - INFO - StackSpot provider initialized successfully
+2025-02-05 10:46:50,365 - aider.providers.stackspot - INFO - Initializing StackSpot provider
+2025-02-05 10:46:50,365 - aider.providers.stackspot - DEBUG - Using provided API key
+2025-02-05 10:46:50,365 - aider.providers.stackspot_config - INFO - Starting StackSpot configuration...
+2025-02-05 10:46:50,365 - aider.providers.stackspot_config - INFO - Using realm: stackspot
+2025-02-05 10:46:50,366 - aider.providers.stackspot_config - DEBUG - Client ID present: True
+2025-02-05 10:46:50,366 - aider.providers.stackspot_config - DEBUG - Client Key present: True
+2025-02-05 10:46:50,366 - aider.providers.stackspot_config - DEBUG - Remote QC Name: fake_remote_qc
+2025-02-05 10:46:50,366 - aider.providers.stackspot_config - INFO - Auth base URL: https://auth.stackspot.com
+2025-02-05 10:46:50,366 - aider.providers.stackspot_config - INFO - API base URL: https://genai-code-buddy-api.stackspot.com
+2025-02-05 10:46:50,366 - aider.providers.stackspot_config - DEBUG - Validating URL: https://auth.stackspot.com
+2025-02-05 10:46:50,366 - aider.providers.stackspot_config - DEBUG - Validating URL: https://genai-code-buddy-api.stackspot.com
+2025-02-05 10:46:50,366 - aider.providers.stackspot_config - INFO - URLs validated successfully
+2025-02-05 10:46:50,366 - aider.providers.stackspot_config - DEBUG - Building URL with base: https://auth.stackspot.com, path: realms/stackspot/protocol/openid-connect/token
+2025-02-05 10:46:50,366 - aider.providers.stackspot_config - DEBUG - Validating URL: https://auth.stackspot.com
+2025-02-05 10:46:50,366 - aider.providers.stackspot_config - DEBUG - Normalizing path: realms/stackspot/protocol/openid-connect/token
+2025-02-05 10:46:50,366 - aider.providers.stackspot_config - DEBUG - Built URL: https://auth.stackspot.com/realms/stackspot/protocol/openid-connect/token
+2025-02-05 10:46:50,366 - aider.providers.stackspot_config - DEBUG - Building URL with base: https://genai-code-buddy-api.stackspot.com, path: v1/quick-commands/create-execution
+2025-02-05 10:46:50,366 - aider.providers.stackspot_config - DEBUG - Validating URL: https://genai-code-buddy-api.stackspot.com
+2025-02-05 10:46:50,366 - aider.providers.stackspot_config - DEBUG - Normalizing path: v1/quick-commands/create-execution
+2025-02-05 10:46:50,367 - aider.providers.stackspot_config - DEBUG - Built URL: https://genai-code-buddy-api.stackspot.com/v1/quick-commands/create-execution
+2025-02-05 10:46:50,367 - aider.providers.stackspot_config - DEBUG - Building URL with base: https://genai-code-buddy-api.stackspot.com, path: v1/quick-commands/execution
+2025-02-05 10:46:50,367 - aider.providers.stackspot_config - DEBUG - Validating URL: https://genai-code-buddy-api.stackspot.com
+2025-02-05 10:46:50,367 - aider.providers.stackspot_config - DEBUG - Normalizing path: v1/quick-commands/execution
+2025-02-05 10:46:50,367 - aider.providers.stackspot_config - DEBUG - Built URL: https://genai-code-buddy-api.stackspot.com/v1/quick-commands/execution
+2025-02-05 10:46:50,367 - aider.providers.stackspot_config - INFO - Endpoint URLs built successfully
+2025-02-05 10:46:50,367 - aider.providers.stackspot_config - DEBUG - Auth URL: https://auth.stackspot.com/realms/stackspot/protocol/openid-connect/token
+2025-02-05 10:46:50,367 - aider.providers.stackspot_config - DEBUG - Create execution URL: https://genai-code-buddy-api.stackspot.com/v1/quick-commands/create-execution
+2025-02-05 10:46:50,367 - aider.providers.stackspot_config - DEBUG - Check execution URL: https://genai-code-buddy-api.stackspot.com/v1/quick-commands/execution
+2025-02-05 10:46:50,367 - aider.providers.stackspot_config - INFO - Creating final configuration...
+2025-02-05 10:46:50,367 - aider.providers.stackspot_config - DEBUG - Using default User-Agent: aider/1.0 (+https://aider.chat)
+2025-02-05 10:46:50,367 - aider.providers.stackspot_config - INFO - StackSpot configuration completed successfully
+2025-02-05 10:46:50,367 - httpx - DEBUG - load_ssl_context verify=True cert=None trust_env=True http2=False
+2025-02-05 10:46:50,368 - httpx - DEBUG - load_verify_locations cafile='/home/pimentel/.cache/pypoetry/virtualenvs/aider-TKH8PC99-py3.12/lib/python3.12/site-packages/certifi/cacert.pem'
+2025-02-05 10:46:50,409 - aider.providers.stackspot - INFO - StackSpot provider initialized successfully
+2025-02-05 10:46:50,478 - aider.providers.stackspot - DEBUG - StackSpot provider cleanup
+2025-02-05 10:46:50,478 - asyncio - DEBUG - Using selector: EpollSelector
+2025-02-05 10:46:50,479 - aider.providers.stackspot - INFO - Closing HTTP client
+2025-02-05 10:46:50,483 - aider.coders.base_coder - INFO - Iniciando coder
+2025-02-05 10:46:50,555 - asyncio - DEBUG - Using selector: EpollSelector
+2025-02-05 10:46:50,668 - watchfiles.main - DEBUG - all changes filtered out, raw_changes={(2, '/home/pimentel/Workspace/aider/aider.log')}
+2025-02-05 10:46:50,769 - watchfiles.main - DEBUG - all changes filtered out, raw_changes={(2, '/home/pimentel/Workspace/aider/aider.log')}
+2025-02-05 10:46:50,870 - watchfiles.main - DEBUG - all changes filtered out, raw_changes={(2, '/home/pimentel/Workspace/aider/aider.log')}
+2025-02-05 10:46:50,971 - watchfiles.main - DEBUG - all changes filtered out, raw_changes={(2, '/home/pimentel/Workspace/aider/aider.log')}
+2025-02-05 10:46:51,072 - watchfiles.main - DEBUG - all changes filtered out, raw_changes={(2, '/home/pimentel/Workspace/aider/aider.log')}
+2025-02-05 10:46:51,175 - watchfiles.main - DEBUG - all changes filtered out, raw_changes={(2, '/home/pimentel/Workspace/aider/aider.log')}
+2025-02-05 10:46:51,290 - watchfiles.main - DEBUG - all changes filtered out, raw_changes={(2, '/home/pimentel/Workspace/aider/aider.log')}
+2025-02-05 10:46:51,391 - watchfiles.main - DEBUG - all changes filtered out, raw_changes={(2, '/home/pimentel/Workspace/aider/aider.log')}
+2025-02-05 10:46:51,494 - watchfiles.main - DEBUG - all changes filtered out, raw_changes={(2, '/home/pimentel/Workspace/aider/aider.log')}
+2025-02-05 10:46:51,595 - watchfiles.main - DEBUG - all changes filtered out, raw_changes={(2, '/home/pimentel/Workspace/aider/aider.log')}
+2025-02-05 10:46:51,696 - watchfiles.main - DEBUG - all changes filtered out, raw_changes={(2, '/home/pimentel/Workspace/aider/aider.log')}
+2025-02-05 10:46:51,807 - watchfiles.main - DEBUG - all changes filtered out, raw_changes={(2, '/home/pimentel/Workspace/aider/aider.log')}
+2025-02-05 10:46:51,909 - watchfiles.main - DEBUG - all changes filtered out, raw_changes={(2, '/home/pimentel/Workspace/aider/aider.log')}
+2025-02-05 10:46:52,010 - watchfiles.main - DEBUG - all changes filtered out, raw_changes={(2, '/home/pimentel/Workspace/aider/aider.log')}
+2025-02-05 10:46:52,111 - watchfiles.main - DEBUG - all changes filtered out, raw_changes={(2, '/home/pimentel/Workspace/aider/aider.log')}
+2025-02-05 10:46:52,214 - watchfiles.main - DEBUG - all changes filtered out, raw_changes={(2, '/home/pimentel/Workspace/aider/aider.log')}
+2025-02-05 10:46:52,315 - watchfiles.main - DEBUG - all changes filtered out, raw_changes={(2, '/home/pimentel/Workspace/aider/aider.log')}
+2025-02-05 10:46:52,418 - watchfiles.main - DEBUG - all changes filtered out, raw_changes={(2, '/home/pimentel/Workspace/aider/aider.log')}
+2025-02-05 10:46:52,521 - watchfiles.main - DEBUG - all changes filtered out, raw_changes={(2, '/home/pimentel/Workspace/aider/aider.log')}
+2025-02-05 10:46:52,630 - watchfiles.main - DEBUG - all changes filtered out, raw_changes={(2, '/home/pimentel/Workspace/aider/aider.log')}
+2025-02-05 10:46:52,731 - watchfiles.main - DEBUG - all changes filtered out, raw_changes={(2, '/home/pimentel/Workspace/aider/aider.log')}
+2025-02-05 10:46:52,832 - watchfiles.main - DEBUG - all changes filtered out, raw_changes={(2, '/home/pimentel/Workspace/aider/aider.log')}
+2025-02-05 10:46:52,935 - watchfiles.main - DEBUG - all changes filtered out, raw_changes={(2, '/home/pimentel/Workspace/aider/aider.log')}
+2025-02-05 10:46:53,037 - watchfiles.main - DEBUG - all changes filtered out, raw_changes={(2, '/home/pimentel/Workspace/aider/aider.log')}
+2025-02-05 10:46:53,138 - watchfiles.main - DEBUG - all changes filtered out, raw_changes={(2, '/home/pimentel/Workspace/aider/aider.log')}
+2025-02-05 10:46:53,239 - watchfiles.main - DEBUG - all changes filtered out, raw_changes={(2, '/home/pimentel/Workspace/aider/aider.log')}
+2025-02-05 10:46:53,340 - watchfiles.main - DEBUG - all changes filtered out, raw_changes={(2, '/home/pimentel/Workspace/aider/aider.log')}
+2025-02-05 10:46:53,441 - watchfiles.main - DEBUG - all changes filtered out, raw_changes={(2, '/home/pimentel/Workspace/aider/aider.log')}
+2025-02-05 10:46:53,542 - watchfiles.main - DEBUG - all changes filtered out, raw_changes={(2, '/home/pimentel/Workspace/aider/aider.log')}
+2025-02-05 10:46:53,643 - watchfiles.main - DEBUG - all changes filtered out, raw_changes={(2, '/home/pimentel/Workspace/aider/aider.log')}
+2025-02-05 10:46:53,746 - watchfiles.main - DEBUG - all changes filtered out, raw_changes={(2, '/home/pimentel/Workspace/aider/aider.log')}
+2025-02-05 10:46:53,847 - watchfiles.main - DEBUG - all changes filtered out, raw_changes={(2, '/home/pimentel/Workspace/aider/aider.log')}
+2025-02-05 10:46:53,948 - watchfiles.main - DEBUG - all changes filtered out, raw_changes={(2, '/home/pimentel/Workspace/aider/aider.log')}
+2025-02-05 10:46:54,049 - watchfiles.main - DEBUG - all changes filtered out, raw_changes={(2, '/home/pimentel/Workspace/aider/aider.log')}
+2025-02-05 10:46:54,157 - watchfiles.main - DEBUG - all changes filtered out, raw_changes={(2, '/home/pimentel/Workspace/aider/aider.log')}
+2025-02-05 10:46:54,258 - watchfiles.main - DEBUG - all changes filtered out, raw_changes={(2, '/home/pimentel/Workspace/aider/aider.log')}
+2025-02-05 10:46:54,359 - watchfiles.main - DEBUG - all changes filtered out, raw_changes={(2, '/home/pimentel/Workspace/aider/aider.log')}
+2025-02-05 10:46:54,460 - watchfiles.main - DEBUG - all changes filtered out, raw_changes={(2, '/home/pimentel/Workspace/aider/aider.log')}
+2025-02-05 10:46:54,562 - watchfiles.main - DEBUG - all changes filtered out, raw_changes={(2, '/home/pimentel/Workspace/aider/aider.log')}
+2025-02-05 10:46:54,668 - watchfiles.main - DEBUG - all changes filtered out, raw_changes={(2, '/home/pimentel/Workspace/aider/aider.log')}
+2025-02-05 10:46:54,769 - watchfiles.main - DEBUG - all changes filtered out, raw_changes={(2, '/home/pimentel/Workspace/aider/aider.log')}
+2025-02-05 10:46:54,878 - watchfiles.main - DEBUG - all changes filtered out, raw_changes={(2, '/home/pimentel/Workspace/aider/aider.log')}
+2025-02-05 10:46:54,994 - watchfiles.main - DEBUG - all changes filtered out, raw_changes={(2, '/home/pimentel/Workspace/aider/aider.log')}
+2025-02-05 10:46:55,096 - watchfiles.main - DEBUG - all changes filtered out, raw_changes={(2, '/home/pimentel/Workspace/aider/aider.log')}
+2025-02-05 10:46:55,197 - watchfiles.main - DEBUG - all changes filtered out, raw_changes={(2, '/home/pimentel/Workspace/aider/aider.log')}
+2025-02-05 10:46:55,298 - watchfiles.main - DEBUG - all changes filtered out, raw_changes={(2, '/home/pimentel/Workspace/aider/aider.log')}
+2025-02-05 10:46:55,408 - watchfiles.main - DEBUG - all changes filtered out, raw_changes={(2, '/home/pimentel/Workspace/aider/aider.log')}
+2025-02-05 10:46:55,509 - watchfiles.main - DEBUG - all changes filtered out, raw_changes={(2, '/home/pimentel/Workspace/aider/aider.log')}
+2025-02-05 10:46:55,610 - watchfiles.main - DEBUG - all changes filtered out, raw_changes={(2, '/home/pimentel/Workspace/aider/aider.log')}
+2025-02-05 10:46:55,711 - watchfiles.main - DEBUG - all changes filtered out, raw_changes={(2, '/home/pimentel/Workspace/aider/aider.log')}
+2025-02-05 10:46:55,812 - watchfiles.main - DEBUG - all changes filtered out, raw_changes={(2, '/home/pimentel/Workspace/aider/aider.log')}
+2025-02-05 10:46:55,913 - watchfiles.main - DEBUG - all changes filtered out, raw_changes={(2, '/home/pimentel/Workspace/aider/aider.log')}
+2025-02-05 10:46:56,015 - watchfiles.main - DEBUG - all changes filtered out, raw_changes={(2, '/home/pimentel/Workspace/aider/aider.log')}
+2025-02-05 10:46:56,116 - watchfiles.main - DEBUG - all changes filtered out, raw_changes={(2, '/home/pimentel/Workspace/aider/aider.log')}
+2025-02-05 10:46:56,219 - watchfiles.main - DEBUG - all changes filtered out, raw_changes={(2, '/home/pimentel/Workspace/aider/aider.log')}
+2025-02-05 10:46:56,322 - watchfiles.main - DEBUG - all changes filtered out, raw_changes={(2, '/home/pimentel/Workspace/aider/aider.log')}
+2025-02-05 10:46:56,423 - watchfiles.main - DEBUG - all changes filtered out, raw_changes={(2, '/home/pimentel/Workspace/aider/aider.log')}
+2025-02-05 10:46:56,524 - watchfiles.main - DEBUG - all changes filtered out, raw_changes={(2, '/home/pimentel/Workspace/aider/aider.log')}
+2025-02-05 10:46:56,625 - watchfiles.main - DEBUG - all changes filtered out, raw_changes={(2, '/home/pimentel/Workspace/aider/aider.log')}
+2025-02-05 10:46:56,727 - watchfiles.main - DEBUG - all changes filtered out, raw_changes={(2, '/home/pimentel/Workspace/aider/aider.log')}
+2025-02-05 10:46:56,836 - watchfiles.main - DEBUG - all changes filtered out, raw_changes={(2, '/home/pimentel/Workspace/aider/aider.log')}
+2025-02-05 10:46:56,937 - watchfiles.main - DEBUG - all changes filtered out, raw_changes={(2, '/home/pimentel/Workspace/aider/aider.log')}
+2025-02-05 10:46:57,038 - watchfiles.main - DEBUG - all changes filtered out, raw_changes={(2, '/home/pimentel/Workspace/aider/aider.log')}
+2025-02-05 10:46:57,139 - watchfiles.main - DEBUG - all changes filtered out, raw_changes={(2, '/home/pimentel/Workspace/aider/aider.log')}
+2025-02-05 10:46:57,240 - watchfiles.main - DEBUG - all changes filtered out, raw_changes={(2, '/home/pimentel/Workspace/aider/aider.log')}
+2025-02-05 10:46:57,341 - watchfiles.main - DEBUG - all changes filtered out, raw_changes={(2, '/home/pimentel/Workspace/aider/aider.log')}
+2025-02-05 10:46:57,442 - watchfiles.main - DEBUG - all changes filtered out, raw_changes={(2, '/home/pimentel/Workspace/aider/aider.log')}
+2025-02-05 10:46:57,544 - watchfiles.main - DEBUG - all changes filtered out, raw_changes={(2, '/home/pimentel/Workspace/aider/aider.log')}
+2025-02-05 10:46:57,645 - watchfiles.main - DEBUG - all changes filtered out, raw_changes={(2, '/home/pimentel/Workspace/aider/aider.log')}
+2025-02-05 10:46:57,759 - watchfiles.main - DEBUG - all changes filtered out, raw_changes={(2, '/home/pimentel/Workspace/aider/aider.log')}
+2025-02-05 10:46:57,860 - watchfiles.main - DEBUG - all changes filtered out, raw_changes={(2, '/home/pimentel/Workspace/aider/aider.log')}
+2025-02-05 10:46:57,961 - watchfiles.main - DEBUG - all changes filtered out, raw_changes={(2, '/home/pimentel/Workspace/aider/aider.log')}
+2025-02-05 10:46:58,062 - watchfiles.main - DEBUG - all changes filtered out, raw_changes={(2, '/home/pimentel/Workspace/aider/aider.log')}
+2025-02-05 10:46:58,166 - watchfiles.main - DEBUG - all changes filtered out, raw_changes={(2, '/home/pimentel/Workspace/aider/aider.log')}
+2025-02-05 10:46:58,267 - watchfiles.main - DEBUG - all changes filtered out, raw_changes={(2, '/home/pimentel/Workspace/aider/aider.log')}
+2025-02-05 10:46:58,368 - watchfiles.main - DEBUG - all changes filtered out, raw_changes={(2, '/home/pimentel/Workspace/aider/aider.log')}
+2025-02-05 10:46:58,469 - watchfiles.main - DEBUG - all changes filtered out, raw_changes={(2, '/home/pimentel/Workspace/aider/aider.log')}
+2025-02-05 10:46:58,570 - watchfiles.main - DEBUG - all changes filtered out, raw_changes={(2, '/home/pimentel/Workspace/aider/aider.log')}
+2025-02-05 10:46:58,670 - watchfiles.main - DEBUG - all changes filtered out, raw_changes={(2, '/home/pimentel/Workspace/aider/aider.log')}
+2025-02-05 10:46:58,771 - watchfiles.main - DEBUG - all changes filtered out, raw_changes={(2, '/home/pimentel/Workspace/aider/aider.log')}
+2025-02-05 10:46:58,872 - watchfiles.main - DEBUG - all changes filtered out, raw_changes={(2, '/home/pimentel/Workspace/aider/aider.log')}
+2025-02-05 10:46:58,973 - watchfiles.main - DEBUG - all changes filtered out, raw_changes={(2, '/home/pimentel/Workspace/aider/aider.log')}
+2025-02-05 10:46:59,074 - watchfiles.main - DEBUG - all changes filtered out, raw_changes={(2, '/home/pimentel/Workspace/aider/aider.log')}
+2025-02-05 10:46:59,175 - watchfiles.main - DEBUG - all changes filtered out, raw_changes={(2, '/home/pimentel/Workspace/aider/aider.log')}
+2025-02-05 10:46:59,276 - watchfiles.main - DEBUG - all changes filtered out, raw_changes={(2, '/home/pimentel/Workspace/aider/aider.log')}
+2025-02-05 10:46:59,377 - watchfiles.main - DEBUG - all changes filtered out, raw_changes={(2, '/home/pimentel/Workspace/aider/aider.log')}
+2025-02-05 10:46:59,478 - watchfiles.main - DEBUG - all changes filtered out, raw_changes={(2, '/home/pimentel/Workspace/aider/aider.log')}
+2025-02-05 10:46:59,579 - watchfiles.main - DEBUG - all changes filtered out, raw_changes={(2, '/home/pimentel/Workspace/aider/aider.log')}
+2025-02-05 10:46:59,680 - watchfiles.main - DEBUG - all changes filtered out, raw_changes={(2, '/home/pimentel/Workspace/aider/aider.log')}
+2025-02-05 10:46:59,781 - watchfiles.main - DEBUG - all changes filtered out, raw_changes={(2, '/home/pimentel/Workspace/aider/aider.log')}
+2025-02-05 10:46:59,882 - watchfiles.main - DEBUG - all changes filtered out, raw_changes={(2, '/home/pimentel/Workspace/aider/aider.log')}
+2025-02-05 10:46:59,983 - watchfiles.main - DEBUG - all changes filtered out, raw_changes={(2, '/home/pimentel/Workspace/aider/aider.log')}
+2025-02-05 10:47:00,085 - watchfiles.main - DEBUG - all changes filtered out, raw_changes={(2, '/home/pimentel/Workspace/aider/aider.log')}
+2025-02-05 10:47:00,186 - watchfiles.main - DEBUG - all changes filtered out, raw_changes={(2, '/home/pimentel/Workspace/aider/aider.log')}
+2025-02-05 10:47:00,291 - watchfiles.main - DEBUG - all changes filtered out, raw_changes={(2, '/home/pimentel/Workspace/aider/aider.log')}
+2025-02-05 10:47:00,393 - watchfiles.main - DEBUG - all changes filtered out, raw_changes={(2, '/home/pimentel/Workspace/aider/aider.log')}
+2025-02-05 10:47:00,494 - watchfiles.main - DEBUG - all changes filtered out, raw_changes={(2, '/home/pimentel/Workspace/aider/aider.log')}
+2025-02-05 10:47:00,595 - watchfiles.main - DEBUG - all changes filtered out, raw_changes={(2, '/home/pimentel/Workspace/aider/aider.log')}
+2025-02-05 10:47:00,697 - watchfiles.main - DEBUG - all changes filtered out, raw_changes={(2, '/home/pimentel/Workspace/aider/aider.log')}
+2025-02-05 10:47:00,800 - watchfiles.main - DEBUG - all changes filtered out, raw_changes={(2, '/home/pimentel/Workspace/aider/aider.log')}
+2025-02-05 10:47:00,902 - watchfiles.main - DEBUG - all changes filtered out, raw_changes={(2, '/home/pimentel/Workspace/aider/aider.log')}
+2025-02-05 10:47:01,003 - watchfiles.main - DEBUG - all changes filtered out, raw_changes={(2, '/home/pimentel/Workspace/aider/aider.log')}
+2025-02-05 10:47:01,106 - watchfiles.main - DEBUG - all changes filtered out, raw_changes={(2, '/home/pimentel/Workspace/aider/aider.log')}
+2025-02-05 10:47:01,208 - watchfiles.main - DEBUG - all changes filtered out, raw_changes={(2, '/home/pimentel/Workspace/aider/aider.log')}
+2025-02-05 10:47:01,311 - watchfiles.main - DEBUG - all changes filtered out, raw_changes={(2, '/home/pimentel/Workspace/aider/aider.log')}
+2025-02-05 10:47:01,413 - watchfiles.main - DEBUG - all changes filtered out, raw_changes={(2, '/home/pimentel/Workspace/aider/aider.log')}
+2025-02-05 10:47:01,463 - aider.coders.base_coder - INFO - Interrupção do usuário recebida
+2025-02-05 10:47:01,512 - asyncio - DEBUG - Using selector: EpollSelector
+2025-02-05 10:47:01,613 - watchfiles.main - DEBUG - all changes filtered out, raw_changes={(2, '/home/pimentel/Workspace/aider/aider.log')}
+2025-02-05 10:47:01,714 - watchfiles.main - DEBUG - all changes filtered out, raw_changes={(2, '/home/pimentel/Workspace/aider/aider.log')}
+2025-02-05 10:47:01,815 - watchfiles.main - DEBUG - all changes filtered out, raw_changes={(2, '/home/pimentel/Workspace/aider/aider.log')}
+2025-02-05 10:47:01,916 - watchfiles.main - DEBUG - all changes filtered out, raw_changes={(2, '/home/pimentel/Workspace/aider/aider.log')}
+2025-02-05 10:47:02,017 - watchfiles.main - DEBUG - all changes filtered out, raw_changes={(2, '/home/pimentel/Workspace/aider/aider.log')}
+2025-02-05 10:47:02,126 - watchfiles.main - DEBUG - all changes filtered out, raw_changes={(2, '/home/pimentel/Workspace/aider/aider.log')}
+2025-02-05 10:47:02,227 - watchfiles.main - DEBUG - all changes filtered out, raw_changes={(2, '/home/pimentel/Workspace/aider/aider.log')}
+2025-02-05 10:47:02,328 - watchfiles.main - DEBUG - all changes filtered out, raw_changes={(2, '/home/pimentel/Workspace/aider/aider.log')}
+2025-02-05 10:47:02,429 - watchfiles.main - DEBUG - all changes filtered out, raw_changes={(2, '/home/pimentel/Workspace/aider/aider.log')}
+2025-02-05 10:47:02,530 - watchfiles.main - DEBUG - all changes filtered out, raw_changes={(2, '/home/pimentel/Workspace/aider/aider.log')}
+2025-02-05 10:47:02,631 - watchfiles.main - DEBUG - all changes filtered out, raw_changes={(2, '/home/pimentel/Workspace/aider/aider.log')}
+2025-02-05 10:47:02,740 - watchfiles.main - DEBUG - all changes filtered out, raw_changes={(2, '/home/pimentel/Workspace/aider/aider.log')}
+2025-02-05 10:47:02,841 - watchfiles.main - DEBUG - all changes filtered out, raw_changes={(2, '/home/pimentel/Workspace/aider/aider.log')}
+2025-02-05 10:47:02,942 - watchfiles.main - DEBUG - all changes filtered out, raw_changes={(2, '/home/pimentel/Workspace/aider/aider.log')}
+2025-02-05 10:47:03,043 - watchfiles.main - DEBUG - all changes filtered out, raw_changes={(2, '/home/pimentel/Workspace/aider/aider.log')}
+2025-02-05 10:47:03,144 - aider.coders.base_coder - INFO - Interrupção do usuário recebida
+2025-02-05 10:47:03,231 - aider.providers.stackspot - DEBUG - StackSpot provider cleanup
+2025-02-05 10:47:03,231 - aider.providers.stackspot - DEBUG - Error during cleanup: There is no current event loop in thread 'MainThread'.
+2025-02-05 10:48:56,584 - aider.providers.stackspot - INFO - Initializing StackSpot provider
+2025-02-05 10:48:56,584 - aider.providers.stackspot_config - INFO - Starting StackSpot configuration...
+2025-02-05 10:48:56,584 - aider.providers.stackspot_config - INFO - Using realm: stackspot
+2025-02-05 10:48:56,584 - aider.providers.stackspot_config - INFO - Auth base URL: https://auth.stackspot.com
+2025-02-05 10:48:56,585 - aider.providers.stackspot_config - INFO - API base URL: https://genai-code-buddy-api.stackspot.com
+2025-02-05 10:48:56,585 - aider.providers.stackspot_config - INFO - URLs validated successfully
+2025-02-05 10:48:56,585 - aider.providers.stackspot_config - INFO - Endpoint URLs built successfully
+2025-02-05 10:48:56,585 - aider.providers.stackspot_config - INFO - Creating final configuration...
+2025-02-05 10:48:56,585 - aider.providers.stackspot_config - INFO - StackSpot configuration completed successfully
+2025-02-05 10:48:56,626 - aider.providers.stackspot - INFO - StackSpot provider initialized successfully
+2025-02-05 10:48:56,627 - aider.providers.stackspot - INFO - Initializing StackSpot provider
+2025-02-05 10:48:56,627 - aider.providers.stackspot_config - INFO - Starting StackSpot configuration...
+2025-02-05 10:48:56,627 - aider.providers.stackspot_config - INFO - Using realm: stackspot
+2025-02-05 10:48:56,627 - aider.providers.stackspot_config - INFO - Auth base URL: https://auth.stackspot.com
+2025-02-05 10:48:56,627 - aider.providers.stackspot_config - INFO - API base URL: https://genai-code-buddy-api.stackspot.com
+2025-02-05 10:48:56,627 - aider.providers.stackspot_config - INFO - URLs validated successfully
+2025-02-05 10:48:56,627 - aider.providers.stackspot_config - INFO - Endpoint URLs built successfully
+2025-02-05 10:48:56,627 - aider.providers.stackspot_config - INFO - Creating final configuration...
+2025-02-05 10:48:56,627 - aider.providers.stackspot_config - INFO - StackSpot configuration completed successfully
+2025-02-05 10:48:56,669 - aider.providers.stackspot - INFO - StackSpot provider initialized successfully
+2025-02-05 10:48:56,724 - aider.coders.base_coder - INFO - Iniciando coder
+2025-02-05 10:49:20,851 - aider.coders.base_coder - INFO - Interrupção do usuário recebida
+2025-02-05 10:49:22,959 - aider.coders.base_coder - INFO - Interrupção do usuário recebida
+2025-02-05 10:49:28,167 - aider.coders.base_coder - INFO - Interrupção do usuário recebida
+2025-02-05 10:49:28,408 - aider.coders.base_coder - INFO - Interrupção do usuário recebida
+2025-02-05 10:50:27,503 - aider.providers.stackspot - INFO - Initializing StackSpot provider
+2025-02-05 10:50:27,504 - aider.providers.stackspot_config - INFO - Starting StackSpot configuration...
+2025-02-05 10:50:27,504 - aider.providers.stackspot_config - INFO - Using realm: stackspot
+2025-02-05 10:50:27,504 - aider.providers.stackspot_config - INFO - Auth base URL: https://auth.stackspot.com
+2025-02-05 10:50:27,504 - aider.providers.stackspot_config - INFO - API base URL: https://genai-code-buddy-api.stackspot.com
+2025-02-05 10:50:27,504 - aider.providers.stackspot_config - INFO - URLs validated successfully
+2025-02-05 10:50:27,504 - aider.providers.stackspot_config - INFO - Endpoint URLs built successfully
+2025-02-05 10:50:27,504 - aider.providers.stackspot_config - INFO - Creating final configuration...
+2025-02-05 10:50:27,504 - aider.providers.stackspot_config - INFO - StackSpot configuration completed successfully
+2025-02-05 10:50:27,547 - aider.providers.stackspot - INFO - StackSpot provider initialized successfully
+2025-02-05 10:50:27,547 - aider.providers.stackspot - INFO - Initializing StackSpot provider
+2025-02-05 10:50:27,547 - aider.providers.stackspot_config - INFO - Starting StackSpot configuration...
+2025-02-05 10:50:27,548 - aider.providers.stackspot_config - INFO - Using realm: stackspot
+2025-02-05 10:50:27,548 - aider.providers.stackspot_config - INFO - Auth base URL: https://auth.stackspot.com
+2025-02-05 10:50:27,548 - aider.providers.stackspot_config - INFO - API base URL: https://genai-code-buddy-api.stackspot.com
+2025-02-05 10:50:27,548 - aider.providers.stackspot_config - INFO - URLs validated successfully
+2025-02-05 10:50:27,548 - aider.providers.stackspot_config - INFO - Endpoint URLs built successfully
+2025-02-05 10:50:27,548 - aider.providers.stackspot_config - INFO - Creating final configuration...
+2025-02-05 10:50:27,548 - aider.providers.stackspot_config - INFO - StackSpot configuration completed successfully
+2025-02-05 10:50:27,591 - aider.providers.stackspot - INFO - StackSpot provider initialized successfully
+2025-02-05 10:50:27,651 - aider.coders.base_coder - INFO - Iniciando coder
+2025-02-05 10:50:36,055 - aider.coders.base_coder - INFO - Interrupção do usuário recebida
+2025-02-05 10:50:36,248 - aider.coders.base_coder - INFO - Interrupção do usuário recebida
+2025-02-05 10:52:53,090 - aider.providers.stackspot - INFO - Initializing StackSpot provider
+2025-02-05 10:52:53,090 - aider.providers.stackspot_config - INFO - Starting StackSpot configuration...
+2025-02-05 10:52:53,090 - aider.providers.stackspot_config - INFO - Using realm: stackspot
+2025-02-05 10:52:53,090 - aider.providers.stackspot_config - INFO - Auth base URL: https://auth.stackspot.com
+2025-02-05 10:52:53,090 - aider.providers.stackspot_config - INFO - API base URL: https://genai-code-buddy-api.stackspot.com
+2025-02-05 10:52:53,090 - aider.providers.stackspot_config - INFO - URLs validated successfully
+2025-02-05 10:52:53,090 - aider.providers.stackspot_config - INFO - Endpoint URLs built successfully
+2025-02-05 10:52:53,091 - aider.providers.stackspot_config - INFO - Creating final configuration...
+2025-02-05 10:52:53,091 - aider.providers.stackspot_config - INFO - StackSpot configuration completed successfully
+2025-02-05 10:52:53,134 - aider.providers.stackspot - INFO - StackSpot provider initialized successfully
+2025-02-05 10:52:53,134 - aider.providers.stackspot - INFO - Initializing StackSpot provider
+2025-02-05 10:52:53,134 - aider.providers.stackspot_config - INFO - Starting StackSpot configuration...
+2025-02-05 10:52:53,134 - aider.providers.stackspot_config - INFO - Using realm: stackspot
+2025-02-05 10:52:53,134 - aider.providers.stackspot_config - INFO - Auth base URL: https://auth.stackspot.com
+2025-02-05 10:52:53,134 - aider.providers.stackspot_config - INFO - API base URL: https://genai-code-buddy-api.stackspot.com
+2025-02-05 10:52:53,135 - aider.providers.stackspot_config - INFO - URLs validated successfully
+2025-02-05 10:52:53,135 - aider.providers.stackspot_config - INFO - Endpoint URLs built successfully
+2025-02-05 10:52:53,135 - aider.providers.stackspot_config - INFO - Creating final configuration...
+2025-02-05 10:52:53,135 - aider.providers.stackspot_config - INFO - StackSpot configuration completed successfully
+2025-02-05 10:52:53,176 - aider.providers.stackspot - INFO - StackSpot provider initialized successfully
+2025-02-05 10:54:21,826 - aider.providers.stackspot - INFO - Initializing StackSpot provider
+2025-02-05 10:54:21,826 - aider.providers.stackspot_config - INFO - Starting StackSpot configuration...
+2025-02-05 10:54:21,826 - aider.providers.stackspot_config - INFO - Using realm: stackspot
+2025-02-05 10:54:21,826 - aider.providers.stackspot_config - INFO - Auth base URL: https://auth.stackspot.com
+2025-02-05 10:54:21,826 - aider.providers.stackspot_config - INFO - API base URL: https://genai-code-buddy-api.stackspot.com
+2025-02-05 10:54:21,827 - aider.providers.stackspot_config - INFO - URLs validated successfully
+2025-02-05 10:54:21,827 - aider.providers.stackspot_config - INFO - Endpoint URLs built successfully
+2025-02-05 10:54:21,827 - aider.providers.stackspot_config - INFO - Creating final configuration...
+2025-02-05 10:54:21,827 - aider.providers.stackspot_config - INFO - StackSpot configuration completed successfully
+2025-02-05 10:54:21,869 - aider.providers.stackspot - INFO - StackSpot provider initialized successfully
+2025-02-05 10:54:21,869 - aider.providers.stackspot - INFO - Initializing StackSpot provider
+2025-02-05 10:54:21,869 - aider.providers.stackspot_config - INFO - Starting StackSpot configuration...
+2025-02-05 10:54:21,869 - aider.providers.stackspot_config - INFO - Using realm: stackspot
+2025-02-05 10:54:21,869 - aider.providers.stackspot_config - INFO - Auth base URL: https://auth.stackspot.com
+2025-02-05 10:54:21,869 - aider.providers.stackspot_config - INFO - API base URL: https://genai-code-buddy-api.stackspot.com
+2025-02-05 10:54:21,869 - aider.providers.stackspot_config - INFO - URLs validated successfully
+2025-02-05 10:54:21,869 - aider.providers.stackspot_config - INFO - Endpoint URLs built successfully
+2025-02-05 10:54:21,870 - aider.providers.stackspot_config - INFO - Creating final configuration...
+2025-02-05 10:54:21,870 - aider.providers.stackspot_config - INFO - StackSpot configuration completed successfully
+2025-02-05 10:54:21,910 - aider.providers.stackspot - INFO - StackSpot provider initialized successfully
+2025-02-05 11:18:27,929 - aider.providers.stackspot - INFO - Initializing StackSpot provider
+2025-02-05 11:18:27,930 - aider.providers.stackspot_config - INFO - Starting StackSpot configuration...
+2025-02-05 11:18:27,930 - aider.providers.stackspot_config - INFO - Using realm: stackspot
+2025-02-05 11:18:27,930 - aider.providers.stackspot_config - INFO - Auth base URL: https://auth.stackspot.com
+2025-02-05 11:18:27,930 - aider.providers.stackspot_config - INFO - API base URL: https://genai-code-buddy-api.stackspot.com
+2025-02-05 11:18:27,930 - aider.providers.stackspot_config - INFO - URLs validated successfully
+2025-02-05 11:18:27,930 - aider.providers.stackspot_config - INFO - Endpoint URLs built successfully
+2025-02-05 11:18:27,930 - aider.providers.stackspot_config - INFO - Creating final configuration...
+2025-02-05 11:18:27,930 - aider.providers.stackspot_config - INFO - StackSpot configuration completed successfully
+2025-02-05 11:18:27,972 - aider.providers.stackspot - INFO - StackSpot provider initialized successfully
+2025-02-05 11:18:27,975 - aider.main - ERROR - Erro não tratado: 1 validation error for Model
+api_key
+  Input should be a valid string [type=string_type, input_value=['stackspot=test-key-123'], input_type=list]
+    For further information visit https://errors.pydantic.dev/2.9/v/string_type
+Traceback (most recent call last):
+  File "/home/pimentel/Workspace/aider/aider/main.py", line 489, in main
+    model_settings = Model(
+                     ^^^^^^
+  File "/home/pimentel/Workspace/aider/aider/models/model.py", line 80, in __init__
+    super().__init__(
+  File "/home/pimentel/Workspace/aider/aider/models/settings.py", line 46, in __init__
+    super().__init__(**data)
+  File "/home/pimentel/.cache/pypoetry/virtualenvs/aider-TKH8PC99-py3.12/lib/python3.12/site-packages/pydantic/main.py", line 212, in __init__
+    validated_self = self.__pydantic_validator__.validate_python(data, self_instance=self)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+pydantic_core._pydantic_core.ValidationError: 1 validation error for Model
+api_key
+  Input should be a valid string [type=string_type, input_value=['stackspot=test-key-123'], input_type=list]
+    For further information visit https://errors.pydantic.dev/2.9/v/string_type
+2025-02-05 11:22:07,005 - aider.providers.stackspot - INFO - Initializing StackSpot provider
+2025-02-05 11:22:07,005 - aider.providers.stackspot_config - INFO - Starting StackSpot configuration...
+2025-02-05 11:22:07,005 - aider.providers.stackspot_config - INFO - Using realm: stackspot
+2025-02-05 11:22:07,005 - aider.providers.stackspot_config - INFO - Auth base URL: https://auth.stackspot.com
+2025-02-05 11:22:07,005 - aider.providers.stackspot_config - INFO - API base URL: https://genai-code-buddy-api.stackspot.com
+2025-02-05 11:22:07,005 - aider.providers.stackspot_config - INFO - URLs validated successfully
+2025-02-05 11:22:07,006 - aider.providers.stackspot_config - INFO - Endpoint URLs built successfully
+2025-02-05 11:22:07,006 - aider.providers.stackspot_config - INFO - Creating final configuration...
+2025-02-05 11:22:07,006 - aider.providers.stackspot_config - INFO - StackSpot configuration completed successfully
+2025-02-05 11:22:07,048 - aider.providers.stackspot - INFO - StackSpot provider initialized successfully
+2025-02-05 11:22:07,048 - aider.providers.stackspot - INFO - Initializing StackSpot provider
+2025-02-05 11:22:07,048 - aider.providers.stackspot_config - INFO - Starting StackSpot configuration...
+2025-02-05 11:22:07,048 - aider.providers.stackspot_config - INFO - Using realm: stackspot
+2025-02-05 11:22:07,049 - aider.providers.stackspot_config - INFO - Auth base URL: https://auth.stackspot.com
+2025-02-05 11:22:07,049 - aider.providers.stackspot_config - INFO - API base URL: https://genai-code-buddy-api.stackspot.com
+2025-02-05 11:22:07,049 - aider.providers.stackspot_config - INFO - URLs validated successfully
+2025-02-05 11:22:07,049 - aider.providers.stackspot_config - INFO - Endpoint URLs built successfully
+2025-02-05 11:22:07,049 - aider.providers.stackspot_config - INFO - Creating final configuration...
+2025-02-05 11:22:07,049 - aider.providers.stackspot_config - INFO - StackSpot configuration completed successfully
+2025-02-05 11:22:07,091 - aider.providers.stackspot - INFO - StackSpot provider initialized successfully
+2025-02-05 11:22:15,406 - aider.main - ERROR - Erro não tratado: 'bool' object is not callable
+Traceback (most recent call last):
+  File "/home/pimentel/Workspace/aider/aider/main.py", line 524, in main
+    coder.run()
+  File "/home/pimentel/Workspace/aider/aider/coders/base_coder.py", line 780, in run
+    self.show_undo_hint()
+TypeError: 'bool' object is not callable
+2025-02-05 11:50:49,161 - aider.providers.stackspot - INFO - Initializing StackSpot provider
+2025-02-05 11:50:49,161 - aider.providers.stackspot_config - INFO - Starting StackSpot configuration...
+2025-02-05 11:50:49,161 - aider.providers.stackspot_config - INFO - Using realm: stackspot
+2025-02-05 11:50:49,162 - aider.providers.stackspot_config - INFO - Auth base URL: https://auth.stackspot.com
+2025-02-05 11:50:49,162 - aider.providers.stackspot_config - INFO - API base URL: https://genai-code-buddy-api.stackspot.com
+2025-02-05 11:50:49,162 - aider.providers.stackspot_config - INFO - URLs validated successfully
+2025-02-05 11:50:49,162 - aider.providers.stackspot_config - INFO - Endpoint URLs built successfully
+2025-02-05 11:50:49,162 - aider.providers.stackspot_config - INFO - Creating final configuration...
+2025-02-05 11:50:49,163 - aider.providers.stackspot_config - INFO - StackSpot configuration completed successfully
+2025-02-05 11:50:49,206 - aider.providers.stackspot - INFO - StackSpot provider initialized successfully
+2025-02-05 11:50:49,206 - aider.providers.stackspot - INFO - Initializing StackSpot provider
+2025-02-05 11:50:49,206 - aider.providers.stackspot_config - INFO - Starting StackSpot configuration...
+2025-02-05 11:50:49,206 - aider.providers.stackspot_config - INFO - Using realm: stackspot
+2025-02-05 11:50:49,206 - aider.providers.stackspot_config - INFO - Auth base URL: https://auth.stackspot.com
+2025-02-05 11:50:49,206 - aider.providers.stackspot_config - INFO - API base URL: https://genai-code-buddy-api.stackspot.com
+2025-02-05 11:50:49,206 - aider.providers.stackspot_config - INFO - URLs validated successfully
+2025-02-05 11:50:49,206 - aider.providers.stackspot_config - INFO - Endpoint URLs built successfully
+2025-02-05 11:50:49,206 - aider.providers.stackspot_config - INFO - Creating final configuration...
+2025-02-05 11:50:49,207 - aider.providers.stackspot_config - INFO - StackSpot configuration completed successfully
+2025-02-05 11:50:49,248 - aider.providers.stackspot - INFO - StackSpot provider initialized successfully
+2025-02-05 11:50:50,743 - aider.main - ERROR - Erro não tratado: 'GitRepo' object has no attribute 'last_aider_commit_hash'
+Traceback (most recent call last):
+  File "/home/pimentel/Workspace/aider/aider/main.py", line 524, in main
+    coder.run()
+  File "/home/pimentel/Workspace/aider/aider/coders/base_coder.py", line 780, in run
+    self.show_undo_hint()
+  File "/home/pimentel/Workspace/aider/aider/coders/editblock_coder.py", line 236, in show_undo_hint
+    if not self.repo.last_aider_commit_hash:
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'GitRepo' object has no attribute 'last_aider_commit_hash'
+2025-02-05 11:57:38,417 - aider.providers.stackspot - INFO - Initializing StackSpot provider
+2025-02-05 11:57:38,417 - aider.providers.stackspot_config - INFO - Starting StackSpot configuration...
+2025-02-05 11:57:38,417 - aider.providers.stackspot_config - INFO - Using realm: stackspot
+2025-02-05 11:57:38,417 - aider.providers.stackspot_config - INFO - Auth base URL: https://auth.stackspot.com
+2025-02-05 11:57:38,417 - aider.providers.stackspot_config - INFO - API base URL: https://genai-code-buddy-api.stackspot.com
+2025-02-05 11:57:38,417 - aider.providers.stackspot_config - INFO - URLs validated successfully
+2025-02-05 11:57:38,417 - aider.providers.stackspot_config - INFO - Endpoint URLs built successfully
+2025-02-05 11:57:38,417 - aider.providers.stackspot_config - INFO - Creating final configuration...
+2025-02-05 11:57:38,417 - aider.providers.stackspot_config - INFO - StackSpot configuration completed successfully
+2025-02-05 11:57:38,460 - aider.providers.stackspot - INFO - StackSpot provider initialized successfully
+2025-02-05 11:57:38,461 - aider.providers.stackspot - INFO - Initializing StackSpot provider
+2025-02-05 11:57:38,461 - aider.providers.stackspot_config - INFO - Starting StackSpot configuration...
+2025-02-05 11:57:38,461 - aider.providers.stackspot_config - INFO - Using realm: stackspot
+2025-02-05 11:57:38,461 - aider.providers.stackspot_config - INFO - Auth base URL: https://auth.stackspot.com
+2025-02-05 11:57:38,461 - aider.providers.stackspot_config - INFO - API base URL: https://genai-code-buddy-api.stackspot.com
+2025-02-05 11:57:38,461 - aider.providers.stackspot_config - INFO - URLs validated successfully
+2025-02-05 11:57:38,462 - aider.providers.stackspot_config - INFO - Endpoint URLs built successfully
+2025-02-05 11:57:38,462 - aider.providers.stackspot_config - INFO - Creating final configuration...
+2025-02-05 11:57:38,462 - aider.providers.stackspot_config - INFO - StackSpot configuration completed successfully
+2025-02-05 11:57:38,504 - aider.providers.stackspot - INFO - StackSpot provider initialized successfully
+2025-02-05 14:30:48,569 - aider.providers.stackspot - INFO - Initializing StackSpot provider
+2025-02-05 14:30:48,570 - aider.providers.stackspot_config - INFO - Starting StackSpot configuration...
+2025-02-05 14:30:48,570 - aider.providers.stackspot_config - INFO - Using realm: stackspot
+2025-02-05 14:30:48,570 - aider.providers.stackspot_config - INFO - Auth base URL: https://auth.stackspot.com
+2025-02-05 14:30:48,570 - aider.providers.stackspot_config - INFO - API base URL: https://genai-code-buddy-api.stackspot.com
+2025-02-05 14:30:48,570 - aider.providers.stackspot_config - INFO - URLs validated successfully
+2025-02-05 14:30:48,570 - aider.providers.stackspot_config - INFO - Endpoint URLs built successfully
+2025-02-05 14:30:48,570 - aider.providers.stackspot_config - INFO - Creating final configuration...
+2025-02-05 14:30:48,570 - aider.providers.stackspot_config - INFO - StackSpot configuration completed successfully
+2025-02-05 14:30:48,611 - aider.providers.stackspot - INFO - StackSpot provider initialized successfully
+2025-02-05 14:30:48,612 - aider.providers.stackspot - INFO - Initializing StackSpot provider
+2025-02-05 14:30:48,612 - aider.providers.stackspot_config - INFO - Starting StackSpot configuration...
+2025-02-05 14:30:48,612 - aider.providers.stackspot_config - INFO - Using realm: stackspot
+2025-02-05 14:30:48,612 - aider.providers.stackspot_config - INFO - Auth base URL: https://auth.stackspot.com
+2025-02-05 14:30:48,612 - aider.providers.stackspot_config - INFO - API base URL: https://genai-code-buddy-api.stackspot.com
+2025-02-05 14:30:48,612 - aider.providers.stackspot_config - INFO - URLs validated successfully
+2025-02-05 14:30:48,613 - aider.providers.stackspot_config - INFO - Endpoint URLs built successfully
+2025-02-05 14:30:48,613 - aider.providers.stackspot_config - INFO - Creating final configuration...
+2025-02-05 14:30:48,613 - aider.providers.stackspot_config - INFO - StackSpot configuration completed successfully
+2025-02-05 14:30:48,654 - aider.providers.stackspot - INFO - StackSpot provider initialized successfully
+2025-02-05 14:56:26,058 - aider.main - ERROR - Erro não tratado: name 'logger' is not defined
+Traceback (most recent call last):
+  File "/home/pimentel/Workspace/aider/aider/io.py", line 303, in __init__
+    logger.debug("PromptSession initialized successfully")
+    ^^^^^^
+NameError: name 'logger' is not defined
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/pimentel/Workspace/aider/aider/main.py", line 468, in main
+    io = InputOutput(
+         ^^^^^^^^^^^^
+  File "/home/pimentel/Workspace/aider/aider/io.py", line 307, in __init__
+    logger.error("Failed to initialize PromptSession: %s", err, exc_info=True)
+    ^^^^^^
+NameError: name 'logger' is not defined
+2025-02-05 14:59:33,314 - aider.providers.stackspot - INFO - Initializing StackSpot provider
+2025-02-05 14:59:33,314 - aider.providers.stackspot_config - INFO - Starting StackSpot configuration...
+2025-02-05 14:59:33,314 - aider.providers.stackspot_config - INFO - Using realm: stackspot
+2025-02-05 14:59:33,314 - aider.providers.stackspot_config - INFO - Auth base URL: https://auth.stackspot.com
+2025-02-05 14:59:33,314 - aider.providers.stackspot_config - INFO - API base URL: https://genai-code-buddy-api.stackspot.com
+2025-02-05 14:59:33,314 - aider.providers.stackspot_config - INFO - URLs validated successfully
+2025-02-05 14:59:33,314 - aider.providers.stackspot_config - INFO - Endpoint URLs built successfully
+2025-02-05 14:59:33,314 - aider.providers.stackspot_config - INFO - Creating final configuration...
+2025-02-05 14:59:33,314 - aider.providers.stackspot_config - INFO - StackSpot configuration completed successfully
+2025-02-05 14:59:33,357 - aider.providers.stackspot - INFO - StackSpot provider initialized successfully
+2025-02-05 14:59:48,140 - aider.providers.stackspot - INFO - Initializing StackSpot provider
+2025-02-05 14:59:48,141 - aider.providers.stackspot_config - INFO - Starting StackSpot configuration...
+2025-02-05 14:59:48,141 - aider.providers.stackspot_config - INFO - Using realm: stackspot
+2025-02-05 14:59:48,141 - aider.providers.stackspot_config - INFO - Auth base URL: https://auth.stackspot.com
+2025-02-05 14:59:48,141 - aider.providers.stackspot_config - INFO - API base URL: https://genai-code-buddy-api.stackspot.com
+2025-02-05 14:59:48,141 - aider.providers.stackspot_config - ERROR - Missing credentials
+2025-02-05 15:01:50,300 - aider.providers.stackspot - INFO - Initializing StackSpot provider
+2025-02-05 15:01:50,300 - aider.providers.stackspot_config - INFO - Starting StackSpot configuration...
+2025-02-05 15:01:50,300 - aider.providers.stackspot_config - INFO - Using realm: stackspot
+2025-02-05 15:01:50,300 - aider.providers.stackspot_config - INFO - Auth base URL: https://auth.stackspot.com
+2025-02-05 15:01:50,300 - aider.providers.stackspot_config - INFO - API base URL: https://genai-code-buddy-api.stackspot.com
+2025-02-05 15:01:50,300 - aider.providers.stackspot_config - ERROR - Missing remote QC name
+2025-02-05 15:02:03,003 - aider.providers.stackspot - INFO - Initializing StackSpot provider
+2025-02-05 15:02:03,003 - aider.providers.stackspot_config - INFO - Starting StackSpot configuration...
+2025-02-05 15:02:03,003 - aider.providers.stackspot_config - INFO - Using realm: stackspot
+2025-02-05 15:02:03,003 - aider.providers.stackspot_config - INFO - Auth base URL: https://auth.stackspot.com
+2025-02-05 15:02:03,003 - aider.providers.stackspot_config - INFO - API base URL: https://genai-code-buddy-api.stackspot.com
+2025-02-05 15:02:03,003 - aider.providers.stackspot_config - INFO - URLs validated successfully
+2025-02-05 15:02:03,003 - aider.providers.stackspot_config - INFO - Endpoint URLs built successfully
+2025-02-05 15:02:03,003 - aider.providers.stackspot_config - INFO - Creating final configuration...
+2025-02-05 15:02:03,003 - aider.providers.stackspot_config - INFO - StackSpot configuration completed successfully
+2025-02-05 15:02:03,045 - aider.providers.stackspot - INFO - StackSpot provider initialized successfully
+2025-02-05 15:02:03,046 - aider.main - ERROR - Erro não tratado: 'ModelSettings' object has no attribute '__dataclass_fields__'
+Traceback (most recent call last):
+  File "/home/pimentel/Workspace/aider/aider/main.py", line 492, in main
+    model_settings = Model(
+                     ^^^^^^
+  File "/home/pimentel/Workspace/aider/aider/models/model.py", line 113, in __init__
+    self.configure_model_settings(model)
+  File "/home/pimentel/Workspace/aider/aider/models/model.py", line 135, in configure_model_settings
+    self._copy_model_fields(ms)
+  File "/home/pimentel/Workspace/aider/aider/models/model.py", line 144, in _copy_model_fields
+    for field_name in source.__dataclass_fields__:
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/pimentel/.cache/pypoetry/virtualenvs/aider-TKH8PC99-py3.12/lib/python3.12/site-packages/pydantic/main.py", line 856, in __getattr__
+    raise AttributeError(f'{type(self).__name__!r} object has no attribute {item!r}')
+AttributeError: 'ModelSettings' object has no attribute '__dataclass_fields__'
+2025-02-05 15:02:57,908 - aider.providers.stackspot - INFO - Initializing StackSpot provider
+2025-02-05 15:02:57,908 - aider.providers.stackspot_config - INFO - Starting StackSpot configuration...
+2025-02-05 15:02:57,908 - aider.providers.stackspot_config - INFO - Using realm: stackspot
+2025-02-05 15:02:57,908 - aider.providers.stackspot_config - INFO - Auth base URL: https://auth.stackspot.com
+2025-02-05 15:02:57,909 - aider.providers.stackspot_config - INFO - API base URL: https://genai-code-buddy-api.stackspot.com
+2025-02-05 15:02:57,909 - aider.providers.stackspot_config - INFO - URLs validated successfully
+2025-02-05 15:02:57,909 - aider.providers.stackspot_config - INFO - Endpoint URLs built successfully
+2025-02-05 15:02:57,909 - aider.providers.stackspot_config - INFO - Creating final configuration...
+2025-02-05 15:02:57,909 - aider.providers.stackspot_config - INFO - StackSpot configuration completed successfully
+2025-02-05 15:02:57,951 - aider.providers.stackspot - INFO - StackSpot provider initialized successfully
+2025-02-05 15:02:57,951 - aider.providers.stackspot - INFO - Initializing StackSpot provider
+2025-02-05 15:02:57,951 - aider.providers.stackspot_config - INFO - Starting StackSpot configuration...
+2025-02-05 15:02:57,952 - aider.providers.stackspot_config - INFO - Using realm: stackspot
+2025-02-05 15:02:57,952 - aider.providers.stackspot_config - INFO - Auth base URL: https://auth.stackspot.com
+2025-02-05 15:02:57,952 - aider.providers.stackspot_config - INFO - API base URL: https://genai-code-buddy-api.stackspot.com
+2025-02-05 15:02:57,952 - aider.providers.stackspot_config - INFO - URLs validated successfully
+2025-02-05 15:02:57,952 - aider.providers.stackspot_config - INFO - Endpoint URLs built successfully
+2025-02-05 15:02:57,952 - aider.providers.stackspot_config - INFO - Creating final configuration...
+2025-02-05 15:02:57,952 - aider.providers.stackspot_config - INFO - StackSpot configuration completed successfully
+2025-02-05 15:02:57,993 - aider.providers.stackspot - INFO - StackSpot provider initialized successfully
+2025-02-05 15:04:46,663 - aider.providers.stackspot - INFO - Initializing StackSpot provider
+2025-02-05 15:04:46,663 - aider.providers.stackspot_config - INFO - Starting StackSpot configuration...
+2025-02-05 15:04:46,663 - aider.providers.stackspot_config - INFO - Using realm: stackspot
+2025-02-05 15:04:46,663 - aider.providers.stackspot_config - INFO - Auth base URL: https://auth.stackspot.com
+2025-02-05 15:04:46,663 - aider.providers.stackspot_config - INFO - API base URL: https://genai-code-buddy-api.stackspot.com
+2025-02-05 15:04:46,663 - aider.providers.stackspot_config - INFO - URLs validated successfully
+2025-02-05 15:04:46,663 - aider.providers.stackspot_config - INFO - Endpoint URLs built successfully
+2025-02-05 15:04:46,663 - aider.providers.stackspot_config - INFO - Creating final configuration...
+2025-02-05 15:04:46,663 - aider.providers.stackspot_config - INFO - StackSpot configuration completed successfully
+2025-02-05 15:04:46,705 - aider.providers.stackspot - INFO - StackSpot provider initialized successfully
+2025-02-05 15:04:46,706 - aider.providers.stackspot - INFO - Initializing StackSpot provider
+2025-02-05 15:04:46,706 - aider.providers.stackspot_config - INFO - Starting StackSpot configuration...
+2025-02-05 15:04:46,706 - aider.providers.stackspot_config - INFO - Using realm: stackspot
+2025-02-05 15:04:46,707 - aider.providers.stackspot_config - INFO - Auth base URL: https://auth.stackspot.com
+2025-02-05 15:04:46,707 - aider.providers.stackspot_config - INFO - API base URL: https://genai-code-buddy-api.stackspot.com
+2025-02-05 15:04:46,707 - aider.providers.stackspot_config - INFO - URLs validated successfully
+2025-02-05 15:04:46,707 - aider.providers.stackspot_config - INFO - Endpoint URLs built successfully
+2025-02-05 15:04:46,707 - aider.providers.stackspot_config - INFO - Creating final configuration...
+2025-02-05 15:04:46,707 - aider.providers.stackspot_config - INFO - StackSpot configuration completed successfully
+2025-02-05 15:04:46,749 - aider.providers.stackspot - INFO - StackSpot provider initialized successfully
+2025-02-05 16:09:58,125 - aider.main - INFO - Successfully loaded environment variables from /home/pimentel/Workspace/aider/.env
+2025-02-05 16:09:58,147 - aider.providers.stackspot_config - INFO - Starting StackSpot configuration...
+2025-02-05 16:09:58,147 - aider.providers.stackspot_config - INFO - Using realm: stackspot
+2025-02-05 16:09:58,147 - aider.providers.stackspot_config - INFO - Auth base URL: https://auth.stackspot.com
+2025-02-05 16:09:58,147 - aider.providers.stackspot_config - INFO - API base URL: https://genai-code-buddy-api.stackspot.com
+2025-02-05 16:09:58,147 - aider.providers.stackspot_config - INFO - URLs validated successfully
+2025-02-05 16:09:58,147 - aider.providers.stackspot_config - INFO - Endpoint URLs built successfully
+2025-02-05 16:09:58,147 - aider.providers.stackspot_config - INFO - Creating final configuration...
+2025-02-05 16:09:58,147 - aider.providers.stackspot_config - INFO - StackSpot configuration completed successfully
+2025-02-05 16:09:58,147 - aider.providers.stackspot - INFO - StackSpot provider initialized successfully
+2025-02-05 16:09:58,148 - aider.providers.stackspot_config - INFO - Starting StackSpot configuration...
+2025-02-05 16:09:58,148 - aider.providers.stackspot_config - INFO - Using realm: stackspot
+2025-02-05 16:09:58,148 - aider.providers.stackspot_config - INFO - Auth base URL: https://auth.stackspot.com
+2025-02-05 16:09:58,148 - aider.providers.stackspot_config - INFO - API base URL: https://genai-code-buddy-api.stackspot.com
+2025-02-05 16:09:58,148 - aider.providers.stackspot_config - INFO - URLs validated successfully
+2025-02-05 16:09:58,149 - aider.providers.stackspot_config - INFO - Endpoint URLs built successfully
+2025-02-05 16:09:58,149 - aider.providers.stackspot_config - INFO - Creating final configuration...
+2025-02-05 16:09:58,149 - aider.providers.stackspot_config - INFO - StackSpot configuration completed successfully
+2025-02-05 16:09:58,149 - aider.providers.stackspot - INFO - StackSpot provider initialized successfully
+2025-02-05 16:10:31,575 - aider.main - ERROR - Unhandled error: 'NoneType' object is not iterable
+Traceback (most recent call last):
+  File "/home/pimentel/Workspace/aider/aider/main.py", line 548, in main
+    coder.run()
+  File "/home/pimentel/Workspace/aider/aider/coders/base_coder.py", line 780, in run
+    self.run_one(user_message, preproc)
+  File "/home/pimentel/Workspace/aider/aider/coders/base_coder.py", line 832, in run_one
+    list(self.send_message(message))
+  File "/home/pimentel/Workspace/aider/aider/coders/base_coder.py", line 1245, in send_message
+    chunks = self.format_messages()
+             ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/pimentel/Workspace/aider/aider/coders/base_coder.py", line 1135, in format_messages
+    chunks = self.format_chat_chunks()
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/pimentel/Workspace/aider/aider/coders/base_coder.py", line 1079, in format_chat_chunks
+    chunks.repo = self.get_repo_messages()
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/pimentel/Workspace/aider/aider/coders/base_coder.py", line 635, in get_repo_messages
+    repo_content = self.get_repo_map()
+                   ^^^^^^^^^^^^^^^^^^^
+  File "/home/pimentel/Workspace/aider/aider/coders/base_coder.py", line 626, in get_repo_map
+    repo_map = self.repo_map.get_repo_map(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/pimentel/Workspace/aider/aider/repomap.py", line 171, in get_repo_map
+    files_listing = self.get_ranked_tags_map(
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/pimentel/Workspace/aider/aider/repomap.py", line 603, in get_ranked_tags_map
+    result = self.get_ranked_tags_map_uncached(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/pimentel/Workspace/aider/aider/repomap.py", line 638, in get_ranked_tags_map_uncached
+    ranked_tags = self.get_ranked_tags(
+                  ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/pimentel/Workspace/aider/aider/repomap.py", line 394, in get_ranked_tags
+    fnames = set(chat_fnames).union(set(other_fnames))
+             ^^^^^^^^^^^^^^^^
+TypeError: 'NoneType' object is not iterable
+2025-02-05 16:11:39,886 - aider.main - INFO - Successfully loaded environment variables from /home/pimentel/Workspace/aider/.env
+2025-02-05 16:11:39,908 - aider.providers.stackspot_config - INFO - Starting StackSpot configuration...
+2025-02-05 16:11:39,909 - aider.providers.stackspot_config - INFO - Using realm: stackspot
+2025-02-05 16:11:39,909 - aider.providers.stackspot_config - INFO - Auth base URL: https://auth.stackspot.com
+2025-02-05 16:11:39,909 - aider.providers.stackspot_config - INFO - API base URL: https://genai-code-buddy-api.stackspot.com
+2025-02-05 16:11:39,909 - aider.providers.stackspot_config - INFO - URLs validated successfully
+2025-02-05 16:11:39,909 - aider.providers.stackspot_config - INFO - Endpoint URLs built successfully
+2025-02-05 16:11:39,909 - aider.providers.stackspot_config - INFO - Creating final configuration...
+2025-02-05 16:11:39,909 - aider.providers.stackspot_config - INFO - StackSpot configuration completed successfully
+2025-02-05 16:11:39,909 - aider.providers.stackspot - INFO - StackSpot provider initialized successfully
+2025-02-05 16:11:39,910 - aider.providers.stackspot_config - INFO - Starting StackSpot configuration...
+2025-02-05 16:11:39,910 - aider.providers.stackspot_config - INFO - Using realm: stackspot
+2025-02-05 16:11:39,910 - aider.providers.stackspot_config - INFO - Auth base URL: https://auth.stackspot.com
+2025-02-05 16:11:39,910 - aider.providers.stackspot_config - INFO - API base URL: https://genai-code-buddy-api.stackspot.com
+2025-02-05 16:11:39,910 - aider.providers.stackspot_config - INFO - URLs validated successfully
+2025-02-05 16:11:39,911 - aider.providers.stackspot_config - INFO - Endpoint URLs built successfully
+2025-02-05 16:11:39,911 - aider.providers.stackspot_config - INFO - Creating final configuration...
+2025-02-05 16:11:39,911 - aider.providers.stackspot_config - INFO - StackSpot configuration completed successfully
+2025-02-05 16:11:39,911 - aider.providers.stackspot - INFO - StackSpot provider initialized successfully
+2025-02-05 16:12:44,825 - aider.main - INFO - Successfully loaded environment variables from /home/pimentel/Workspace/aider/.env
+2025-02-05 16:12:44,848 - aider.providers.stackspot_config - INFO - Starting StackSpot configuration...
+2025-02-05 16:12:44,848 - aider.providers.stackspot_config - INFO - Using realm: stackspot
+2025-02-05 16:12:44,848 - aider.providers.stackspot_config - INFO - Auth base URL: https://auth.stackspot.com
+2025-02-05 16:12:44,849 - aider.providers.stackspot_config - INFO - API base URL: https://genai-code-buddy-api.stackspot.com
+2025-02-05 16:12:44,849 - aider.providers.stackspot_config - INFO - URLs validated successfully
+2025-02-05 16:12:44,849 - aider.providers.stackspot_config - INFO - Endpoint URLs built successfully
+2025-02-05 16:12:44,849 - aider.providers.stackspot_config - INFO - Creating final configuration...
+2025-02-05 16:12:44,849 - aider.providers.stackspot_config - INFO - StackSpot configuration completed successfully
+2025-02-05 16:12:44,849 - aider.providers.stackspot - INFO - StackSpot provider initialized successfully
+2025-02-05 16:12:44,849 - aider.main - ERROR - Error loading aider model settings: 'str' object has no attribute 'name'
+2025-02-05 16:13:09,014 - aider.main - INFO - Successfully loaded environment variables from /home/pimentel/Workspace/aider/.env
+2025-02-05 16:13:09,036 - aider.providers.stackspot_config - INFO - Starting StackSpot configuration...
+2025-02-05 16:13:09,036 - aider.providers.stackspot_config - INFO - Using realm: stackspot
+2025-02-05 16:13:09,036 - aider.providers.stackspot_config - INFO - Auth base URL: https://auth.stackspot.com
+2025-02-05 16:13:09,036 - aider.providers.stackspot_config - INFO - API base URL: https://genai-code-buddy-api.stackspot.com
+2025-02-05 16:13:09,036 - aider.providers.stackspot_config - INFO - URLs validated successfully
+2025-02-05 16:13:09,037 - aider.providers.stackspot_config - INFO - Endpoint URLs built successfully
+2025-02-05 16:13:09,037 - aider.providers.stackspot_config - INFO - Creating final configuration...
+2025-02-05 16:13:09,037 - aider.providers.stackspot_config - INFO - StackSpot configuration completed successfully
+2025-02-05 16:13:09,037 - aider.providers.stackspot - INFO - StackSpot provider initialized successfully
+2025-02-05 16:13:09,037 - aider.main - ERROR - Error loading aider model settings: 'str' object has no attribute 'name'
+2025-02-05 16:13:46,778 - aider.main - INFO - Successfully loaded environment variables from /home/pimentel/Workspace/aider/.env
+2025-02-05 16:13:46,800 - aider.providers.stackspot_config - INFO - Starting StackSpot configuration...
+2025-02-05 16:13:46,800 - aider.providers.stackspot_config - INFO - Using realm: stackspot
+2025-02-05 16:13:46,800 - aider.providers.stackspot_config - INFO - Auth base URL: https://auth.stackspot.com
+2025-02-05 16:13:46,800 - aider.providers.stackspot_config - INFO - API base URL: https://genai-code-buddy-api.stackspot.com
+2025-02-05 16:13:46,800 - aider.providers.stackspot_config - INFO - URLs validated successfully
+2025-02-05 16:13:46,800 - aider.providers.stackspot_config - INFO - Endpoint URLs built successfully
+2025-02-05 16:13:46,800 - aider.providers.stackspot_config - INFO - Creating final configuration...
+2025-02-05 16:13:46,801 - aider.providers.stackspot_config - INFO - StackSpot configuration completed successfully
+2025-02-05 16:13:46,801 - aider.providers.stackspot - INFO - StackSpot provider initialized successfully
+2025-02-05 16:13:46,801 - aider.main - ERROR - Error loading aider model settings: 'str' object has no attribute 'name'
+2025-02-05 16:14:19,295 - aider.main - ERROR - Unhandled error: unsupported operand type(s) for +=: 'NoneType' and 'str'
+Traceback (most recent call last):
+  File "/home/pimentel/Workspace/aider/aider/main.py", line 548, in main
+    "api_path": "/v1/chat/completions",
+    ^^^^^^^^^^^
+  File "/home/pimentel/Workspace/aider/aider/coders/base_coder.py", line 779, in run
+    user_message = self.get_input()
+                   ^^^^^^^^^^^^^^^^
+  File "/home/pimentel/Workspace/aider/aider/coders/base_coder.py", line 801, in get_input
+    return self.io.get_input(
+           ^^^^^^^^^^^^^^^^^^
+  File "/home/pimentel/Workspace/aider/aider/io.py", line 471, in get_input
+    show += "> "
+TypeError: unsupported operand type(s) for +=: 'NoneType' and 'str'
+2025-02-05 16:14:29,956 - aider.main - INFO - Successfully loaded environment variables from /home/pimentel/Workspace/aider/.env
+2025-02-05 16:14:29,980 - aider.providers.stackspot_config - INFO - Starting StackSpot configuration...
+2025-02-05 16:14:29,981 - aider.providers.stackspot_config - INFO - Using realm: stackspot
+2025-02-05 16:14:29,981 - aider.providers.stackspot_config - INFO - Auth base URL: https://auth.stackspot.com
+2025-02-05 16:14:29,981 - aider.providers.stackspot_config - INFO - API base URL: https://genai-code-buddy-api.stackspot.com
+2025-02-05 16:14:29,981 - aider.providers.stackspot_config - INFO - URLs validated successfully
+2025-02-05 16:14:29,981 - aider.providers.stackspot_config - INFO - Endpoint URLs built successfully
+2025-02-05 16:14:29,981 - aider.providers.stackspot_config - INFO - Creating final configuration...
+2025-02-05 16:14:29,981 - aider.providers.stackspot_config - INFO - StackSpot configuration completed successfully
+2025-02-05 16:14:29,981 - aider.providers.stackspot - INFO - StackSpot provider initialized successfully
+2025-02-05 16:14:29,982 - aider.main - ERROR - Error loading aider model settings: 'str' object has no attribute 'name'
+2025-02-05 16:16:17,937 - aider.providers.stackspot_config - INFO - Starting StackSpot configuration...
+2025-02-05 16:16:17,937 - aider.providers.stackspot_config - INFO - Using realm: stackspot
+2025-02-05 16:16:17,938 - aider.providers.stackspot_config - INFO - Auth base URL: https://auth.stackspot.com
+2025-02-05 16:16:17,938 - aider.providers.stackspot_config - INFO - API base URL: https://genai-code-buddy-api.stackspot.com
+2025-02-05 16:16:17,938 - aider.providers.stackspot_config - INFO - URLs validated successfully
+2025-02-05 16:16:17,938 - aider.providers.stackspot_config - INFO - Endpoint URLs built successfully
+2025-02-05 16:16:17,938 - aider.providers.stackspot_config - INFO - Creating final configuration...
+2025-02-05 16:16:17,938 - aider.providers.stackspot_config - INFO - StackSpot configuration completed successfully
+2025-02-05 16:16:17,938 - aider.providers.stackspot - INFO - StackSpot provider initialized successfully
+2025-02-05 16:16:17,940 - aider.models - ERROR - Error loading model settings from .aider.model.settings.yml: 'int' object does not support item assignment
+2025-02-05 16:16:17,942 - aider.models - ERROR - Error loading model settings from /home/pimentel/Workspace/aider/.aider.model.settings.yml: 'int' object does not support item assignment
+2025-02-05 16:16:17,946 - aider.models - ERROR - Error loading model settings from /home/pimentel/.aider.model.settings.yml: 'list' object has no attribute 'items'
+2025-02-05 16:16:17,946 - aider.providers.stackspot_config - INFO - Starting StackSpot configuration...
+2025-02-05 16:16:17,946 - aider.providers.stackspot_config - INFO - Using realm: stackspot
+2025-02-05 16:16:17,946 - aider.providers.stackspot_config - INFO - Auth base URL: https://auth.stackspot.com
+2025-02-05 16:16:17,946 - aider.providers.stackspot_config - INFO - API base URL: https://genai-code-buddy-api.stackspot.com
+2025-02-05 16:16:17,947 - aider.providers.stackspot_config - INFO - URLs validated successfully
+2025-02-05 16:16:17,947 - aider.providers.stackspot_config - INFO - Endpoint URLs built successfully
+2025-02-05 16:16:17,947 - aider.providers.stackspot_config - INFO - Creating final configuration...
+2025-02-05 16:16:17,947 - aider.providers.stackspot_config - INFO - StackSpot configuration completed successfully
+2025-02-05 16:16:17,947 - aider.providers.stackspot - INFO - StackSpot provider initialized successfully
+2025-02-05 16:16:55,878 - aider.providers.stackspot_config - INFO - Starting StackSpot configuration...
+2025-02-05 16:16:55,878 - aider.providers.stackspot_config - INFO - Using realm: stackspot
+2025-02-05 16:16:55,878 - aider.providers.stackspot_config - INFO - Auth base URL: https://auth.stackspot.com
+2025-02-05 16:16:55,878 - aider.providers.stackspot_config - INFO - API base URL: https://genai-code-buddy-api.stackspot.com
+2025-02-05 16:16:55,878 - aider.providers.stackspot_config - INFO - URLs validated successfully
+2025-02-05 16:16:55,878 - aider.providers.stackspot_config - INFO - Endpoint URLs built successfully
+2025-02-05 16:16:55,878 - aider.providers.stackspot_config - INFO - Creating final configuration...
+2025-02-05 16:16:55,878 - aider.providers.stackspot_config - INFO - StackSpot configuration completed successfully
+2025-02-05 16:16:55,878 - aider.providers.stackspot - INFO - StackSpot provider initialized successfully
+2025-02-05 16:16:55,886 - aider.models - ERROR - Error loading model settings from /home/pimentel/.aider.model.settings.yml: 'list' object has no attribute 'items'
+2025-02-05 16:16:55,886 - aider.providers.stackspot_config - INFO - Starting StackSpot configuration...
+2025-02-05 16:16:55,886 - aider.providers.stackspot_config - INFO - Using realm: stackspot
+2025-02-05 16:16:55,886 - aider.providers.stackspot_config - INFO - Auth base URL: https://auth.stackspot.com
+2025-02-05 16:16:55,886 - aider.providers.stackspot_config - INFO - API base URL: https://genai-code-buddy-api.stackspot.com
+2025-02-05 16:16:55,887 - aider.providers.stackspot_config - INFO - URLs validated successfully
+2025-02-05 16:16:55,887 - aider.providers.stackspot_config - INFO - Endpoint URLs built successfully
+2025-02-05 16:16:55,887 - aider.providers.stackspot_config - INFO - Creating final configuration...
+2025-02-05 16:16:55,887 - aider.providers.stackspot_config - INFO - StackSpot configuration completed successfully
+2025-02-05 16:16:55,887 - aider.providers.stackspot - INFO - StackSpot provider initialized successfully
+2025-02-05 16:17:36,826 - aider.providers.stackspot_config - INFO - Starting StackSpot configuration...
+2025-02-05 16:17:36,826 - aider.providers.stackspot_config - INFO - Using realm: stackspot
+2025-02-05 16:17:36,826 - aider.providers.stackspot_config - INFO - Auth base URL: https://auth.stackspot.com
+2025-02-05 16:17:36,826 - aider.providers.stackspot_config - INFO - API base URL: https://genai-code-buddy-api.stackspot.com
+2025-02-05 16:17:36,826 - aider.providers.stackspot_config - INFO - URLs validated successfully
+2025-02-05 16:17:36,827 - aider.providers.stackspot_config - INFO - Endpoint URLs built successfully
+2025-02-05 16:17:36,827 - aider.providers.stackspot_config - INFO - Creating final configuration...
+2025-02-05 16:17:36,827 - aider.providers.stackspot_config - INFO - StackSpot configuration completed successfully
+2025-02-05 16:17:36,827 - aider.providers.stackspot - INFO - StackSpot provider initialized successfully
+2025-02-05 16:17:36,834 - aider.models - ERROR - Error loading model settings from /home/pimentel/.aider.model.settings.yml: 'list' object has no attribute 'items'
+2025-02-05 16:17:36,835 - aider.providers.stackspot_config - INFO - Starting StackSpot configuration...
+2025-02-05 16:17:36,835 - aider.providers.stackspot_config - INFO - Using realm: stackspot
+2025-02-05 16:17:36,835 - aider.providers.stackspot_config - INFO - Auth base URL: https://auth.stackspot.com
+2025-02-05 16:17:36,835 - aider.providers.stackspot_config - INFO - API base URL: https://genai-code-buddy-api.stackspot.com
+2025-02-05 16:17:36,835 - aider.providers.stackspot_config - INFO - URLs validated successfully
+2025-02-05 16:17:36,835 - aider.providers.stackspot_config - INFO - Endpoint URLs built successfully
+2025-02-05 16:17:36,835 - aider.providers.stackspot_config - INFO - Creating final configuration...
+2025-02-05 16:17:36,835 - aider.providers.stackspot_config - INFO - StackSpot configuration completed successfully
+2025-02-05 16:17:36,835 - aider.providers.stackspot - INFO - StackSpot provider initialized successfully
+2025-02-05 16:18:33,824 - aider.providers.stackspot_config - INFO - Starting StackSpot configuration...
+2025-02-05 16:18:33,824 - aider.providers.stackspot_config - INFO - Using realm: stackspot
+2025-02-05 16:18:33,825 - aider.providers.stackspot_config - INFO - Auth base URL: https://auth.stackspot.com
+2025-02-05 16:18:33,825 - aider.providers.stackspot_config - INFO - API base URL: https://genai-code-buddy-api.stackspot.com
+2025-02-05 16:18:33,825 - aider.providers.stackspot_config - INFO - URLs validated successfully
+2025-02-05 16:18:33,825 - aider.providers.stackspot_config - INFO - Endpoint URLs built successfully
+2025-02-05 16:18:33,825 - aider.providers.stackspot_config - INFO - Creating final configuration...
+2025-02-05 16:18:33,825 - aider.providers.stackspot_config - INFO - StackSpot configuration completed successfully
+2025-02-05 16:18:33,825 - aider.providers.stackspot - INFO - StackSpot provider initialized successfully
+2025-02-05 16:18:33,832 - aider.models - ERROR - Error loading model settings from /home/pimentel/.aider.model.settings.yml: 'list' object has no attribute 'items'
+2025-02-05 16:18:33,833 - aider.providers.stackspot_config - INFO - Starting StackSpot configuration...
+2025-02-05 16:18:33,833 - aider.providers.stackspot_config - INFO - Using realm: stackspot
+2025-02-05 16:18:33,833 - aider.providers.stackspot_config - INFO - Auth base URL: https://auth.stackspot.com
+2025-02-05 16:18:33,833 - aider.providers.stackspot_config - INFO - API base URL: https://genai-code-buddy-api.stackspot.com
+2025-02-05 16:18:33,833 - aider.providers.stackspot_config - INFO - URLs validated successfully
+2025-02-05 16:18:33,834 - aider.providers.stackspot_config - INFO - Endpoint URLs built successfully
+2025-02-05 16:18:33,834 - aider.providers.stackspot_config - INFO - Creating final configuration...
+2025-02-05 16:18:33,834 - aider.providers.stackspot_config - INFO - StackSpot configuration completed successfully
+2025-02-05 16:18:33,834 - aider.providers.stackspot - INFO - StackSpot provider initialized successfully
+2025-02-05 16:19:16,566 - aider.providers.stackspot_config - INFO - Starting StackSpot configuration...
+2025-02-05 16:19:16,566 - aider.providers.stackspot_config - INFO - Using realm: stackspot
+2025-02-05 16:19:16,566 - aider.providers.stackspot_config - INFO - Auth base URL: https://auth.stackspot.com
+2025-02-05 16:19:16,567 - aider.providers.stackspot_config - INFO - API base URL: https://genai-code-buddy-api.stackspot.com
+2025-02-05 16:19:16,567 - aider.providers.stackspot_config - INFO - URLs validated successfully
+2025-02-05 16:19:16,567 - aider.providers.stackspot_config - INFO - Endpoint URLs built successfully
+2025-02-05 16:19:16,567 - aider.providers.stackspot_config - INFO - Creating final configuration...
+2025-02-05 16:19:16,567 - aider.providers.stackspot_config - INFO - StackSpot configuration completed successfully
+2025-02-05 16:19:16,567 - aider.providers.stackspot - INFO - StackSpot provider initialized successfully
+2025-02-05 16:19:16,574 - aider.providers.stackspot_config - INFO - Starting StackSpot configuration...
+2025-02-05 16:19:16,574 - aider.providers.stackspot_config - INFO - Using realm: stackspot
+2025-02-05 16:19:16,575 - aider.providers.stackspot_config - INFO - Auth base URL: https://auth.stackspot.com
+2025-02-05 16:19:16,575 - aider.providers.stackspot_config - INFO - API base URL: https://genai-code-buddy-api.stackspot.com
+2025-02-05 16:19:16,575 - aider.providers.stackspot_config - INFO - URLs validated successfully
+2025-02-05 16:19:16,575 - aider.providers.stackspot_config - INFO - Endpoint URLs built successfully
+2025-02-05 16:19:16,575 - aider.providers.stackspot_config - INFO - Creating final configuration...
+2025-02-05 16:19:16,575 - aider.providers.stackspot_config - INFO - StackSpot configuration completed successfully
+2025-02-05 16:19:16,575 - aider.providers.stackspot - INFO - StackSpot provider initialized successfully
+2025-02-05 16:22:03,012 - aider.providers.stackspot_config - INFO - Starting StackSpot configuration...
+2025-02-05 16:22:03,012 - aider.providers.stackspot_config - INFO - Using realm: stackspot
+2025-02-05 16:22:03,012 - aider.providers.stackspot_config - INFO - Auth base URL: https://auth.stackspot.com
+2025-02-05 16:22:03,012 - aider.providers.stackspot_config - INFO - API base URL: https://genai-code-buddy-api.stackspot.com
+2025-02-05 16:22:03,012 - aider.providers.stackspot_config - INFO - URLs validated successfully
+2025-02-05 16:22:03,013 - aider.providers.stackspot_config - INFO - Endpoint URLs built successfully
+2025-02-05 16:22:03,013 - aider.providers.stackspot_config - INFO - Creating final configuration...
+2025-02-05 16:22:03,013 - aider.providers.stackspot_config - INFO - StackSpot configuration completed successfully
+2025-02-05 16:22:03,013 - aider.providers.stackspot - INFO - StackSpot provider initialized successfully
+2025-02-05 16:22:03,020 - aider.providers.stackspot_config - INFO - Starting StackSpot configuration...
+2025-02-05 16:22:03,020 - aider.providers.stackspot_config - INFO - Using realm: stackspot
+2025-02-05 16:22:03,020 - aider.providers.stackspot_config - INFO - Auth base URL: https://auth.stackspot.com
+2025-02-05 16:22:03,020 - aider.providers.stackspot_config - INFO - API base URL: https://genai-code-buddy-api.stackspot.com
+2025-02-05 16:22:03,020 - aider.providers.stackspot_config - INFO - URLs validated successfully
+2025-02-05 16:22:03,021 - aider.providers.stackspot_config - INFO - Endpoint URLs built successfully
+2025-02-05 16:22:03,021 - aider.providers.stackspot_config - INFO - Creating final configuration...
+2025-02-05 16:22:03,021 - aider.providers.stackspot_config - INFO - StackSpot configuration completed successfully
+2025-02-05 16:22:03,021 - aider.providers.stackspot - INFO - StackSpot provider initialized successfully
+2025-02-05 16:26:08,927 - aider.main - INFO - Successfully loaded environment variables from /home/pimentel/Workspace/aider/.env
+2025-02-05 16:26:08,950 - aider.providers.stackspot_config - INFO - Starting StackSpot configuration...
+2025-02-05 16:26:08,950 - aider.providers.stackspot_config - INFO - Using realm: stackspot
+2025-02-05 16:26:08,950 - aider.providers.stackspot_config - INFO - Auth base URL: https://auth.stackspot.com
+2025-02-05 16:26:08,950 - aider.providers.stackspot_config - INFO - API base URL: https://genai-code-buddy-api.stackspot.com
+2025-02-05 16:26:08,950 - aider.providers.stackspot_config - INFO - URLs validated successfully
+2025-02-05 16:26:08,950 - aider.providers.stackspot_config - INFO - Endpoint URLs built successfully
+2025-02-05 16:26:08,951 - aider.providers.stackspot_config - INFO - Creating final configuration...
+2025-02-05 16:26:08,951 - aider.providers.stackspot_config - INFO - StackSpot configuration completed successfully
+2025-02-05 16:26:08,951 - aider.providers.stackspot - INFO - StackSpot provider initialized successfully
+2025-02-05 16:26:08,958 - aider.main - INFO - Model settings loaded from:
+2025-02-05 16:26:08,958 - aider.main - INFO -   - .aider.model.settings.yml
+2025-02-05 16:26:08,958 - aider.main - INFO -   - /home/pimentel/Workspace/aider/.aider.model.settings.yml
+2025-02-05 16:26:08,959 - aider.main - INFO -   - /home/pimentel/.aider.model.settings.yml
+2025-02-05 16:26:08,959 - aider.providers.stackspot_config - INFO - Starting StackSpot configuration...
+2025-02-05 16:26:08,959 - aider.providers.stackspot_config - INFO - Using realm: stackspot
+2025-02-05 16:26:08,959 - aider.providers.stackspot_config - INFO - Auth base URL: https://auth.stackspot.com
+2025-02-05 16:26:08,960 - aider.providers.stackspot_config - INFO - API base URL: https://genai-code-buddy-api.stackspot.com
+2025-02-05 16:26:08,960 - aider.providers.stackspot_config - INFO - URLs validated successfully
+2025-02-05 16:26:08,960 - aider.providers.stackspot_config - INFO - Endpoint URLs built successfully
+2025-02-05 16:26:08,960 - aider.providers.stackspot_config - INFO - Creating final configuration...
+2025-02-05 16:26:08,960 - aider.providers.stackspot_config - INFO - StackSpot configuration completed successfully
+2025-02-05 16:26:08,960 - aider.providers.stackspot - INFO - StackSpot provider initialized successfully
+2025-02-05 16:28:50,902 - aider.providers.stackspot_config - INFO - Starting StackSpot configuration...
+2025-02-05 16:28:50,902 - aider.providers.stackspot_config - INFO - Using realm: stackspot
+2025-02-05 16:28:50,903 - aider.providers.stackspot_config - INFO - Auth base URL: https://auth.stackspot.com
+2025-02-05 16:28:50,903 - aider.providers.stackspot_config - INFO - API base URL: https://genai-code-buddy-api.stackspot.com
+2025-02-05 16:28:50,903 - aider.providers.stackspot_config - INFO - URLs validated successfully
+2025-02-05 16:28:50,903 - aider.providers.stackspot_config - INFO - Endpoint URLs built successfully
+2025-02-05 16:28:50,903 - aider.providers.stackspot_config - INFO - Creating final configuration...
+2025-02-05 16:28:50,903 - aider.providers.stackspot_config - INFO - StackSpot configuration completed successfully
+2025-02-05 16:28:50,903 - aider.providers.stackspot - INFO - StackSpot provider initialized successfully
+2025-02-05 16:28:50,910 - aider.models - WARNING - Model settings file not found: /home/pimentel/.aider/.aider.model.settings.yml
+2025-02-05 16:28:50,911 - aider.providers.stackspot_config - INFO - Starting StackSpot configuration...
+2025-02-05 16:28:50,911 - aider.providers.stackspot_config - INFO - Using realm: stackspot
+2025-02-05 16:28:50,911 - aider.providers.stackspot_config - INFO - Auth base URL: https://auth.stackspot.com
+2025-02-05 16:28:50,911 - aider.providers.stackspot_config - INFO - API base URL: https://genai-code-buddy-api.stackspot.com
+2025-02-05 16:28:50,911 - aider.providers.stackspot_config - INFO - URLs validated successfully
+2025-02-05 16:28:50,911 - aider.providers.stackspot_config - INFO - Endpoint URLs built successfully
+2025-02-05 16:28:50,911 - aider.providers.stackspot_config - INFO - Creating final configuration...
+2025-02-05 16:28:50,911 - aider.providers.stackspot_config - INFO - StackSpot configuration completed successfully
+2025-02-05 16:28:50,911 - aider.providers.stackspot - INFO - StackSpot provider initialized successfully
+2025-02-05 16:29:30,308 - aider.providers.stackspot_config - INFO - Starting StackSpot configuration...
+2025-02-05 16:29:30,308 - aider.providers.stackspot_config - INFO - Using realm: stackspot
+2025-02-05 16:29:30,308 - aider.providers.stackspot_config - INFO - Auth base URL: https://auth.stackspot.com
+2025-02-05 16:29:30,308 - aider.providers.stackspot_config - INFO - API base URL: https://genai-code-buddy-api.stackspot.com
+2025-02-05 16:29:30,308 - aider.providers.stackspot_config - INFO - URLs validated successfully
+2025-02-05 16:29:30,309 - aider.providers.stackspot_config - INFO - Endpoint URLs built successfully
+2025-02-05 16:29:30,309 - aider.providers.stackspot_config - INFO - Creating final configuration...
+2025-02-05 16:29:30,309 - aider.providers.stackspot_config - INFO - StackSpot configuration completed successfully
+2025-02-05 16:29:30,309 - aider.providers.stackspot - INFO - StackSpot provider initialized successfully
+2025-02-05 16:29:30,311 - aider.models - ERROR - YAML parsing error in .aider.model.settings.yml: while parsing a block mapping
+  in ".aider.model.settings.yml", line 2, column 1
+expected <block end>, but found '-'
+  in ".aider.model.settings.yml", line 34, column 1
+2025-02-05 16:29:30,313 - aider.models - ERROR - YAML parsing error in /home/pimentel/Workspace/aider/.aider.model.settings.yml: while parsing a block mapping
+  in "/home/pimentel/Workspace/aider/.aider.model.settings.yml", line 2, column 1
+expected <block end>, but found '-'
+  in "/home/pimentel/Workspace/aider/.aider.model.settings.yml", line 34, column 1
+2025-02-05 16:29:30,316 - aider.models - WARNING - Model settings file not found: /home/pimentel/.aider/.aider.model.settings.yml
+2025-02-05 16:29:30,316 - aider.providers.stackspot_config - INFO - Starting StackSpot configuration...
+2025-02-05 16:29:30,316 - aider.providers.stackspot_config - INFO - Using realm: stackspot
+2025-02-05 16:29:30,316 - aider.providers.stackspot_config - INFO - Auth base URL: https://auth.stackspot.com
+2025-02-05 16:29:30,317 - aider.providers.stackspot_config - INFO - API base URL: https://genai-code-buddy-api.stackspot.com
+2025-02-05 16:29:30,317 - aider.providers.stackspot_config - INFO - URLs validated successfully
+2025-02-05 16:29:30,317 - aider.providers.stackspot_config - INFO - Endpoint URLs built successfully
+2025-02-05 16:29:30,317 - aider.providers.stackspot_config - INFO - Creating final configuration...
+2025-02-05 16:29:30,317 - aider.providers.stackspot_config - INFO - StackSpot configuration completed successfully
+2025-02-05 16:29:30,317 - aider.providers.stackspot - INFO - StackSpot provider initialized successfully
+2025-02-05 16:30:51,237 - aider.providers.stackspot_config - INFO - Starting StackSpot configuration...
+2025-02-05 16:30:51,237 - aider.providers.stackspot_config - INFO - Using realm: stackspot
+2025-02-05 16:30:51,237 - aider.providers.stackspot_config - INFO - Auth base URL: https://auth.stackspot.com
+2025-02-05 16:30:51,237 - aider.providers.stackspot_config - INFO - API base URL: https://genai-code-buddy-api.stackspot.com
+2025-02-05 16:30:51,238 - aider.providers.stackspot_config - INFO - URLs validated successfully
+2025-02-05 16:30:51,238 - aider.providers.stackspot_config - INFO - Endpoint URLs built successfully
+2025-02-05 16:30:51,238 - aider.providers.stackspot_config - INFO - Creating final configuration...
+2025-02-05 16:30:51,238 - aider.providers.stackspot_config - INFO - StackSpot configuration completed successfully
+2025-02-05 16:30:51,238 - aider.providers.stackspot - INFO - StackSpot provider initialized successfully
+2025-02-05 16:30:51,238 - aider.models - WARNING - Empty settings file: .aider.model.settings.yml
+2025-02-05 16:30:51,238 - aider.models - WARNING - Empty settings file: /home/pimentel/Workspace/aider/.aider.model.settings.yml
+2025-02-05 16:30:51,242 - aider.models - WARNING - Model settings file not found: /home/pimentel/.aider/.aider.model.settings.yml
+2025-02-05 16:30:51,242 - aider.providers.stackspot_config - INFO - Starting StackSpot configuration...
+2025-02-05 16:30:51,243 - aider.providers.stackspot_config - INFO - Using realm: stackspot
+2025-02-05 16:30:51,243 - aider.providers.stackspot_config - INFO - Auth base URL: https://auth.stackspot.com
+2025-02-05 16:30:51,243 - aider.providers.stackspot_config - INFO - API base URL: https://genai-code-buddy-api.stackspot.com
+2025-02-05 16:30:51,243 - aider.providers.stackspot_config - INFO - URLs validated successfully
+2025-02-05 16:30:51,243 - aider.providers.stackspot_config - INFO - Endpoint URLs built successfully
+2025-02-05 16:30:51,243 - aider.providers.stackspot_config - INFO - Creating final configuration...
+2025-02-05 16:30:51,243 - aider.providers.stackspot_config - INFO - StackSpot configuration completed successfully
+2025-02-05 16:30:51,243 - aider.providers.stackspot - INFO - StackSpot provider initialized successfully
+2025-02-05 16:32:04,322 - aider.providers.stackspot_config - INFO - Starting StackSpot configuration...
+2025-02-05 16:32:04,322 - aider.providers.stackspot_config - INFO - Using realm: stackspot
+2025-02-05 16:32:04,322 - aider.providers.stackspot_config - INFO - Auth base URL: https://auth.stackspot.com
+2025-02-05 16:32:04,322 - aider.providers.stackspot_config - INFO - API base URL: https://genai-code-buddy-api.stackspot.com
+2025-02-05 16:32:04,323 - aider.providers.stackspot_config - INFO - URLs validated successfully
+2025-02-05 16:32:04,323 - aider.providers.stackspot_config - INFO - Endpoint URLs built successfully
+2025-02-05 16:32:04,323 - aider.providers.stackspot_config - INFO - Creating final configuration...
+2025-02-05 16:32:04,323 - aider.providers.stackspot_config - INFO - StackSpot configuration completed successfully
+2025-02-05 16:32:04,323 - aider.providers.stackspot - INFO - StackSpot provider initialized successfully
+2025-02-05 16:32:04,333 - aider.models - WARNING - Model settings file not found: /home/pimentel/.aider/.aider.model.settings.yml
+2025-02-05 16:32:04,334 - aider.providers.stackspot_config - INFO - Starting StackSpot configuration...
+2025-02-05 16:32:04,334 - aider.providers.stackspot_config - INFO - Using realm: stackspot
+2025-02-05 16:32:04,334 - aider.providers.stackspot_config - INFO - Auth base URL: https://auth.stackspot.com
+2025-02-05 16:32:04,334 - aider.providers.stackspot_config - INFO - API base URL: https://genai-code-buddy-api.stackspot.com
+2025-02-05 16:32:04,335 - aider.providers.stackspot_config - INFO - URLs validated successfully
+2025-02-05 16:32:04,335 - aider.providers.stackspot_config - INFO - Endpoint URLs built successfully
+2025-02-05 16:32:04,335 - aider.providers.stackspot_config - INFO - Creating final configuration...
+2025-02-05 16:32:04,335 - aider.providers.stackspot_config - INFO - StackSpot configuration completed successfully
+2025-02-05 16:32:04,335 - aider.providers.stackspot - INFO - StackSpot provider initialized successfully
+2025-02-05 16:32:44,943 - aider.main - INFO - Successfully loaded environment variables from /home/pimentel/Workspace/aider/.env
+2025-02-05 16:32:44,964 - aider.providers.stackspot_config - INFO - Starting StackSpot configuration...
+2025-02-05 16:32:44,964 - aider.providers.stackspot_config - INFO - Using realm: stackspot
+2025-02-05 16:32:44,964 - aider.providers.stackspot_config - INFO - Auth base URL: https://auth.stackspot.com
+2025-02-05 16:32:44,964 - aider.providers.stackspot_config - INFO - API base URL: https://genai-code-buddy-api.stackspot.com
+2025-02-05 16:32:44,965 - aider.providers.stackspot_config - INFO - URLs validated successfully
+2025-02-05 16:32:44,965 - aider.providers.stackspot_config - INFO - Endpoint URLs built successfully
+2025-02-05 16:32:44,965 - aider.providers.stackspot_config - INFO - Creating final configuration...
+2025-02-05 16:32:44,965 - aider.providers.stackspot_config - INFO - StackSpot configuration completed successfully
+2025-02-05 16:32:44,965 - aider.providers.stackspot - INFO - StackSpot provider initialized successfully
+2025-02-05 16:32:44,975 - aider.models - WARNING - Model settings file not found: /home/pimentel/.aider/.aider.model.settings.yml
+2025-02-05 16:32:44,975 - aider.main - INFO - Model settings loaded from:
+2025-02-05 16:32:44,975 - aider.main - INFO -   - .aider.model.settings.yml
+2025-02-05 16:32:44,975 - aider.main - INFO -   - /home/pimentel/Workspace/aider/.aider.model.settings.yml
+2025-02-05 16:32:44,975 - aider.main - INFO -   - /home/pimentel/.aider.model.settings.yml
+2025-02-05 16:32:44,976 - aider.providers.stackspot_config - INFO - Starting StackSpot configuration...
+2025-02-05 16:32:44,976 - aider.providers.stackspot_config - INFO - Using realm: stackspot
+2025-02-05 16:32:44,976 - aider.providers.stackspot_config - INFO - Auth base URL: https://auth.stackspot.com
+2025-02-05 16:32:44,977 - aider.providers.stackspot_config - INFO - API base URL: https://genai-code-buddy-api.stackspot.com
+2025-02-05 16:32:44,977 - aider.providers.stackspot_config - INFO - URLs validated successfully
+2025-02-05 16:32:44,977 - aider.providers.stackspot_config - INFO - Endpoint URLs built successfully
+2025-02-05 16:32:44,977 - aider.providers.stackspot_config - INFO - Creating final configuration...
+2025-02-05 16:32:44,977 - aider.providers.stackspot_config - INFO - StackSpot configuration completed successfully
+2025-02-05 16:32:44,977 - aider.providers.stackspot - INFO - StackSpot provider initialized successfully
+2025-02-05 16:33:10,456 - aider.main - INFO - Successfully loaded environment variables from /home/pimentel/Workspace/aider/.env
+2025-02-05 16:33:10,478 - aider.providers.stackspot_config - INFO - Starting StackSpot configuration...
+2025-02-05 16:33:10,478 - aider.providers.stackspot_config - INFO - Using realm: stackspot
+2025-02-05 16:33:10,478 - aider.providers.stackspot_config - INFO - Auth base URL: https://auth.stackspot.com
+2025-02-05 16:33:10,478 - aider.providers.stackspot_config - INFO - API base URL: https://genai-code-buddy-api.stackspot.com
+2025-02-05 16:33:10,478 - aider.providers.stackspot_config - INFO - URLs validated successfully
+2025-02-05 16:33:10,478 - aider.providers.stackspot_config - INFO - Endpoint URLs built successfully
+2025-02-05 16:33:10,478 - aider.providers.stackspot_config - INFO - Creating final configuration...
+2025-02-05 16:33:10,479 - aider.providers.stackspot_config - INFO - StackSpot configuration completed successfully
+2025-02-05 16:33:10,479 - aider.providers.stackspot - INFO - StackSpot provider initialized successfully
+2025-02-05 16:33:10,490 - aider.models - WARNING - Model settings file not found: /home/pimentel/.aider/.aider.model.settings.yml
+2025-02-05 16:33:10,490 - aider.main - INFO - Model settings loaded from:
+2025-02-05 16:33:10,490 - aider.main - INFO -   - .aider.model.settings.yml
+2025-02-05 16:33:10,490 - aider.main - INFO -   - /home/pimentel/Workspace/aider/.aider.model.settings.yml
+2025-02-05 16:33:10,490 - aider.main - INFO -   - /home/pimentel/.aider.model.settings.yml
+2025-02-05 16:33:10,491 - aider.providers.stackspot_config - INFO - Starting StackSpot configuration...
+2025-02-05 16:33:10,492 - aider.providers.stackspot_config - INFO - Using realm: stackspot
+2025-02-05 16:33:10,492 - aider.providers.stackspot_config - INFO - Auth base URL: https://auth.stackspot.com
+2025-02-05 16:33:10,492 - aider.providers.stackspot_config - INFO - API base URL: https://genai-code-buddy-api.stackspot.com
+2025-02-05 16:33:10,492 - aider.providers.stackspot_config - INFO - URLs validated successfully
+2025-02-05 16:33:10,492 - aider.providers.stackspot_config - INFO - Endpoint URLs built successfully
+2025-02-05 16:33:10,492 - aider.providers.stackspot_config - INFO - Creating final configuration...
+2025-02-05 16:33:10,492 - aider.providers.stackspot_config - INFO - StackSpot configuration completed successfully
+2025-02-05 16:33:10,492 - aider.providers.stackspot - INFO - StackSpot provider initialized successfully
+2025-02-05 16:35:33,038 - aider.main - INFO - Successfully loaded environment variables from /home/pimentel/Workspace/aider/.env
+2025-02-05 16:35:33,060 - aider.providers.stackspot_config - INFO - Starting StackSpot configuration...
+2025-02-05 16:35:33,060 - aider.providers.stackspot_config - INFO - Using realm: stackspot
+2025-02-05 16:35:33,060 - aider.providers.stackspot_config - INFO - Auth base URL: https://auth.stackspot.com
+2025-02-05 16:35:33,060 - aider.providers.stackspot_config - INFO - API base URL: https://genai-code-buddy-api.stackspot.com
+2025-02-05 16:35:33,061 - aider.providers.stackspot_config - INFO - URLs validated successfully
+2025-02-05 16:35:33,061 - aider.providers.stackspot_config - INFO - Endpoint URLs built successfully
+2025-02-05 16:35:33,061 - aider.providers.stackspot_config - INFO - Creating final configuration...
+2025-02-05 16:35:33,061 - aider.providers.stackspot_config - INFO - StackSpot configuration completed successfully
+2025-02-05 16:35:33,061 - aider.providers.stackspot - INFO - StackSpot provider initialized successfully
+2025-02-05 16:35:33,072 - aider.models - WARNING - Model settings file not found: /home/pimentel/.aider/.aider.model.settings.yml
+2025-02-05 16:35:33,072 - aider.main - INFO - Model settings loaded from:
+2025-02-05 16:35:33,073 - aider.main - INFO -   - .aider.model.settings.yml
+2025-02-05 16:35:33,073 - aider.main - INFO -   - /home/pimentel/Workspace/aider/.aider.model.settings.yml
+2025-02-05 16:35:33,073 - aider.main - INFO -   - /home/pimentel/.aider.model.settings.yml
+2025-02-05 16:35:33,074 - aider.providers.stackspot_config - INFO - Starting StackSpot configuration...
+2025-02-05 16:35:33,074 - aider.providers.stackspot_config - INFO - Using realm: stackspot
+2025-02-05 16:35:33,074 - aider.providers.stackspot_config - INFO - Auth base URL: https://auth.stackspot.com
+2025-02-05 16:35:33,074 - aider.providers.stackspot_config - INFO - API base URL: https://genai-code-buddy-api.stackspot.com
+2025-02-05 16:35:33,074 - aider.providers.stackspot_config - INFO - URLs validated successfully
+2025-02-05 16:35:33,074 - aider.providers.stackspot_config - INFO - Endpoint URLs built successfully
+2025-02-05 16:35:33,074 - aider.providers.stackspot_config - INFO - Creating final configuration...
+2025-02-05 16:35:33,074 - aider.providers.stackspot_config - INFO - StackSpot configuration completed successfully
+2025-02-05 16:35:33,074 - aider.providers.stackspot - INFO - StackSpot provider initialized successfully
+2025-02-05 16:36:04,331 - aider.main - INFO - Successfully loaded environment variables from /home/pimentel/Workspace/aider/.env
+2025-02-05 16:36:04,352 - aider.providers.stackspot_config - INFO - Starting StackSpot configuration...
+2025-02-05 16:36:04,352 - aider.providers.stackspot_config - INFO - Using realm: stackspot
+2025-02-05 16:36:04,352 - aider.providers.stackspot_config - INFO - Auth base URL: https://auth.stackspot.com
+2025-02-05 16:36:04,352 - aider.providers.stackspot_config - INFO - API base URL: https://genai-code-buddy-api.stackspot.com
+2025-02-05 16:36:04,353 - aider.providers.stackspot_config - INFO - URLs validated successfully
+2025-02-05 16:36:04,353 - aider.providers.stackspot_config - INFO - Endpoint URLs built successfully
+2025-02-05 16:36:04,353 - aider.providers.stackspot_config - INFO - Creating final configuration...
+2025-02-05 16:36:04,353 - aider.providers.stackspot_config - INFO - StackSpot configuration completed successfully
+2025-02-05 16:36:04,353 - aider.providers.stackspot - INFO - StackSpot provider initialized successfully
+2025-02-05 16:36:04,364 - aider.models - WARNING - Model settings file not found: /home/pimentel/.aider/.aider.model.settings.yml
+2025-02-05 16:36:04,364 - aider.main - INFO - Model settings loaded from:
+2025-02-05 16:36:04,364 - aider.main - INFO -   - .aider.model.settings.yml
+2025-02-05 16:36:04,364 - aider.main - INFO -   - /home/pimentel/Workspace/aider/.aider.model.settings.yml
+2025-02-05 16:36:04,364 - aider.main - INFO -   - /home/pimentel/.aider.model.settings.yml
+2025-02-05 16:36:04,365 - aider.main - ERROR - Exception details:
+Traceback (most recent call last):
+  File "/home/pimentel/Workspace/aider/aider/main.py", line 537, in main
+    model_settings = Model(
+                     ^^^^^^
+TypeError: Model.__init__() got multiple values for argument 'name'
+2025-02-05 16:36:24,873 - aider.main - INFO - Successfully loaded environment variables from /home/pimentel/Workspace/aider/.env
+2025-02-05 16:36:24,894 - aider.providers.stackspot_config - INFO - Starting StackSpot configuration...
+2025-02-05 16:36:24,894 - aider.providers.stackspot_config - INFO - Using realm: stackspot
+2025-02-05 16:36:24,894 - aider.providers.stackspot_config - INFO - Auth base URL: https://auth.stackspot.com
+2025-02-05 16:36:24,894 - aider.providers.stackspot_config - INFO - API base URL: https://genai-code-buddy-api.stackspot.com
+2025-02-05 16:36:24,895 - aider.providers.stackspot_config - INFO - URLs validated successfully
+2025-02-05 16:36:24,895 - aider.providers.stackspot_config - INFO - Endpoint URLs built successfully
+2025-02-05 16:36:24,895 - aider.providers.stackspot_config - INFO - Creating final configuration...
+2025-02-05 16:36:24,895 - aider.providers.stackspot_config - INFO - StackSpot configuration completed successfully
+2025-02-05 16:36:24,895 - aider.providers.stackspot - INFO - StackSpot provider initialized successfully
+2025-02-05 16:36:24,906 - aider.models - WARNING - Model settings file not found: /home/pimentel/.aider/.aider.model.settings.yml
+2025-02-05 16:36:24,906 - aider.main - INFO - Model settings loaded from:
+2025-02-05 16:36:24,906 - aider.main - INFO -   - .aider.model.settings.yml
+2025-02-05 16:36:24,906 - aider.main - INFO -   - /home/pimentel/Workspace/aider/.aider.model.settings.yml
+2025-02-05 16:36:24,906 - aider.main - INFO -   - /home/pimentel/.aider.model.settings.yml
+2025-02-05 16:36:24,907 - aider.main - ERROR - Exception details:
+Traceback (most recent call last):
+  File "/home/pimentel/Workspace/aider/aider/main.py", line 537, in main
+    model_settings = Model(
+                     ^^^^^^
+TypeError: Model.__init__() got an unexpected keyword argument 'info'
+2025-02-05 16:36:54,008 - aider.main - INFO - Successfully loaded environment variables from /home/pimentel/Workspace/aider/.env
+2025-02-05 16:36:54,033 - aider.providers.stackspot_config - INFO - Starting StackSpot configuration...
+2025-02-05 16:36:54,033 - aider.providers.stackspot_config - INFO - Using realm: stackspot
+2025-02-05 16:36:54,033 - aider.providers.stackspot_config - INFO - Auth base URL: https://auth.stackspot.com
+2025-02-05 16:36:54,033 - aider.providers.stackspot_config - INFO - API base URL: https://genai-code-buddy-api.stackspot.com
+2025-02-05 16:36:54,033 - aider.providers.stackspot_config - INFO - URLs validated successfully
+2025-02-05 16:36:54,034 - aider.providers.stackspot_config - INFO - Endpoint URLs built successfully
+2025-02-05 16:36:54,034 - aider.providers.stackspot_config - INFO - Creating final configuration...
+2025-02-05 16:36:54,034 - aider.providers.stackspot_config - INFO - StackSpot configuration completed successfully
+2025-02-05 16:36:54,034 - aider.providers.stackspot - INFO - StackSpot provider initialized successfully
+2025-02-05 16:36:54,047 - aider.models - WARNING - Model settings file not found: /home/pimentel/.aider/.aider.model.settings.yml
+2025-02-05 16:36:54,047 - aider.main - INFO - Model settings loaded from:
+2025-02-05 16:36:54,047 - aider.main - INFO -   - .aider.model.settings.yml
+2025-02-05 16:36:54,047 - aider.main - INFO -   - /home/pimentel/Workspace/aider/.aider.model.settings.yml
+2025-02-05 16:36:54,047 - aider.main - INFO -   - /home/pimentel/.aider.model.settings.yml
+2025-02-05 16:36:54,048 - aider.providers.stackspot_config - INFO - Starting StackSpot configuration...
+2025-02-05 16:36:54,048 - aider.providers.stackspot_config - INFO - Using realm: stackspot
+2025-02-05 16:36:54,048 - aider.providers.stackspot_config - INFO - Auth base URL: https://auth.stackspot.com
+2025-02-05 16:36:54,048 - aider.providers.stackspot_config - INFO - API base URL: https://genai-code-buddy-api.stackspot.com
+2025-02-05 16:36:54,048 - aider.providers.stackspot_config - INFO - URLs validated successfully
+2025-02-05 16:36:54,048 - aider.providers.stackspot_config - INFO - Endpoint URLs built successfully
+2025-02-05 16:36:54,048 - aider.providers.stackspot_config - INFO - Creating final configuration...
+2025-02-05 16:36:54,048 - aider.providers.stackspot_config - INFO - StackSpot configuration completed successfully
+2025-02-05 16:36:54,048 - aider.providers.stackspot - INFO - StackSpot provider initialized successfully
+2025-02-05 16:37:14,143 - aider.main - INFO - Successfully loaded environment variables from /home/pimentel/Workspace/aider/.env
+2025-02-05 16:37:14,164 - aider.providers.stackspot_config - INFO - Starting StackSpot configuration...
+2025-02-05 16:37:14,164 - aider.providers.stackspot_config - INFO - Using realm: stackspot
+2025-02-05 16:37:14,164 - aider.providers.stackspot_config - INFO - Auth base URL: https://auth.stackspot.com
+2025-02-05 16:37:14,164 - aider.providers.stackspot_config - INFO - API base URL: https://genai-code-buddy-api.stackspot.com
+2025-02-05 16:37:14,164 - aider.providers.stackspot_config - INFO - URLs validated successfully
+2025-02-05 16:37:14,164 - aider.providers.stackspot_config - INFO - Endpoint URLs built successfully
+2025-02-05 16:37:14,164 - aider.providers.stackspot_config - INFO - Creating final configuration...
+2025-02-05 16:37:14,165 - aider.providers.stackspot_config - INFO - StackSpot configuration completed successfully
+2025-02-05 16:37:14,165 - aider.providers.stackspot - INFO - StackSpot provider initialized successfully
+2025-02-05 16:37:14,176 - aider.models - WARNING - Model settings file not found: /home/pimentel/.aider/.aider.model.settings.yml
+2025-02-05 16:37:14,176 - aider.main - INFO - Model settings loaded from:
+2025-02-05 16:37:14,176 - aider.main - INFO -   - .aider.model.settings.yml
+2025-02-05 16:37:14,176 - aider.main - INFO -   - /home/pimentel/Workspace/aider/.aider.model.settings.yml
+2025-02-05 16:37:14,176 - aider.main - INFO -   - /home/pimentel/.aider.model.settings.yml
+2025-02-05 16:37:14,177 - aider.providers.stackspot_config - INFO - Starting StackSpot configuration...
+2025-02-05 16:37:14,177 - aider.providers.stackspot_config - INFO - Using realm: stackspot
+2025-02-05 16:37:14,177 - aider.providers.stackspot_config - INFO - Auth base URL: https://auth.stackspot.com
+2025-02-05 16:37:14,178 - aider.providers.stackspot_config - INFO - API base URL: https://genai-code-buddy-api.stackspot.com
+2025-02-05 16:37:14,178 - aider.providers.stackspot_config - INFO - URLs validated successfully
+2025-02-05 16:37:14,178 - aider.providers.stackspot_config - INFO - Endpoint URLs built successfully
+2025-02-05 16:37:14,178 - aider.providers.stackspot_config - INFO - Creating final configuration...
+2025-02-05 16:37:14,178 - aider.providers.stackspot_config - INFO - StackSpot configuration completed successfully
+2025-02-05 16:37:14,178 - aider.providers.stackspot - INFO - StackSpot provider initialized successfully
+2025-02-05 16:38:42,210 - aider.main - INFO - Successfully loaded environment variables from /home/pimentel/Workspace/aider/.env
+2025-02-05 16:38:42,231 - aider.providers.stackspot_config - INFO - Starting StackSpot configuration...
+2025-02-05 16:38:42,231 - aider.providers.stackspot_config - INFO - Using realm: stackspot
+2025-02-05 16:38:42,231 - aider.providers.stackspot_config - INFO - Auth base URL: https://auth.stackspot.com
+2025-02-05 16:38:42,231 - aider.providers.stackspot_config - INFO - API base URL: https://genai-code-buddy-api.stackspot.com
+2025-02-05 16:38:42,231 - aider.providers.stackspot_config - INFO - URLs validated successfully
+2025-02-05 16:38:42,232 - aider.providers.stackspot_config - INFO - Endpoint URLs built successfully
+2025-02-05 16:38:42,232 - aider.providers.stackspot_config - INFO - Creating final configuration...
+2025-02-05 16:38:42,232 - aider.providers.stackspot_config - INFO - StackSpot configuration completed successfully
+2025-02-05 16:38:42,232 - aider.providers.stackspot - INFO - StackSpot provider initialized successfully
+2025-02-05 16:38:42,242 - aider.models - WARNING - Model settings file not found: /home/pimentel/.aider/.aider.model.settings.yml
+2025-02-05 16:38:42,242 - aider.main - INFO - Model settings loaded from:
+2025-02-05 16:38:42,243 - aider.main - INFO -   - .aider.model.settings.yml
+2025-02-05 16:38:42,243 - aider.main - INFO -   - /home/pimentel/Workspace/aider/.aider.model.settings.yml
+2025-02-05 16:38:42,243 - aider.main - INFO -   - /home/pimentel/.aider.model.settings.yml
+2025-02-05 16:38:42,243 - aider.providers.stackspot_config - INFO - Starting StackSpot configuration...
+2025-02-05 16:38:42,244 - aider.providers.stackspot_config - INFO - Using realm: stackspot
+2025-02-05 16:38:42,244 - aider.providers.stackspot_config - INFO - Auth base URL: https://auth.stackspot.com
+2025-02-05 16:38:42,244 - aider.providers.stackspot_config - INFO - API base URL: https://genai-code-buddy-api.stackspot.com
+2025-02-05 16:38:42,244 - aider.providers.stackspot_config - INFO - URLs validated successfully
+2025-02-05 16:38:42,244 - aider.providers.stackspot_config - INFO - Endpoint URLs built successfully
+2025-02-05 16:38:42,244 - aider.providers.stackspot_config - INFO - Creating final configuration...
+2025-02-05 16:38:42,244 - aider.providers.stackspot_config - INFO - StackSpot configuration completed successfully
+2025-02-05 16:38:42,244 - aider.providers.stackspot - INFO - StackSpot provider initialized successfully
+2025-02-05 16:39:27,622 - aider.main - INFO - Successfully loaded environment variables from /home/pimentel/Workspace/aider/.env
+2025-02-05 16:39:27,648 - aider.providers.stackspot_config - INFO - Starting StackSpot configuration...
+2025-02-05 16:39:27,648 - aider.providers.stackspot_config - INFO - Using realm: stackspot
+2025-02-05 16:39:27,648 - aider.providers.stackspot_config - INFO - Auth base URL: https://auth.stackspot.com
+2025-02-05 16:39:27,648 - aider.providers.stackspot_config - INFO - API base URL: https://genai-code-buddy-api.stackspot.com
+2025-02-05 16:39:27,648 - aider.providers.stackspot_config - INFO - URLs validated successfully
+2025-02-05 16:39:27,648 - aider.providers.stackspot_config - INFO - Endpoint URLs built successfully
+2025-02-05 16:39:27,648 - aider.providers.stackspot_config - INFO - Creating final configuration...
+2025-02-05 16:39:27,649 - aider.providers.stackspot_config - INFO - StackSpot configuration completed successfully
+2025-02-05 16:39:27,649 - aider.providers.stackspot - INFO - StackSpot provider initialized successfully
+2025-02-05 16:39:27,660 - aider.models - WARNING - Model settings file not found: /home/pimentel/.aider/.aider.model.settings.yml
+2025-02-05 16:39:27,661 - aider.main - INFO - Model settings loaded from:
+2025-02-05 16:39:27,661 - aider.main - INFO -   - .aider.model.settings.yml
+2025-02-05 16:39:27,661 - aider.main - INFO -   - /home/pimentel/Workspace/aider/.aider.model.settings.yml
+2025-02-05 16:39:27,661 - aider.main - INFO -   - /home/pimentel/.aider.model.settings.yml
+2025-02-05 16:39:27,662 - aider.providers.stackspot_config - INFO - Starting StackSpot configuration...
+2025-02-05 16:39:27,662 - aider.providers.stackspot_config - INFO - Using realm: stackspot
+2025-02-05 16:39:27,662 - aider.providers.stackspot_config - INFO - Auth base URL: https://auth.stackspot.com
+2025-02-05 16:39:27,662 - aider.providers.stackspot_config - INFO - API base URL: https://genai-code-buddy-api.stackspot.com
+2025-02-05 16:39:27,662 - aider.providers.stackspot_config - INFO - URLs validated successfully
+2025-02-05 16:39:27,662 - aider.providers.stackspot_config - INFO - Endpoint URLs built successfully
+2025-02-05 16:39:27,662 - aider.providers.stackspot_config - INFO - Creating final configuration...
+2025-02-05 16:39:27,662 - aider.providers.stackspot_config - INFO - StackSpot configuration completed successfully
+2025-02-05 16:39:27,662 - aider.providers.stackspot - INFO - StackSpot provider initialized successfully

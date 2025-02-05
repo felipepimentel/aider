@@ -73,7 +73,6 @@ class Coder:
     repo = None
     last_aider_commit_hash = None
     aider_edited_files = None
-    last_asked_for_commit_time = 0
     repo_map = None
     functions = None
     num_exhausted_context_windows = 0
@@ -258,6 +257,11 @@ class Coder:
     def __init__(self, main_model=None, io=None, **kwargs):
         self.main_model = main_model
         self.io = io
+        self.abs_fnames = set()  # Initialize abs_fnames as an empty set
+        self.abs_read_only_fnames = (
+            set()
+        )  # Initialize abs_read_only_fnames as an empty set
+
         for k, v in kwargs.items():
             setattr(self, k, v)
 
@@ -454,6 +458,8 @@ class Coder:
                 self.io.tool_output("JSON Schema:")
                 self.io.tool_output(json.dumps(self.functions, indent=4))
 
+        self.last_asked_for_commit_time = 0  # Initialize as instance variable
+
     def setup_lint_cmds(self, lint_cmds):
         if not lint_cmds:
             return
@@ -577,15 +583,29 @@ class Coder:
         return prompt
 
     def get_cur_message_text(self):
-        """Get the text of the current message."""
-        if not hasattr(self, "cur_messages") or not self.cur_messages:
+        """Get the text of the current message being processed."""
+        if not self.cur_messages:
             return ""
-        return "\n".join(msg.get("content", "") for msg in self.cur_messages)
+        return self.cur_messages[-1].get("content", "")
+
+    def get_file_mentions(self, text):
+        """Extract file mentions from text."""
+        if not text:
+            return set()
+
+        mentions = set()
+        for rel_fname in self.get_addable_relative_files():
+            if rel_fname in text:
+                mentions.add(rel_fname)
+        return mentions
 
     def get_ident_mentions(self, text):
-        # Split the string on any character that is not alphanumeric
-        # \W+ matches one or more non-word characters (equivalent to [^a-zA-Z0-9_]+)
-        words = set(re.split(r"\W+", text))
+        """Extract identifier mentions from text."""
+        if not text:
+            return set()
+
+        # Simple word extraction - can be improved with better parsing
+        words = set(re.findall(r"\b\w+\b", text))
         return words
 
     def get_ident_filename_matches(self, idents):
@@ -617,17 +637,37 @@ class Coder:
         if not self.repo_map:
             return ""
 
-        mentioned_idents = self.get_mentioned_idents()
-        mentioned_fnames = set()
-        if mentioned_idents is not None:
-            mentioned_fnames.update(self.get_ident_filename_matches(mentioned_idents))
+        cur_msg_text = self.get_cur_message_text()
+        mentioned_fnames = self.get_file_mentions(cur_msg_text)
+        mentioned_idents = self.get_ident_mentions(cur_msg_text)
 
-        repo_map = self.repo_map.get_repo_map(
-            self.chat_history,
-            mentioned_fnames,
-            self.repo_map_tokens,
+        mentioned_fnames.update(self.get_ident_filename_matches(mentioned_idents))
+
+        other_files = set(self.get_all_abs_files()) - set(self.abs_fnames)
+        repo_content = self.repo_map.get_repo_map(
+            self.abs_fnames,
+            other_files,
+            mentioned_fnames=mentioned_fnames,
+            mentioned_idents=mentioned_idents,
         )
-        return repo_map
+
+        # fall back to global repo map if files in chat are disjoint from rest of repo
+        if not repo_content:
+            repo_content = self.repo_map.get_repo_map(
+                set(),
+                set(self.get_all_abs_files()),
+                mentioned_fnames=mentioned_fnames,
+                mentioned_idents=mentioned_idents,
+            )
+
+        # fall back to completely unhinted repo
+        if not repo_content:
+            repo_content = self.repo_map.get_repo_map(
+                set(),
+                set(self.get_all_abs_files()),
+            )
+
+        return repo_content
 
     def get_repo_messages(self):
         repo_messages = []
@@ -1524,19 +1564,6 @@ See https://aider.chat/docs/llms/ollama.html#setting-the-context-window-size
                 )
             ]
 
-    def get_file_mentions(self, content):
-        if not content:
-            return
-
-        added_fnames = []
-        for rel_fname in self.get_addable_relative_files():
-            if rel_fname in content:
-                self.add_rel_fname(rel_fname)
-                added_fnames.append(rel_fname)
-
-        if added_fnames:
-            return f"Added mentioned files to chat: {', '.join(added_fnames)}"
-
     def check_for_file_mentions(self, content):
         if not content:
             return
@@ -1615,10 +1642,37 @@ See https://aider.chat/docs/llms/ollama.html#setting-the-context-window-size
         return self.get_ident_mentions(cur_msg_text)
 
     def show_undo_hint(self):
-        """Show a hint about using /undo if there are changes to undo"""
-        if not self.commit_before_message:
+        """Show hint about undo command if needed."""
+        if not self.done_messages:
             return
-        if self.commit_before_message != self.repo.get_head():
-            self.io.tool_output(
-                "You can use /undo to undo and discard each aider commit."
-            )
+
+        last_msg = self.done_messages[-1]
+        if last_msg.get("role") != "assistant":
+            return
+
+        if not self.io.pretty:
+            return
+
+        if not self.show_diffs:
+            return
+
+        if self.dry_run:
+            return
+
+        if not self.repo:
+            return
+
+        if not self.repo.last_aider_commit_hash:
+            return
+
+        if time.time() - self.last_asked_for_commit_time < 60:
+            return
+
+        self.io.tool_output("Use /undo to revert the last edit")
+        self.last_asked_for_commit_time = time.time()
+
+    def get_all_abs_files(self):
+        """Get all absolute file paths in the repository."""
+        if self.repo:
+            return self.repo.get_tracked_files()
+        return list(self.abs_fnames)

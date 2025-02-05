@@ -9,19 +9,8 @@ from .stackspot_constants import (
     API_PATH_CHECK_EXECUTION,
     API_PATH_CREATE_EXECUTION,
     API_PATH_TOKEN,
-    DEFAULT_API_URL,
-    DEFAULT_AUTH_URL,
     DEFAULT_CONFIG,
     DEFAULT_HEADERS,
-    DEFAULT_REALM,
-    DEFAULT_USER_AGENT,
-    ENV_API_URL,
-    ENV_AUTH_URL,
-    ENV_CLIENT_ID,
-    ENV_CLIENT_KEY,
-    ENV_REALM,
-    ENV_REMOTE_QC_NAME,
-    ENV_USER_AGENT,
     ERROR_MESSAGES,
 )
 
@@ -102,12 +91,7 @@ def get_user_agent() -> str:
     Returns:
         The User-Agent string to use in requests.
     """
-    custom_user_agent = os.getenv(ENV_USER_AGENT)
-    if custom_user_agent:
-        logger.debug(f"Using custom User-Agent: {custom_user_agent}")
-        return f"{custom_user_agent} {DEFAULT_USER_AGENT}"
-    logger.debug(f"Using default User-Agent: {DEFAULT_USER_AGENT}")
-    return DEFAULT_USER_AGENT
+    return "aider/1.0 (+https://aider.chat)"
 
 
 def configure_stackspot() -> Dict[str, Any]:
@@ -122,10 +106,10 @@ def configure_stackspot() -> Dict[str, Any]:
     logger.info("Starting StackSpot configuration...")
 
     # Get credentials from environment
-    client_id = os.getenv(ENV_CLIENT_ID)
-    client_key = os.getenv(ENV_CLIENT_KEY)
-    client_realm = os.getenv(ENV_REALM, DEFAULT_REALM)
-    remote_qc_name = os.getenv(ENV_REMOTE_QC_NAME)
+    client_id = os.getenv("STACKSPOTAI_CLIENT_ID")
+    client_key = os.getenv("STACKSPOTAI_CLIENT_KEY")
+    client_realm = os.getenv("STACKSPOTAI_REALM", "stackspot")
+    remote_qc_name = os.getenv("STACKSPOTAI_REMOTEQC_NAME")
 
     logger.info(f"Using realm: {client_realm}")
     logger.debug(f"Client ID present: {bool(client_id)}")
@@ -133,8 +117,10 @@ def configure_stackspot() -> Dict[str, Any]:
     logger.debug(f"Remote QC Name: {remote_qc_name}")
 
     # Get base URLs from environment or use defaults
-    auth_base_url = os.getenv(ENV_AUTH_URL, DEFAULT_AUTH_URL)
-    api_base_url = os.getenv(ENV_API_URL, DEFAULT_API_URL)
+    auth_base_url = os.getenv("STACKSPOTAI_AUTH_URL", "https://auth.stackspot.com")
+    api_base_url = os.getenv(
+        "STACKSPOTAI_API_URL", "https://genai-code-buddy-api.stackspot.com"
+    )
 
     logger.info(f"Auth base URL: {auth_base_url}")
     logger.info(f"API base URL: {api_base_url}")
@@ -190,40 +176,6 @@ def configure_stackspot() -> Dict[str, Any]:
                 **DEFAULT_HEADERS,
                 "User-Agent": get_user_agent(),
             },
-        },
-        "models": {
-            "stackspot-ai": {
-                "max_tokens": 8192,
-                "max_input_tokens": 16384,
-                "max_output_tokens": 8192,
-                "model_type": "code",
-                "streaming": True,
-                "temperature": 0.7,
-            },
-            "stackspot-ai-chat": {
-                "max_tokens": 8192,
-                "max_input_tokens": 16384,
-                "max_output_tokens": 8192,
-                "model_type": "chat",
-                "streaming": True,
-                "temperature": 0.7,
-            },
-            "stackspot-ai-code": {
-                "max_tokens": 8192,
-                "max_input_tokens": 16384,
-                "max_output_tokens": 8192,
-                "model_type": "code",
-                "streaming": True,
-                "temperature": 0.7,
-            },
-        },
-        "defaults": {
-            "timeout": 60,
-            "max_retries": 3,
-            "retry_delay": 1.0,
-            "cache_ttl": 3600,
-            "polling_interval": 2,
-            "max_polling_attempts": 30,
         },
     })
 

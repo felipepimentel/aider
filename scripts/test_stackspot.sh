@@ -6,8 +6,14 @@ export STACKSPOTAI_CLIENT_KEY=fake_client_key
 export STACKSPOTAI_REMOTEQC_NAME=fake_remote_qc
 export STACKSPOTAI_REALM=stackspot
 
-# Run aider with a simple command
-echo "hello" | poetry run aider
+# Set test mode and force interactive
+export AIDER_TEST_MODE=1
+export PYTHONUNBUFFERED=1
+export FORCE_INTERACTIVE=1
+export TERM=xterm-256color
+
+# Run aider with debug flags
+poetry run aider --verbose --fancy-input
 
 # Check the exit code
 exit_code=$?

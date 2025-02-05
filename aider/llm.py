@@ -16,24 +16,28 @@ os.environ["OR_SITE_URL"] = AIDER_SITE_URL
 os.environ["OR_APP_NAME"] = AIDER_APP_NAME
 os.environ["LITELLM_MODE"] = "PRODUCTION"
 
-logger.debug("=== Debug: Iniciando Módulo LLM ===")
-logger.debug(f"Diretório de trabalho atual: {os.getcwd()}")
+logger.debug("=== Debug: Starting LLM Module ===")
+logger.debug(f"Current working directory: {os.getcwd()}")
 logger.debug(f"Python path: {sys.path}")
-logger.debug("Variáveis de ambiente:")
-logger.debug(f"- STACKSPOT_API_KEY presente: {bool(os.getenv('STACKSPOT_API_KEY'))}")
+logger.debug("Environment variables:")
+logger.debug(
+    f"- STACKSPOTAI_CLIENT_KEY present: {bool(os.getenv('STACKSPOTAI_CLIENT_KEY'))}"
+)
 logger.debug(f"- LITELLM_MODE: {os.getenv('LITELLM_MODE')}")
 
 try:
-    logger.info("Inicializando LiteLLM...")
-    litellm = init_litellm()
-    logger.info("LiteLLM inicializado com sucesso!")
+    logger.info("Initializing LiteLLM...")
+    init_litellm()
+    import litellm
+
+    logger.info("LiteLLM initialized successfully!")
 except Exception as e:
-    logger.error("\nErro ao inicializar LiteLLM:")
+    logger.error("\nError initializing LiteLLM:")
     logger.error(str(e))
     logger.error("\nTraceback:", exc_info=True)
     raise
 
-logger.debug("=== Debug: Módulo LLM Carregado ===\n")
+logger.debug("=== Debug: LLM Module Loaded ===\n")
 
 
 def completion(prompt, model="stackspot-ai", stream=True, **kwargs):
@@ -47,7 +51,7 @@ def completion(prompt, model="stackspot-ai", stream=True, **kwargs):
         )
         return response
     except Exception as e:
-        logger.error(f"Erro durante completion: {str(e)}")
+        logger.error(f"Error during completion: {str(e)}")
         raise
 
 
@@ -69,4 +73,4 @@ def handle_chat_completion_error(e):
     return None
 
 
-__all__ = [litellm]
+__all__ = ["litellm", "completion", "chat_completion"]

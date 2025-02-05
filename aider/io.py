@@ -1,12 +1,14 @@
 import base64
+import logging
 import os
 import signal
 import time
 from collections import defaultdict
 from dataclasses import dataclass
 from datetime import datetime
-from io import StringIO
 from pathlib import Path
+
+logger = logging.getLogger(__name__)
 
 from prompt_toolkit.completion import Completer, Completion, ThreadedCompleter
 from prompt_toolkit.cursor_shapes import ModalCursorShapeConfig
@@ -21,7 +23,6 @@ from prompt_toolkit.shortcuts import CompleteStyle, PromptSession
 from prompt_toolkit.styles import Style
 from pygments.lexers import MarkdownLexer, guess_lexer_for_filename
 from pygments.token import Token
-from rich.columns import Columns
 from rich.console import Console
 from rich.markdown import Markdown
 from rich.style import Style as RichStyle
@@ -300,9 +301,13 @@ class InputOutput:
             try:
                 self.prompt_session = PromptSession(**session_kwargs)
                 self.console = Console()  # pretty console
+                logger.debug("PromptSession initialized successfully")
             except Exception as err:
                 self.console = Console(force_terminal=False, no_color=True)
-                self.tool_error(f"Can't initialize prompt toolkit: {err}")  # non-pretty
+                self.tool_error(f"Can't initialize prompt toolkit: {err}")
+                logger.error(
+                    "Failed to initialize PromptSession: %s", err, exc_info=True
+                )
         else:
             self.console = Console(force_terminal=False, no_color=True)  # non-pretty
             if self.is_dumb_terminal:
@@ -859,6 +864,9 @@ class InputOutput:
             message = Text(message)
         style = dict(style=color) if self.pretty and color else dict()
         try:
+            if self.output is None or not hasattr(self.output, 'write'):
+                # Skip writing to DummyOutput or None output
+                return
             self.console.print(message, **style)
         except UnicodeEncodeError:
             # Fallback to ASCII-safe output
@@ -970,45 +978,6 @@ class InputOutput:
                 editable_files.append(f"{full_path}")
 
             return "\n".join(read_only_files + editable_files) + "\n"
-
-        output = StringIO()
-        console = Console(file=output, force_terminal=False)
-
-        read_only_files = sorted(rel_read_only_fnames or [])
-        editable_files = [
-            f for f in sorted(rel_fnames) if f not in rel_read_only_fnames
-        ]
-
-        if read_only_files:
-            # Use shorter of abs/rel paths for readonly files
-            ro_paths = []
-            for rel_path in read_only_files:
-                abs_path = os.path.abspath(os.path.join(self.root, rel_path))
-                ro_paths.append(abs_path if len(abs_path) < len(rel_path) else rel_path)
-
-            files_with_label = ["Readonly:"] + ro_paths
-            read_only_output = StringIO()
-            Console(file=read_only_output, force_terminal=False).print(
-                Columns(files_with_label)
-            )
-            read_only_lines = read_only_output.getvalue().splitlines()
-            console.print(Columns(files_with_label))
-
-        if editable_files:
-            files_with_label = editable_files
-            if read_only_files:
-                files_with_label = ["Editable:"] + editable_files
-                editable_output = StringIO()
-                Console(file=editable_output, force_terminal=False).print(
-                    Columns(files_with_label)
-                )
-                editable_lines = editable_output.getvalue().splitlines()
-
-                if len(read_only_lines) > 1 or len(editable_lines) > 1:
-                    console.print()
-            console.print(Columns(files_with_label))
-
-        return output.getvalue()
 
 
 def get_rel_fname(fname, root):

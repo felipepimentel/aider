@@ -2,23 +2,6 @@
 
 from typing import Dict, Final
 
-# Default URLs
-DEFAULT_AUTH_URL: Final[str] = "https://auth.stackspot.com"
-DEFAULT_API_URL: Final[str] = "https://genai-code-buddy-api.stackspot.com"
-
-# Environment variable names
-ENV_CLIENT_ID: Final[str] = "STACKSPOTAI_CLIENT_ID"
-ENV_CLIENT_KEY: Final[str] = "STACKSPOTAI_CLIENT_KEY"
-ENV_REALM: Final[str] = "STACKSPOTAI_REALM"
-ENV_REMOTE_QC_NAME: Final[str] = "STACKSPOTAI_REMOTEQC_NAME"
-ENV_AUTH_URL: Final[str] = "STACKSPOTAI_AUTH_URL"
-ENV_API_URL: Final[str] = "STACKSPOTAI_API_URL"
-ENV_USER_AGENT: Final[str] = "STACKSPOTAI_USER_AGENT"
-
-# Default values
-DEFAULT_REALM: Final[str] = "stackspot"
-DEFAULT_USER_AGENT: Final[str] = "aider/1.0 (+https://aider.chat)"
-
 # API endpoints
 API_PATH_CREATE_EXECUTION: Final[str] = "v1/quick-commands/create-execution"
 API_PATH_CHECK_EXECUTION: Final[str] = "v1/quick-commands/execution"

@@ -26,9 +26,7 @@ from pydantic import BaseModel, ConfigDict, Field
 from .stackspot_config import configure_stackspot
 from .stackspot_constants import (
     CONTENT_TYPE_MAP,
-    ENV_CLIENT_KEY,
     ERROR_MESSAGES,
-    TOKEN_REFRESH_THRESHOLD,
 )
 from .stackspot_errors import (
     InvalidRequestError,
@@ -40,67 +38,26 @@ from .stackspot_errors import (
 logger = logging.getLogger(__name__)
 
 
-class TokenInfo:
-    """Token information and management.
+class TokenInfo(BaseModel):
+    """Token information model.
 
-    This class handles token lifecycle management, including expiration tracking
-    and refresh scheduling.
+    This model stores authentication token information including the token itself
+    and its expiration time.
 
     Attributes:
-        token: The access token string.
-        created_at: Timestamp when the token was created.
-        expires_in: Token lifetime in seconds.
-        refresh_threshold: Percentage of token lifetime after which to refresh.
+        token: The authentication token.
+        expires_in: Time in seconds until the token expires.
     """
 
-    def __init__(self, token: str, expires_in: int):
-        """Initialize token info.
+    model_config = ConfigDict(
+        extra="allow",  # Permite campos extras
+        validate_assignment=True,  # Valida atribuições
+        frozen=False,  # Permite modificações
+        str_strip_whitespace=True,  # Remove espaços em branco
+    )
 
-        Args:
-            token: The access token string.
-            expires_in: Token lifetime in seconds.
-        """
-        self.token = token
-        self.created_at = time.time()
-        self.expires_in = expires_in
-        self.refresh_threshold = TOKEN_REFRESH_THRESHOLD
-        logger.debug(f"Token initialized with {expires_in}s lifetime")
-
-    @property
-    def is_expired(self) -> bool:
-        """Check if token is expired.
-
-        Returns:
-            True if the token has expired, False otherwise.
-        """
-        expired = time.time() >= self.created_at + self.expires_in
-        if expired:
-            logger.debug("Token is expired")
-        return expired
-
-    @property
-    def needs_refresh(self) -> bool:
-        """Check if token needs refresh.
-
-        Returns:
-            True if the token should be refreshed, False otherwise.
-        """
-        elapsed = time.time() - self.created_at
-        needs_refresh = elapsed >= self.expires_in * self.refresh_threshold
-        if needs_refresh:
-            logger.debug(f"Token needs refresh (elapsed: {elapsed}s)")
-        return needs_refresh
-
-    @property
-    def remaining_time(self) -> float:
-        """Get remaining time in seconds.
-
-        Returns:
-            Number of seconds until token expiration.
-        """
-        remaining = max(0, (self.created_at + self.expires_in) - time.time())
-        logger.debug(f"Token remaining time: {remaining}s")
-        return remaining
+    token: str
+    expires_in: int
 
 
 class StackSpotCommand(BaseModel):
@@ -116,7 +73,12 @@ class StackSpotCommand(BaseModel):
         max_tokens: Maximum number of tokens to generate.
     """
 
-    model_config = ConfigDict(populate_by_name=True)
+    model_config = ConfigDict(
+        extra="allow",
+        validate_assignment=True,
+        frozen=False,
+        str_strip_whitespace=True,
+    )
 
     input_data: str
     conversation_id: Optional[str] = None
@@ -136,7 +98,12 @@ class StackSpotResponse(BaseModel):
         metadata: Optional response metadata.
     """
 
-    model_config = ConfigDict(populate_by_name=True)
+    model_config = ConfigDict(
+        extra="allow",
+        validate_assignment=True,
+        frozen=False,
+        str_strip_whitespace=True,
+    )
 
     id: str = Field(default_factory=lambda: f"ssp-{int(time.time())}")
     content: str
@@ -159,27 +126,45 @@ class StackSpotProvider:
 
     content_type_map = CONTENT_TYPE_MAP
 
-    def __init__(self, api_key: Optional[str] = None):
-        """Initialize StackSpot provider.
+    def __init__(self, api_key=None, client_id=None, realm=None):
+        """Initialize the StackSpot provider.
 
         Args:
-            api_key: Optional API key. If provided, it will override the environment variable.
+            api_key: Optional API key. If not provided, will try to get from environment.
+            client_id: Optional client ID. If not provided, will try to get from environment.
+            realm: Optional realm. If not provided, will try to get from environment.
         """
-        logger.info("Initializing StackSpot provider")
+        self.api_key = api_key or os.getenv("STACKSPOTAI_CLIENT_KEY")
+        self.client_id = client_id or os.getenv("STACKSPOTAI_CLIENT_ID")
+        self.realm = realm or os.getenv("STACKSPOTAI_REALM")
 
-        if api_key:
-            logger.debug("Using provided API key")
-            os.environ[ENV_CLIENT_KEY] = api_key
+        if not self.api_key:
+            raise ValueError("STACKSPOTAI_CLIENT_KEY not found in environment")
+        if not self.client_id:
+            raise ValueError("STACKSPOTAI_CLIENT_ID not found in environment")
+        if not self.realm:
+            raise ValueError("STACKSPOTAI_REALM not found in environment")
 
-        self.config = configure_stackspot()
-        self.http_client = httpx.AsyncClient(
-            timeout=self.config["defaults"]["timeout"],
-            limits=httpx.Limits(max_keepalive_connections=5, max_connections=10),
-        )
+        self.config = {
+            "api_base": os.getenv(
+                "STACKSPOTAI_API_URL", "https://genai-code-buddy-api.stackspot.com"
+            ),
+            "auth_url": os.getenv("STACKSPOTAI_AUTH_URL", "https://auth.stackspot.com"),
+        }
+
+        # Initialize other attributes
+        self.http_client = None
         self.token_info = None
         self.conversation_id = None
         self._auth_lock = asyncio.Lock()
-        logger.info("StackSpot provider initialized successfully")
+
+        # Load configuration
+        try:
+            self.config = configure_stackspot()
+            logger.info("StackSpot provider initialized successfully")
+        except Exception as e:
+            logger.error("Failed to initialize StackSpot provider: %s", str(e))
+            raise
 
     @property
     def access_token(self) -> Optional[str]:
@@ -189,6 +174,22 @@ class StackSpotProvider:
             The current access token if available, None otherwise.
         """
         return self.token_info.token if self.token_info else None
+
+    def initialize_client(self):
+        """Initialize HTTP client with default configuration."""
+        if self.http_client:
+            return
+
+        try:
+            self.http_client = httpx.AsyncClient(
+                timeout=self.config["defaults"]["timeout"],
+                headers=self.config["api"]["headers"],
+                follow_redirects=True,
+            )
+            logger.info("HTTP client initialized successfully")
+        except Exception as e:
+            logger.error("Failed to initialize HTTP client: %s", str(e))
+            raise
 
     async def _get_access_token(self) -> str:
         """Get access token for API requests with automatic refresh.
@@ -218,8 +219,11 @@ class StackSpotProvider:
         Raises:
             ValueError: If token acquisition fails.
         """
+        if not self.http_client:
+            self.initialize_client()
+
         auth_url = self.config["auth"]["auth_url"]
-        logger.info(f"Fetching new token from {auth_url}")
+        logger.info("Fetching new token from %s", auth_url)
 
         data = {
             "grant_type": "client_credentials",
@@ -228,81 +232,80 @@ class StackSpotProvider:
         }
 
         try:
-            response = await self._make_request(
-                "post",
+            response = await self.http_client.post(
                 auth_url,
-                headers=self._get_headers("form"),
+                headers={"Content-Type": CONTENT_TYPE_MAP["form"]},
                 data=data,
-                retry_auth=False,
             )
+            response.raise_for_status()
 
             token_data = response.json()
             logger.debug("Token response received")
 
             if "access_token" not in token_data or "expires_in" not in token_data:
-                logger.error(f"Invalid token response format: {token_data}")
-                raise InvalidRequestError("Invalid token response format")
+                logger.error("Invalid token response format: %s", token_data)
+                raise ValueError(ERROR_MESSAGES["invalid_token_response"])
 
             self.token_info = TokenInfo(
                 token=token_data["access_token"],
                 expires_in=token_data["expires_in"],
             )
 
-            logger.info(f"New token obtained (expires in {token_data['expires_in']}s)")
+            logger.info("New token obtained (expires in %ds)", token_data["expires_in"])
             return self.token_info.token
 
         except httpx.HTTPError as e:
-            logger.error("HTTP error during token fetch")
+            logger.error("HTTP error during token fetch: %s", str(e))
             handle_http_error(e)
         except Exception as e:
-            logger.error(
-                f"Unexpected error during token fetch: {str(e)}", exc_info=True
-            )
+            logger.error("Unexpected error during token fetch: %s", str(e))
             raise StackSpotError(f"Failed to obtain access token: {str(e)}")
 
-    async def _refresh_token(self) -> None:
+    async def _refresh_token(self) -> str:
         """Refresh the current access token.
+
+        Returns:
+            A new access token.
 
         Raises:
             ValueError: If token refresh fails.
         """
-        try:
-            await self._fetch_new_token()
-        except Exception as e:
-            logger.error(f"Failed to refresh token: {str(e)}")
-            # Clear token info to force new token fetch on next request
-            self.token_info = None
-            raise
+        logger.info("Refreshing access token")
+        return await self._fetch_new_token()
 
     def _get_headers(self, content_type: str = "json") -> Dict[str, str]:
-        """Return headers for requests.
+        """Get headers for API requests.
 
         Args:
             content_type: The content type to use (json or form).
 
         Returns:
-            A dictionary of HTTP headers.
+            A dictionary of headers.
         """
         headers = self.config["api"]["headers"].copy()
-        headers["Content-Type"] = self.content_type_map[content_type]
-        if self.access_token:
-            headers["Authorization"] = f"Bearer {self.access_token}"
+        headers["Content-Type"] = self.content_type_map.get(
+            content_type, self.content_type_map["json"]
+        )
+        if self.token_info and self.token_info.token:
+            headers["Authorization"] = f"Bearer {self.token_info.token}"
         return headers
 
     async def _make_request(
         self,
         method: str,
         url: str,
+        headers: Dict[str, str] = None,
+        data: Dict = None,
         retry_auth: bool = True,
-        **kwargs,
     ) -> httpx.Response:
         """Make an HTTP request with automatic token refresh.
 
         Args:
-            method: HTTP method to use.
-            url: URL to request.
+            method: The HTTP method to use.
+            url: The URL to request.
+            headers: Optional headers to include.
+            data: Optional data to send.
             retry_auth: Whether to retry with a new token on auth failure.
-            **kwargs: Additional arguments to pass to httpx.
 
         Returns:
             The HTTP response.
@@ -310,141 +313,125 @@ class StackSpotProvider:
         Raises:
             httpx.HTTPError: If the request fails.
         """
-        logger.debug(f"Making {method.upper()} request to {url}")
-        logger.debug(f"Request kwargs: {json.dumps(kwargs, default=str)}")
+        if not self.http_client:
+            self.initialize_client()
+
+        if retry_auth:
+            token = await self._get_access_token()
+            if not headers:
+                headers = {}
+            headers["Authorization"] = f"Bearer {token}"
 
         try:
-            response = await self.http_client.request(method, url, **kwargs)
-            logger.debug(f"Response status: {response.status_code}")
-
-            if response.status_code >= 400:
-                logger.error(f"Request failed with status {response.status_code}")
-                logger.error(f"Response content: {response.content}")
-
-                if response.status_code in (401, 403) and retry_auth:
-                    logger.info("Authentication failed, attempting to refresh token")
-                    self.token_info = None
-                    if "headers" in kwargs:
-                        kwargs["headers"]["Authorization"] = (
-                            f"Bearer {await self._get_access_token()}"
-                        )
-                    return await self._make_request(
-                        method, url, retry_auth=False, **kwargs
-                    )
-
-                response.raise_for_status()
-
+            response = await self.http_client.request(
+                method,
+                url,
+                headers=headers,
+                json=data if method.lower() != "get" else None,
+                params=data if method.lower() == "get" else None,
+            )
+            response.raise_for_status()
             return response
 
-        except httpx.HTTPError as e:
-            logger.error("HTTP error during request")
-            handle_http_error(e)
-        except Exception as e:
-            logger.error(f"Unexpected error during request: {str(e)}", exc_info=True)
-            raise StackSpotError(f"Request failed: {str(e)}")
+        except httpx.HTTPStatusError as e:
+            if e.response.status_code == 401 and retry_auth:
+                logger.info("Token expired, retrying with new token")
+                self.token_info = None
+                return await self._make_request(
+                    method, url, headers, data, retry_auth=False
+                )
+            raise
 
     async def _start_execution(
         self,
-        prompt: str,
+        messages: List[Dict[str, str]],
         model: str = "stackspot-ai",
         temperature: float = 0.7,
-        max_tokens: Optional[int] = None,
-    ) -> str:
-        """Start execution and return execution ID.
+        max_tokens: int = None,
+    ) -> Dict:
+        """Start a new execution.
 
         Args:
-            prompt: The input prompt.
+            messages: List of messages to process.
             model: The model to use.
             temperature: The sampling temperature.
             max_tokens: Maximum number of tokens to generate.
 
         Returns:
-            The execution ID.
+            The execution response data.
 
         Raises:
-            ValueError: If execution start fails.
+            ValueError: If the request is invalid.
+            httpx.HTTPError: If the request fails.
         """
-        suffix_url = (
-            f"?conversation_id={self.conversation_id}" if self.conversation_id else ""
-        )
-        url = f"{self.config['api']['create_exec_url']}/{self.config['api']['remote_qc_name']}{suffix_url}"
+        if not messages:
+            raise ValueError(ERROR_MESSAGES["no_messages"])
 
-        # Create command with all parameters
-        command_data = {
-            "input_data": prompt,
-            "conversation_id": self.conversation_id,
+        url = self.config["api"]["create_exec_url"]
+        data = {
+            "input_data": json.dumps(messages),
             "model": model,
             "temperature": temperature,
         }
-        if max_tokens is not None:
-            command_data["max_tokens"] = max_tokens
+        if max_tokens:
+            data["max_tokens"] = max_tokens
 
-        command = StackSpotCommand(**command_data)
-
-        try:
-            logger.debug(f"Starting execution with prompt: {prompt[:100]}...")
-            response = await self._make_request(
-                "post",
-                url,
-                headers=self._get_headers(),
-                data=json.dumps(command.model_dump(exclude_none=True)),
-            )
-            execution_id = response.text.strip('"')
-            logger.debug(f"Execution started with ID: {execution_id}")
-            return execution_id
-        except httpx.HTTPError as e:
-            self._handle_http_error(e)
+        response = await self._make_request("post", url, data=data)
+        return response.json()
 
     async def _check_execution(self, execution_id: str) -> Dict:
-        """Check execution status and return result.
+        """Check the status of an execution.
 
         Args:
             execution_id: The execution ID to check.
 
         Returns:
-            The execution result.
+            The execution status data.
 
         Raises:
-            ValueError: If execution check fails.
-            TimeoutError: If execution check times out.
+            httpx.HTTPError: If the request fails.
         """
         url = f"{self.config['api']['check_exec_url']}/{execution_id}"
+        response = await self._make_request("get", url)
+        return response.json()
+
+    async def _wait_for_completion(self, execution_id: str) -> Dict:
+        """Wait for an execution to complete.
+
+        Args:
+            execution_id: The execution ID to wait for.
+
+        Returns:
+            The final execution data.
+
+        Raises:
+            TimeoutError: If the execution takes too long.
+            ValueError: If the execution fails or is cancelled.
+        """
         attempts = 0
         max_attempts = self.config["defaults"]["max_polling_attempts"]
-        polling_interval = self.config["defaults"]["polling_interval"]
+        interval = self.config["defaults"]["polling_interval"]
 
         while attempts < max_attempts:
-            try:
-                logger.debug(
-                    f"Checking execution status (attempt {attempts + 1}/{max_attempts})"
-                )
-                response = await self._make_request(
-                    "get", url, headers=self._get_headers()
-                )
-                data = response.json()
+            data = await self._check_execution(execution_id)
+            status = data.get("status", "").lower()
 
-                status = data.get("progress", {}).get("status")
-                if status == "COMPLETED":
-                    logger.debug("Execution completed successfully")
-                    return data
-                elif status == "FAILED":
-                    error_msg = data.get("progress", {}).get("error", "Unknown error")
-                    raise ValueError(
-                        ERROR_MESSAGES["execution_failed"].format(error=error_msg)
+            if status == "completed":
+                return data
+            elif status == "failed":
+                raise ValueError(
+                    ERROR_MESSAGES["execution_failed"].format(
+                        error=data.get("error", "Unknown error")
                     )
-                elif status == "CANCELLED":
-                    raise ValueError(ERROR_MESSAGES["execution_cancelled"])
+                )
+            elif status == "cancelled":
+                raise ValueError(ERROR_MESSAGES["execution_cancelled"])
 
-                attempts += 1
-                logger.debug(f"Execution in progress, status: {status}")
-                await asyncio.sleep(polling_interval)
-            except httpx.HTTPError as e:
-                self._handle_http_error(e)
+            attempts += 1
+            await asyncio.sleep(interval)
 
         raise TimeoutError(
-            ERROR_MESSAGES["request_timeout"].format(
-                attempts=f"{max_attempts} attempts ({max_attempts * polling_interval} seconds)"
-            )
+            ERROR_MESSAGES["request_timeout"].format(attempts=max_attempts)
         )
 
     def _handle_http_error(self, error: httpx.HTTPError):
@@ -633,12 +620,12 @@ class StackSpotProvider:
         try:
             # Start execution
             execution_id = await self._start_execution(
-                prompt, model, temperature, max_tokens=max_tokens
+                messages, model, temperature, max_tokens=max_tokens
             )
             logger.info(f"Execution started with ID: {execution_id}")
 
             # Check execution result
-            result = await self._check_execution(execution_id)
+            result = await self._wait_for_completion(execution_id)
             logger.debug(f"Raw execution result: {result}")
 
             # Format response
@@ -660,16 +647,99 @@ class StackSpotProvider:
             await self.http_client.aclose()
 
     def __del__(self):
-        """Cleanup when destroying the object."""
-        logger.debug("StackSpot provider cleanup")
-        if self.http_client and not self.http_client.is_closed:
+        """Cleanup resources on deletion."""
+        try:
+            if self.http_client and not self.http_client.is_closed:
+                import asyncio
+
+                try:
+                    loop = asyncio.get_event_loop()
+                except RuntimeError:
+                    # Se não houver event loop, cria um novo
+                    loop = asyncio.new_event_loop()
+                    asyncio.set_event_loop(loop)
+
+                try:
+                    loop.run_until_complete(self.http_client.aclose())
+                except Exception as e:
+                    logger.debug("Error during cleanup: %s", e)
+                finally:
+                    if loop.is_running():
+                        loop.stop()
+                    loop.close()
+        except Exception as e:
+            # If we can't clean up properly, just ignore it
+            logger.debug("Error during cleanup: %s", e)
+            pass
+
+    async def cleanup(self):
+        """Clean up resources used by the provider."""
+        if self.http_client:
             try:
-                loop = asyncio.get_event_loop()
-                if loop.is_running():
-                    loop.create_task(self.close())
-                else:
-                    loop.run_until_complete(self.close())
+                await self.http_client.aclose()
+                logger.info("HTTP client closed successfully")
             except Exception as e:
-                logger.debug(f"Error during cleanup: {e}")
-                # If we can't clean up properly, just ignore it
-                pass
+                logger.debug("Error during cleanup: %s", e)
+
+    async def send_completion(
+        self,
+        messages: List[Dict[str, str]],
+        model: str = "stackspot-ai",
+        temperature: float = 0.7,
+        max_tokens: int = None,
+    ) -> Dict:
+        """Send a completion request.
+
+        Args:
+            messages: List of messages to process.
+            model: The model to use.
+            temperature: The sampling temperature.
+            max_tokens: Maximum number of tokens to generate.
+
+        Returns:
+            The completion response data.
+
+        Raises:
+            ValueError: If the request is invalid.
+            TimeoutError: If the request times out.
+            StackSpotError: If the request fails.
+        """
+        if not messages:
+            raise ValueError(ERROR_MESSAGES["no_messages"])
+
+        try:
+            # Start execution
+            execution_data = await self._start_execution(
+                messages, model, temperature, max_tokens=max_tokens
+            )
+            logger.info("Execution started successfully")
+
+            # Wait for completion
+            result = await self._wait_for_completion(execution_data["execution_id"])
+            logger.debug("Execution completed successfully")
+
+            # Extract and validate content
+            content = result.get("content")
+            if not content:
+                raise ValueError(ERROR_MESSAGES["no_content"])
+
+            return {
+                "id": result.get("id", f"ssp-{int(time.time())}"),
+                "content": content,
+                "metadata": result.get("metadata", {}),
+            }
+
+        except (ValueError, TimeoutError) as e:
+            logger.error("Error during completion: %s", str(e))
+            raise
+        except Exception as e:
+            logger.error("Unexpected error during completion: %s", str(e))
+            raise StackSpotError(f"Completion failed: {str(e)}")
+
+    async def __aenter__(self):
+        """Async context manager entry."""
+        return self
+
+    async def __aexit__(self, exc_type, exc_val, exc_tb):
+        """Async context manager exit."""
+        await self.cleanup()

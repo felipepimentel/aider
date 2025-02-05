@@ -45,10 +45,32 @@ def setup_logging(config_path=None):
     Configura o sistema de logging baseado no arquivo de configuração.
     Se config_path não for fornecido, procura o arquivo de configuração nos locais padrão.
     """
+    # Desabilitar todos os loggers existentes primeiro
+    for logger_name in logging.root.manager.loggerDict:
+        logger = logging.getLogger(logger_name)
+        logger.handlers = []
+        logger.propagate = True
+        logger.setLevel(logging.WARNING)
+
     if config_path is None:
         config_path = find_config_file()
         if not config_path:
             # Configuração padrão se nenhum arquivo for encontrado
+            logging.basicConfig(
+                level=logging.INFO,
+                format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+            )
+            return
+
+    # Se config_path for um objeto Namespace ou dict, extrair o caminho do arquivo
+    if hasattr(config_path, "config_file"):
+        config_path = config_path.config_file
+    elif isinstance(config_path, dict):
+        config_path = config_path.get("config_file")
+    elif not isinstance(config_path, (str, bytes, os.PathLike)):
+        # Se não for um caminho válido, usar o padrão
+        config_path = find_config_file()
+        if not config_path:
             logging.basicConfig(
                 level=logging.INFO,
                 format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
@@ -73,6 +95,10 @@ def setup_logging(config_path=None):
     if isinstance(root_level, str):
         root_level = getattr(logging, root_level.upper())
 
+    # Resetar configuração básica
+    for handler in logging.root.handlers[:]:
+        logging.root.removeHandler(handler)
+
     logging.basicConfig(
         level=root_level,
         format=logging_config.get(
@@ -87,7 +113,7 @@ def setup_logging(config_path=None):
     file_config = handlers_config.get("file", {})
     if file_config.get("enabled"):
         file_handler = logging.FileHandler(file_config.get("filename", "aider.log"))
-        file_level = file_config.get("level", "DEBUG")
+        file_level = file_config.get("level", "INFO")
         if isinstance(file_level, str):
             file_level = getattr(logging, file_level.upper())
         file_handler.setLevel(file_level)
@@ -100,7 +126,18 @@ def setup_logging(config_path=None):
         component_level = settings.get("level", "INFO")
         if isinstance(component_level, str):
             component_level = getattr(logging, component_level.upper())
-        logging.getLogger(f"aider.{component}").setLevel(component_level)
+        logger = logging.getLogger(f"aider.{component}")
+        logger.setLevel(component_level)
+        logger.propagate = True
+
+    # Configurar loggers de terceiros
+    for logger_name, settings in logging_config.get("loggers", {}).items():
+        logger_level = settings.get("level", "WARNING")
+        if isinstance(logger_level, str):
+            logger_level = getattr(logging, logger_level.upper())
+        logger = logging.getLogger(logger_name)
+        logger.setLevel(logger_level)
+        logger.propagate = True
 
 
 def setup_verbose_mode(verbose=False):

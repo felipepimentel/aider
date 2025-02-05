@@ -33,6 +33,17 @@ ANY_GIT_ERROR += [
 ANY_GIT_ERROR = tuple(ANY_GIT_ERROR)
 
 
+def get_git_root():
+    """Return the git root directory if it exists, otherwise return None."""
+    try:
+        if git is None:
+            return None
+        repo = git.Repo(search_parent_directories=True)
+        return utils.safe_abs_path(repo.working_tree_dir)
+    except ANY_GIT_ERROR:
+        return None
+
+
 class GitRepo:
     repo = None
     aider_ignore_file = None
@@ -42,6 +53,7 @@ class GitRepo:
     subtree_only = False
     ignore_file_cache = {}
     git_repo_error = None
+    last_aider_commit_hash = None  # Track last aider commit hash
 
     def __init__(
         self,
@@ -59,6 +71,7 @@ class GitRepo:
     ):
         self.io = io
         self.models = models
+        self.last_aider_commit_hash = None  # Initialize last_aider_commit_hash
 
         self.normalized_path = {}
         self.tree_files = {}
@@ -159,13 +172,14 @@ class GitRepo:
         try:
             self.repo.git.commit(cmd)
             commit_hash = self.get_head_commit_sha(short=True)
+            if aider_edits:
+                self.last_aider_commit_hash = commit_hash  # Track last aider commit
             self.io.tool_output(f"Commit {commit_hash} {commit_message}", bold=True)
             return commit_hash, commit_message
         except ANY_GIT_ERROR as err:
             self.io.tool_error(f"Unable to commit: {err}")
         finally:
             # Restore the env
-
             if self.attribute_committer:
                 if original_committer_name_env is not None:
                     os.environ["GIT_COMMITTER_NAME"] = original_committer_name_env
@@ -295,7 +309,9 @@ class GitRepo:
                             if blob.type == "blob":  # blob is a file
                                 files.add(blob.path)
                         except IndexError:
-                            self.io.tool_warning(f"GitRepo: read error skipping {blob.path}")
+                            self.io.tool_warning(
+                                f"GitRepo: read error skipping {blob.path}"
+                            )
                             continue
                         except StopIteration:
                             break
